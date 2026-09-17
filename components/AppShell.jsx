@@ -48,7 +48,7 @@ export default function AppShell({ children }) {
 
   return (
     <div className="min-h-screen bg-[#0C2043] text-[#EDE7D6]">
-      <div className="bg-[#2FD3C4] text-[#0C2043] border-b-4 border-[#0C2043]">
+      <div className="no-print bg-[#2FD3C4] text-[#0C2043] border-b-4 border-[#0C2043]">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <div>
             <p className="text-xs tracking-[0.25em] uppercase text-[#0C2043] font-semibold">

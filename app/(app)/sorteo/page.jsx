@@ -167,13 +167,20 @@ export default function SorteoPage() {
           <p className="text-sm text-[#9FB0D0] mb-3">
             {registeredLabels.length} equipo(s)/participante(s) inscriptos en {disciplineCategory?.name}.
           </p>
-          <button
-            onClick={runDraw}
-            disabled={busy || registeredLabels.length < 2}
-            className="flex items-center gap-2 bg-[#2FD3C4] text-[#0C2043] font-semibold text-sm px-4 py-2.5 rounded-lg hover:brightness-95 disabled:opacity-50"
-          >
-            <Shuffle className="w-4 h-4" /> {category.drawn ? "Volver a sortear" : "Sortear"}
-          </button>
+          <div className="flex items-center gap-3 flex-wrap">
+            <button
+              onClick={runDraw}
+              disabled={busy || registeredLabels.length < 2}
+              className="flex items-center gap-2 bg-[#2FD3C4] text-[#0C2043] font-semibold text-sm px-4 py-2.5 rounded-lg hover:brightness-95 disabled:opacity-50"
+            >
+              <Shuffle className="w-4 h-4" /> {category.drawn ? "Volver a sortear" : "Sortear"}
+            </button>
+            {category.drawn && (
+              <a href={`/poster/${selCategory}`} target="_blank" rel="noreferrer" className="text-sm text-[#2FD3C4] hover:underline">
+                Ver póster / imprimir →
+              </a>
+            )}
+          </div>
         </Card>
 
         {category.modality === "grupos" && matches.groupMatches.length > 0 && (

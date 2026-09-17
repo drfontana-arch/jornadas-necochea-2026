@@ -36,7 +36,12 @@ export async function POST(req, { params }) {
       });
     }
 
-    const matches = buildDrawMatches(qualifiers);
+    const rawMatches = buildDrawMatches(qualifiers);
+    const roundCounters = {};
+    const matches = rawMatches.map((m) => {
+      roundCounters[m.round] = (roundCounters[m.round] ?? -1) + 1;
+      return { ...m, seq: roundCounters[m.round] };
+    });
     const schedulable = matches.filter((m) => !m.placeholder && !m.bye);
     const allMatches = await listAllMatches(); // incluye los propios partidos de grupos de esta categoría
     const restrictions = await listRestrictions();

@@ -7,3 +7,8 @@ body {
   background-color: #0C2043;
   color: #EDE7D6;
 }
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white !important; }
+}
