@@ -25,11 +25,39 @@ interno de la organización, para:
 
 ## Estado del proyecto
 
-🚧 En construcción. Este repo arranca con el artifact piloto (React, pensado
-originalmente para correr dentro de Claude.ai) como punto de partida y
-referencia de la lógica de sorteo ya validada — ver
-[`/pilot-artifact`](./pilot-artifact). La migración a una app propia
-(Next.js en Vercel + Supabase + GitHub Actions) está en desarrollo.
+✅ App Next.js funcional conectada a Supabase: Departamentales, Disciplinas y
+sedes, Inscripciones, Antecedentes, Sorteo (con asignación de horarios que
+evita superposiciones), Fixture/Calendario con autoresolución de conflictos,
+y el módulo Auditor completo (Resumen, Resultados, Asistencia, Incidencias).
+
+🚧 Pendiente: detección de superposiciones a nivel de cada participante (hoy
+es a nivel departamental) y la página del delegado — depende del export de
+inscriptos que va a pasar Gonzalo Coelho. El artifact piloto original queda
+como referencia en [`/pilot-artifact`](./pilot-artifact).
+
+## Cómo correrlo localmente
+
+```bash
+npm install
+cp .env.example .env.local   # completar con los valores reales
+npm run dev
+```
+
+## Variables de entorno necesarias
+
+| Variable | Qué es |
+|---|---|
+| `SUPABASE_URL` | URL del proyecto Supabase (`jornadas-necochea-2026`) |
+| `SUPABASE_ANON_KEY` | Clave anon/publishable de ese proyecto |
+| `ACCESS_PASSPHRASE` | Contraseña compartida para entrar a la app |
+| `SESSION_SECRET` | Cualquier cadena aleatoria, para firmar la cookie de sesión |
+
+## Deploy
+
+Pensado para desplegarse en Vercel (plan gratuito) conectando este repo
+directamente — cada push a `main` dispara un deploy automático. Las cuatro
+variables de entorno de arriba se cargan en Vercel → Project Settings →
+Environment Variables.
 
 ## Arquitectura prevista
 
