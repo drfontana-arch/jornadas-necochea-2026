@@ -8,15 +8,15 @@ export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const matches = await listAllMatches();
+    const individualBusy = await getIndividualDisciplineBusyMatches();
+    const matchesWithIndividual = matches.concat(individualBusy);
     if (searchParams.get("withConflicts")) {
-      const individualBusy = await getIndividualDisciplineBusyMatches();
-      const forConflicts = matches.concat(individualBusy);
-      const conflicts = computeConflicts(forConflicts, 10);
+      const conflicts = computeConflicts(matchesWithIndividual, 10);
       const restrictions = await listRestrictions();
-      const violations = computeRestrictionViolations(forConflicts, restrictions);
-      return NextResponse.json({ matches, conflicts, violations });
+      const violations = computeRestrictionViolations(matchesWithIndividual, restrictions);
+      return NextResponse.json({ matches: matchesWithIndividual, conflicts, violations });
     }
-    return NextResponse.json({ matches });
+    return NextResponse.json({ matches: matchesWithIndividual });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

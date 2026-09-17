@@ -123,7 +123,9 @@ export default function CalendarioPage() {
     return m && !String(m.id).startsWith("ind-");
   }
   function matchLabel(m) {
-    return m.teamB ? `${m.teamA} vs ${m.teamB}` : `${m.teamA} (horario de competencia)`;
+    if (m.teamB) return `${m.teamA} vs ${m.teamB}`;
+    if (m.teamA) return `${m.teamA} (horario de competencia)`;
+    return "A definir vs A definir";
   }
 
   if (loading) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
@@ -344,7 +346,7 @@ export default function CalendarioPage() {
                     <td className="py-1.5 pr-3">{m.disciplineName}</td>
                     <td className="py-1.5 pr-3">{m.categoryName}</td>
                     <td className="py-1.5 pr-3">{m.stage}</td>
-                    <td className="py-1.5 pr-3">{m.teamA || "?"} vs {m.bye ? "BYE" : m.teamB || "?"}</td>
+                    <td className="py-1.5 pr-3">{m.bye ? `${m.teamA || "?"} vs BYE` : matchLabel(m)}</td>
                   </tr>
                 );
               })}
