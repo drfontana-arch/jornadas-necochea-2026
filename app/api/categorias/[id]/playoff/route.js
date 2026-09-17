@@ -3,6 +3,8 @@ import { getCategory, listAllMatches, replaceMatchesForStage, updateCategorySett
 import { getSupabase } from "../../../../../lib/supabase";
 import { buildDrawMatches, assignSlotsAvoidingConflicts, groupLetter } from "../../../../../lib/sorteoLogic";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req, { params }) {
   try {
     const categoryId = params.id;

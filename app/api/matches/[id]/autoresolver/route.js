@@ -3,6 +3,8 @@ import { listAllMatches, rescheduleMatch, listRestrictions } from "../../../../.
 import { getSupabase } from "../../../../../lib/supabase";
 import { buildSlotPool, overlaps, baseDept, slotBlockedByRestrictions } from "../../../../../lib/sorteoLogic";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req, { params }) {
   try {
     const body = await req.json().catch(() => ({}));

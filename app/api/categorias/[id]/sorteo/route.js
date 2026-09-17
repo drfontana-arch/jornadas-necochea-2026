@@ -9,6 +9,8 @@ import {
   groupLetter, assignSlotsAvoidingConflicts, uid,
 } from "../../../../../lib/sorteoLogic";
 
+export const dynamic = "force-dynamic";
+
 function computeLabels(entries) {
   const counts = {};
   entries.forEach((e) => { counts[e.dept] = (counts[e.dept] || 0) + 1; });

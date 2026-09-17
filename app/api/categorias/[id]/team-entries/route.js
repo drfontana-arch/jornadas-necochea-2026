@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { listTeamEntries, addTeamEntry, removeTeamEntry, removeTeamEntriesByDept, getCategory, updateCategorySettings } from "../../../../../lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req, { params }) {
   try {
     const entries = await listTeamEntries(params.id);

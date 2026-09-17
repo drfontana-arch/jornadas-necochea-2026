@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getCategory, updateCategorySettings, removeCategory } from "../../../../lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req, { params }) {
   try {
     const cat = await getCategory(params.id);

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { removeRestriction } from "../../../../lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function DELETE(req, { params }) {
   try {
     await removeRestriction(params.id);

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { hashToken, AUTH_COOKIE } from "../../../lib/authEdge";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req) {
   const body = await req.json().catch(() => ({}));
   const passphrase = body.passphrase || "";

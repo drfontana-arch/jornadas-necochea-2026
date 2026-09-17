@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { updateVenue, removeVenue } from "../../../../lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function PATCH(req, { params }) {
   try {
     const body = await req.json();

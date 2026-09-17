@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { listIncidents, addIncident } from "../../../lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const incidents = await listIncidents();
