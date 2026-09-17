@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { listDisciplines, INDIVIDUAL_DISCIPLINES } from "../../../lib/db";
 import { getSupabase } from "../../../lib/supabase";
-import { runSorteoForCategory } from "../../../lib/sorteoRunner";
+import { runSorteoForCategory, buildSorteoBatchContext } from "../../../lib/sorteoRunner";
 import { validateGroupConfig } from "../../../lib/sorteoLogic";
 
 export const dynamic = "force-dynamic";
@@ -63,9 +63,10 @@ export async function POST(req) {
     let sorteadas = 0;
     let saltadas = 0;
     const detalle = [];
+    const context = await buildSorteoBatchContext();
 
     for (const cat of pendientes) {
-      const result = await runSorteoForCategory(cat.id, transitionMinutes);
+      const result = await runSorteoForCategory(cat.id, transitionMinutes, context);
       if (result.ok) {
         sorteadas++;
         detalle.push({ categoria: `${cat.disciplineName} - ${cat.name}`, ok: true, unresolved: result.unresolved || 0 });

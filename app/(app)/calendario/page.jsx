@@ -104,7 +104,13 @@ export default function CalendarioPage() {
     setUltimoDetalle(null);
     try {
       const res = await fetch("/api/sorteo-global", { method: "POST" });
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        showToast("El servidor tardó demasiado o falló. Apretá el botón de nuevo -- retoma desde donde quedó.");
+        return;
+      }
       if (!res.ok) { showToast(data.error || "No se pudo completar el sorteo global."); return; }
       setUltimoDetalle(data);
       setRevision(null);
