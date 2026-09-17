@@ -62,8 +62,8 @@ export default function InscripcionesPage() {
     return count > 1 ? `${entry.dept} ${entry.num}` : entry.dept;
   }
 
-  if (loading) return <p className="text-[#93A0BB] text-sm">Cargando…</p>;
-  if (!discipline || !category) return <p className="text-[#93A0BB] text-sm">No hay disciplinas cargadas.</p>;
+  if (loading) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
+  if (!discipline || !category) return <p className="text-[#9FB0D0] text-sm">No hay disciplinas cargadas.</p>;
 
   return (
     <SelectorBar
@@ -80,7 +80,7 @@ export default function InscripcionesPage() {
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="p-5">
           <h3 className="font-bold mb-3">Departamentales</h3>
-          <p className="text-xs text-[#7484A3] mb-3">
+          <p className="text-xs text-[#7A8FBE] mb-3">
             Tildá quiénes participan en {category.name} ({discipline.name}).
             {category.max_teams > 1 && ` Esta categoría admite hasta ${category.max_teams} equipos por departamental.`}
           </p>
@@ -89,7 +89,7 @@ export default function InscripcionesPage() {
               const depEntries = entries.filter((e) => e.departamentalId === dep.id);
               const checked = depEntries.length > 0;
               return (
-                <div key={dep.id} className={`border rounded-lg px-3 py-2 text-sm ${checked ? "border-[#C9A227] bg-[#2A2410]" : "border-[#24334F]"}`}>
+                <div key={dep.id} className={`border rounded-lg px-3 py-2 text-sm ${checked ? "border-[#C9A227] bg-[#2A2410]" : "border-[#21426E]"}`}>
                   <div className="flex items-center justify-between">
                     <label className="flex items-center gap-2 flex-1 cursor-pointer">
                       <input type="checkbox" checked={checked} onChange={() => toggleDept(dep.id)} />
@@ -100,7 +100,7 @@ export default function InscripcionesPage() {
                     )}
                   </div>
                   {checked && depEntries.length > 1 && (
-                    <p className="text-xs text-[#7484A3] mt-1 ml-6">{depEntries.length} equipos inscriptos</p>
+                    <p className="text-xs text-[#7A8FBE] mt-1 ml-6">{depEntries.length} equipos inscriptos</p>
                   )}
                 </div>
               );
@@ -111,13 +111,13 @@ export default function InscripcionesPage() {
         <Card className="p-5">
           <h3 className="font-bold mb-3">Inscriptos ({entries.length})</h3>
           {entries.length === 0 ? (
-            <p className="text-sm text-[#7484A3]">Todavía no hay nadie inscripto en esta categoría.</p>
+            <p className="text-sm text-[#7A8FBE]">Todavía no hay nadie inscripto en esta categoría.</p>
           ) : (
             <ul className="space-y-1.5">
               {entries.map((e) => (
-                <li key={e.id} className="flex items-center gap-2 bg-[#101C33] border border-[#24334F] rounded-lg px-3 py-1.5 text-sm">
+                <li key={e.id} className="flex items-center gap-2 bg-[#0C2043] border border-[#21426E] rounded-lg px-3 py-1.5 text-sm">
                   <span className="flex-1">{teamLabel(e)}</span>
-                  <button onClick={() => removeEntry(e.id)} className="text-[#7484A3] hover:text-[#E0684A]"><Trash2 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => removeEntry(e.id)} className="text-[#7A8FBE] hover:text-[#E0684A]"><Trash2 className="w-3.5 h-3.5" /></button>
                 </li>
               ))}
             </ul>

@@ -20,9 +20,9 @@ function StatCard({ label, value, sub, tone = "neutral" }) {
   const tones = { neutral: "text-[#C9A227]", good: "text-[#4FAE72]", warn: "text-[#E0C15A]", bad: "text-[#E0684A]" };
   return (
     <Card className="p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-[#93A0BB] mb-1">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-[#9FB0D0] mb-1">{label}</p>
       <p className={`text-2xl font-bold ${tones[tone]}`}>{value}</p>
-      {sub && <p className="text-xs text-[#7484A3] mt-0.5">{sub}</p>}
+      {sub && <p className="text-xs text-[#7A8FBE] mt-0.5">{sub}</p>}
     </Card>
   );
 }
@@ -55,7 +55,7 @@ export default function AuditorPage() {
   }
   useEffect(() => { loadAll(); }, []);
 
-  if (loading) return <p className="text-[#93A0BB] text-sm">Cargando…</p>;
+  if (loading) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
 
   const totalCategoriasDefinidas = disciplines.reduce((acc, d) => acc + d.categories.length, 0);
   const categoriasConSorteo = disciplines.reduce((acc, d) => acc + d.categories.filter((c) => c.drawn).length, 0);
@@ -76,7 +76,7 @@ export default function AuditorPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-1 mb-5 border-b border-[#24334F]">
+      <div className="flex flex-wrap gap-1 mb-5 border-b border-[#21426E]">
         {SUBS.map((s) => {
           const Icon = s.icon;
           const active = sub === s.id;
@@ -85,7 +85,7 @@ export default function AuditorPage() {
               key={s.id}
               onClick={() => setSub(s.id)}
               className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors ${
-                active ? "bg-[#16233F] border border-b-0 border-[#24334F] text-[#C9A227]" : "text-[#93A0BB] hover:text-[#C9A227]"
+                active ? "bg-[#163A67] border border-b-0 border-[#21426E] text-[#C9A227]" : "text-[#9FB0D0] hover:text-[#C9A227]"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -131,10 +131,10 @@ function ResumenTab({ stats, matches, results, disciplines }) {
         <h3 className="font-bold mb-3">Asistencia general por día</h3>
         <div className="grid sm:grid-cols-3 gap-3">
           {stats.asistenciaPorDia.map((a) => (
-            <div key={a.day} className="border border-[#24334F] rounded-lg p-3">
+            <div key={a.day} className="border border-[#21426E] rounded-lg p-3">
               <p className="text-sm font-semibold">{DAY_LABEL[a.day]}</p>
               <p className="text-xl font-bold text-[#C9A227]">{a.presentes}/{a.total}</p>
-              <p className="text-xs text-[#7484A3]">departamentales presentes</p>
+              <p className="text-xs text-[#7A8FBE]">departamentales presentes</p>
             </div>
           ))}
         </div>
@@ -142,22 +142,22 @@ function ResumenTab({ stats, matches, results, disciplines }) {
       <Card className="p-5">
         <h3 className="font-bold mb-3">Avance por disciplina</h3>
         {porDisciplina.length === 0 ? (
-          <p className="text-sm text-[#7484A3]">Todavía no hay partidos programados en ninguna disciplina.</p>
+          <p className="text-sm text-[#7A8FBE]">Todavía no hay partidos programados en ninguna disciplina.</p>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-[#93A0BB] border-b border-[#24334F]">
+              <tr className="text-left text-xs uppercase tracking-wide text-[#9FB0D0] border-b border-[#21426E]">
                 <th className="py-2 pr-3">Disciplina</th><th className="py-2 pr-3">Programados</th><th className="py-2 pr-3">Jugados</th><th className="py-2 pr-3">Avance</th>
               </tr>
             </thead>
             <tbody>
               {porDisciplina.map((d) => (
-                <tr key={d.id} className="border-b border-[#1E2C47]">
+                <tr key={d.id} className="border-b border-[#12294C]">
                   <td className="py-1.5 pr-3 font-medium">{d.name}</td>
                   <td className="py-1.5 pr-3">{d.programados}</td>
                   <td className="py-1.5 pr-3">{d.jugados}</td>
                   <td className="py-1.5 pr-3 w-40">
-                    <div className="h-2 bg-[#1E2C47] rounded-full overflow-hidden">
+                    <div className="h-2 bg-[#12294C] rounded-full overflow-hidden">
                       <div className="h-2 bg-[#C9A227]" style={{ width: `${d.programados ? Math.round((d.jugados / d.programados) * 100) : 0}%` }} />
                     </div>
                   </td>
@@ -191,15 +191,15 @@ function ResultadosTab({ matches, results, disciplines, onSaved }) {
     <div className="space-y-4">
       <Card className="p-4 flex flex-wrap gap-3 items-end">
         <div>
-          <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Día</label>
-          <select className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm" value={filterDay} onChange={(e) => setFilterDay(e.target.value)}>
+          <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Día</label>
+          <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={filterDay} onChange={(e) => setFilterDay(e.target.value)}>
             <option value="">Todos</option>
             {DAYS.map((d) => <option key={d} value={d}>{DAY_LABEL[d]}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Disciplina</label>
-          <select className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm" value={filterDisc} onChange={(e) => setFilterDisc(e.target.value)}>
+          <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Disciplina</label>
+          <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={filterDisc} onChange={(e) => setFilterDisc(e.target.value)}>
             <option value="">Todas</option>
             {disciplines.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
           </select>
@@ -212,7 +212,7 @@ function ResultadosTab({ matches, results, disciplines, onSaved }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-[#93A0BB] border-b border-[#24334F] bg-[#1C2C4A]">
+              <tr className="text-left text-xs uppercase tracking-wide text-[#9FB0D0] border-b border-[#21426E] bg-[#1E4478]">
                 <th className="py-2 px-3">Día / hora</th><th className="py-2 px-3">Disciplina</th><th className="py-2 px-3">Categoría</th>
                 <th className="py-2 px-3">Partido</th><th className="py-2 px-3">Jugado</th><th className="py-2 px-3">Resultado</th>
                 <th className="py-2 px-3">Ganador</th><th className="py-2 px-3">Hora real</th>
@@ -222,7 +222,7 @@ function ResultadosTab({ matches, results, disciplines, onSaved }) {
               {rows.map((m) => {
                 const r = results[m.id] || {};
                 return (
-                  <tr key={m.id} className={`border-b border-[#1E2C47] ${r.jugado ? "bg-[#15261C]" : ""}`}>
+                  <tr key={m.id} className={`border-b border-[#12294C] ${r.jugado ? "bg-[#15261C]" : ""}`}>
                     <td className="py-1.5 px-3 font-mono text-xs whitespace-nowrap">{DAY_LABEL[m.day] || m.day} {m.time}</td>
                     <td className="py-1.5 px-3">{m.disciplineName}</td>
                     <td className="py-1.5 px-3">{m.categoryName}</td>
@@ -232,10 +232,10 @@ function ResultadosTab({ matches, results, disciplines, onSaved }) {
                     </td>
                     <td className="py-1.5 px-3">
                       <input type="text" placeholder="ej. 3-1" defaultValue={r.resultado || ""} onBlur={(e) => save(m.id, { resultado: e.target.value })}
-                        className="bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-xs w-20" />
+                        className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs w-20" />
                     </td>
                     <td className="py-1.5 px-3">
-                      <select defaultValue={r.ganador || ""} onChange={(e) => save(m.id, { ganador: e.target.value })} className="bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-xs">
+                      <select defaultValue={r.ganador || ""} onChange={(e) => save(m.id, { ganador: e.target.value })} className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs">
                         <option value="">—</option>
                         {m.teamA && <option value={m.teamA}>{m.teamA}</option>}
                         {m.teamB && <option value={m.teamB}>{m.teamB}</option>}
@@ -244,15 +244,15 @@ function ResultadosTab({ matches, results, disciplines, onSaved }) {
                     </td>
                     <td className="py-1.5 px-3">
                       <div className="flex items-center gap-1">
-                        <input type="time" defaultValue={r.hora_inicio_real || ""} onBlur={(e) => save(m.id, { hora_inicio_real: e.target.value })} className="bg-[#101C33] border border-[#2B3B5C] rounded px-1.5 py-1 text-xs" />
-                        <span className="text-[#7484A3]">–</span>
-                        <input type="time" defaultValue={r.hora_fin_real || ""} onBlur={(e) => save(m.id, { hora_fin_real: e.target.value })} className="bg-[#101C33] border border-[#2B3B5C] rounded px-1.5 py-1 text-xs" />
+                        <input type="time" defaultValue={r.hora_inicio_real || ""} onBlur={(e) => save(m.id, { hora_inicio_real: e.target.value })} className="bg-[#0C2043] border border-[#2A4E85] rounded px-1.5 py-1 text-xs" />
+                        <span className="text-[#7A8FBE]">–</span>
+                        <input type="time" defaultValue={r.hora_fin_real || ""} onBlur={(e) => save(m.id, { hora_fin_real: e.target.value })} className="bg-[#0C2043] border border-[#2A4E85] rounded px-1.5 py-1 text-xs" />
                       </div>
                     </td>
                   </tr>
                 );
               })}
-              {rows.length === 0 && <tr><td colSpan={8} className="py-6 text-center text-[#7484A3]">No hay partidos que coincidan con el filtro.</td></tr>}
+              {rows.length === 0 && <tr><td colSpan={8} className="py-6 text-center text-[#7A8FBE]">No hay partidos que coincidan con el filtro.</td></tr>}
             </tbody>
           </table>
         </div>
@@ -280,18 +280,18 @@ function AsistenciaTab({ departamentales, attendance, asistenciaPorDia, onSaved 
   return (
     <div className="space-y-4">
       <Card className="p-5">
-        <p className="text-sm text-[#93A0BB] mb-4">Asistencia general de cada departamental por día (no se carga asistencia individual de participantes).</p>
+        <p className="text-sm text-[#9FB0D0] mb-4">Asistencia general de cada departamental por día (no se carga asistencia individual de participantes).</p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-[#93A0BB] border-b border-[#24334F]">
+              <tr className="text-left text-xs uppercase tracking-wide text-[#9FB0D0] border-b border-[#21426E]">
                 <th className="py-2 pr-3">Departamental</th>
                 {DAYS.map((d) => <th key={d} className="py-2 px-3 text-center">{DAY_LABEL[d]}</th>)}
               </tr>
             </thead>
             <tbody>
               {departamentales.map((d) => (
-                <tr key={d.id} className="border-b border-[#1E2C47]">
+                <tr key={d.id} className="border-b border-[#12294C]">
                   <td className="py-1.5 pr-3 font-medium">{d.name}</td>
                   {DAYS.map((day) => (
                     <td key={day} className="py-1.5 px-3 text-center">
@@ -303,12 +303,12 @@ function AsistenciaTab({ departamentales, attendance, asistenciaPorDia, onSaved 
             </tbody>
             <tfoot>
               <tr>
-                <td className="py-2 pr-3 text-xs font-semibold text-[#93A0BB]">Marcar todos</td>
+                <td className="py-2 pr-3 text-xs font-semibold text-[#9FB0D0]">Marcar todos</td>
                 {DAYS.map((day) => (
                   <td key={day} className="py-2 px-3 text-center">
                     <div className="flex items-center justify-center gap-1">
                       <button onClick={() => marcarTodos(day, true)} className="text-[10px] bg-[#16261E] text-[#4FAE72] border border-[#2E4A3A] rounded px-1.5 py-0.5">Todos</button>
-                      <button onClick={() => marcarTodos(day, false)} className="text-[10px] bg-[#101C33] text-[#93A0BB] border border-[#2B3B5C] rounded px-1.5 py-0.5">Ninguno</button>
+                      <button onClick={() => marcarTodos(day, false)} className="text-[10px] bg-[#0C2043] text-[#9FB0D0] border border-[#2A4E85] rounded px-1.5 py-0.5">Ninguno</button>
                     </div>
                   </td>
                 ))}
@@ -350,43 +350,43 @@ function IncidentCard({ incident, disciplines, onSaved }) {
     <div className="border rounded-lg p-4" style={{ borderColor: colors.border, backgroundColor: colors.bg }}>
       <div className="flex items-start justify-between gap-3 mb-2">
         <div>
-          <p className="text-xs font-mono text-[#93A0BB]">
+          <p className="text-xs font-mono text-[#9FB0D0]">
             {DAY_LABEL[incident.day] || incident.day || "—"}{incident.hora ? ` · ${incident.hora}` : ""} — {disc ? disc.name : "General"}{incident.categoria ? ` · ${incident.categoria}` : ""}
           </p>
           <p className="text-sm font-semibold mt-0.5" style={{ color: colors.text }}>{incident.tipo}</p>
         </div>
-        <span className="text-xs font-semibold px-2 py-1 rounded-full" style={{ color: colors.text, backgroundColor: "#16233F", border: `1px solid ${colors.border}` }}>{incident.estado}</span>
+        <span className="text-xs font-semibold px-2 py-1 rounded-full" style={{ color: colors.text, backgroundColor: "#163A67", border: `1px solid ${colors.border}` }}>{incident.estado}</span>
       </div>
       <p className="text-sm text-[#EDE7D6] mb-1">{incident.descripcion}</p>
-      {incident.involucrados && <p className="text-xs text-[#93A0BB] mb-1"><strong>Involucrados:</strong> {incident.involucrados}</p>}
-      {incident.responsable && !editing && <p className="text-xs text-[#93A0BB] mb-1"><strong>Responsable:</strong> {incident.responsable}</p>}
+      {incident.involucrados && <p className="text-xs text-[#9FB0D0] mb-1"><strong>Involucrados:</strong> {incident.involucrados}</p>}
+      {incident.responsable && !editing && <p className="text-xs text-[#9FB0D0] mb-1"><strong>Responsable:</strong> {incident.responsable}</p>}
       {incident.resolucion && !editing && <p className="text-xs text-[#4FAE72] mt-1"><strong>Resolución:</strong> {incident.resolucion}</p>}
 
       {editing ? (
-        <div className="mt-3 space-y-2 bg-[#16233F] border border-[#24334F] rounded-lg p-3">
+        <div className="mt-3 space-y-2 bg-[#163A67] border border-[#21426E] rounded-lg p-3">
           <div>
-            <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Estado</label>
-            <select className="bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-xs w-full" value={estado} onChange={(e) => setEstado(e.target.value)}>
+            <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Estado</label>
+            <select className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs w-full" value={estado} onChange={(e) => setEstado(e.target.value)}>
               {INCIDENT_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Responsable</label>
-            <input type="text" className="bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-xs w-full" value={responsable} onChange={(e) => setResponsable(e.target.value)} />
+            <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Responsable</label>
+            <input type="text" className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs w-full" value={responsable} onChange={(e) => setResponsable(e.target.value)} />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Resolución / novedades</label>
-            <textarea className="bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-xs w-full" rows={2} value={resolucion} onChange={(e) => setResolucion(e.target.value)} />
+            <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Resolución / novedades</label>
+            <textarea className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs w-full" rows={2} value={resolucion} onChange={(e) => setResolucion(e.target.value)} />
           </div>
           <div className="flex gap-2">
-            <button onClick={guardar} className="text-xs bg-[#C9A227] text-[#132A4C] px-3 py-1.5 rounded-lg">Guardar</button>
-            <button onClick={() => setEditing(false)} className="text-xs bg-[#16233F] border border-[#2B3B5C] px-3 py-1.5 rounded-lg">Cancelar</button>
+            <button onClick={guardar} className="text-xs bg-[#C9A227] text-[#0C2043] px-3 py-1.5 rounded-lg">Guardar</button>
+            <button onClick={() => setEditing(false)} className="text-xs bg-[#163A67] border border-[#2A4E85] px-3 py-1.5 rounded-lg">Cancelar</button>
           </div>
         </div>
       ) : (
         <div className="flex gap-2 mt-2">
-          <button onClick={() => setEditing(true)} className="flex items-center gap-1 text-xs bg-[#16233F] border border-[#2B3B5C] px-2.5 py-1.5 rounded-lg hover:bg-[#101C33]"><RefreshCw className="w-3.5 h-3.5" /> Actualizar estado</button>
-          <button onClick={eliminar} className="flex items-center gap-1 text-xs bg-[#16233F] border border-[#2B3B5C] px-2.5 py-1.5 rounded-lg hover:bg-[#3A241F] hover:text-[#E0684A]"><Trash2 className="w-3.5 h-3.5" /> Eliminar</button>
+          <button onClick={() => setEditing(true)} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#0C2043]"><RefreshCw className="w-3.5 h-3.5" /> Actualizar estado</button>
+          <button onClick={eliminar} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#3A241F] hover:text-[#E0684A]"><Trash2 className="w-3.5 h-3.5" /> Eliminar</button>
         </div>
       )}
     </div>
@@ -412,13 +412,13 @@ function IncidenciasTab({ disciplines, departamentales, incidents, onSaved }) {
     <div className="space-y-4">
       <Card className="p-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <label className="text-xs font-semibold text-[#93A0BB]">Filtrar por estado</label>
-          <select className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm" value={filterEstado} onChange={(e) => setFilterEstado(e.target.value)}>
+          <label className="text-xs font-semibold text-[#9FB0D0]">Filtrar por estado</label>
+          <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={filterEstado} onChange={(e) => setFilterEstado(e.target.value)}>
             <option value="">Todas ({incidents.length})</option>
             {INCIDENT_STATES.map((s) => <option key={s} value={s}>{s} ({incidents.filter((i) => i.estado === s).length})</option>)}
           </select>
         </div>
-        <button onClick={() => setShowForm((v) => !v)} className="flex items-center gap-2 bg-[#C9A227] text-[#132A4C] text-sm px-4 py-2.5 rounded-lg hover:bg-[#A9841C]">
+        <button onClick={() => setShowForm((v) => !v)} className="flex items-center gap-2 bg-[#C9A227] text-[#0C2043] text-sm px-4 py-2.5 rounded-lg hover:bg-[#A9841C]">
           <Plus className="w-4 h-4" /> Registrar incidencia
         </button>
       </Card>
@@ -427,18 +427,18 @@ function IncidenciasTab({ disciplines, departamentales, incidents, onSaved }) {
         <Card className="p-5 space-y-3">
           <div className="grid sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Día</label>
-              <select className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm w-full" value={form.day} onChange={(e) => setForm({ ...form, day: e.target.value })}>
+              <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Día</label>
+              <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm w-full" value={form.day} onChange={(e) => setForm({ ...form, day: e.target.value })}>
                 {DAYS.map((d) => <option key={d} value={d}>{DAY_LABEL[d]}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Hora aproximada</label>
-              <input type="time" className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm w-full" value={form.hora} onChange={(e) => setForm({ ...form, hora: e.target.value })} />
+              <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Hora aproximada</label>
+              <input type="time" className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm w-full" value={form.hora} onChange={(e) => setForm({ ...form, hora: e.target.value })} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Disciplina</label>
-              <select className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm w-full" value={form.disciplineId} onChange={(e) => setForm({ ...form, disciplineId: e.target.value })}>
+              <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Disciplina</label>
+              <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm w-full" value={form.disciplineId} onChange={(e) => setForm({ ...form, disciplineId: e.target.value })}>
                 <option value="">General / sin disciplina específica</option>
                 {disciplines.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
               </select>
@@ -446,41 +446,41 @@ function IncidenciasTab({ disciplines, departamentales, incidents, onSaved }) {
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Categoría (opcional)</label>
-              <input type="text" className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm w-full" value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} />
+              <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Categoría (opcional)</label>
+              <input type="text" className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm w-full" value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Tipo</label>
-              <select className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm w-full" value={form.tipo} onChange={(e) => setForm({ ...form, tipo: e.target.value })}>
+              <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Tipo</label>
+              <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm w-full" value={form.tipo} onChange={(e) => setForm({ ...form, tipo: e.target.value })}>
                 {INCIDENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Departamentales / equipos involucrados (opcional)</label>
-            <input type="text" list="dept-suggestions" placeholder="ej. Necochea, Mar del Plata" className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm w-full"
+            <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Departamentales / equipos involucrados (opcional)</label>
+            <input type="text" list="dept-suggestions" placeholder="ej. Necochea, Mar del Plata" className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm w-full"
               value={form.involucrados} onChange={(e) => setForm({ ...form, involucrados: e.target.value })} />
             <datalist id="dept-suggestions">{departamentales.map((d) => <option key={d.id} value={d.name} />)}</datalist>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Descripción</label>
-            <textarea className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm w-full" rows={3}
+            <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Descripción</label>
+            <textarea className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm w-full" rows={3}
               value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
               placeholder="Qué pasó, dónde, y cualquier detalle relevante para el seguimiento." />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Responsable de atenderla (opcional)</label>
-            <input type="text" className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm w-full" value={form.responsable} onChange={(e) => setForm({ ...form, responsable: e.target.value })} />
+            <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Responsable de atenderla (opcional)</label>
+            <input type="text" className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm w-full" value={form.responsable} onChange={(e) => setForm({ ...form, responsable: e.target.value })} />
           </div>
           <div className="flex gap-2">
-            <button onClick={submit} className="bg-[#C9A227] text-[#132A4C] text-sm font-semibold px-4 py-2 rounded-lg hover:brightness-95">Guardar incidencia</button>
-            <button onClick={() => setShowForm(false)} className="bg-[#16233F] border border-[#2B3B5C] text-sm px-4 py-2 rounded-lg">Cancelar</button>
+            <button onClick={submit} className="bg-[#C9A227] text-[#0C2043] text-sm font-semibold px-4 py-2 rounded-lg hover:brightness-95">Guardar incidencia</button>
+            <button onClick={() => setShowForm(false)} className="bg-[#163A67] border border-[#2A4E85] text-sm px-4 py-2 rounded-lg">Cancelar</button>
           </div>
         </Card>
       )}
 
       <div className="space-y-3">
-        {filtered.length === 0 && <Card className="p-6 text-center text-sm text-[#7484A3]">No hay incidencias registradas{filterEstado ? ` en estado "${filterEstado}"` : ""}.</Card>}
+        {filtered.length === 0 && <Card className="p-6 text-center text-sm text-[#7A8FBE]">No hay incidencias registradas{filterEstado ? ` en estado "${filterEstado}"` : ""}.</Card>}
         {filtered.map((i) => <IncidentCard key={i.id} incident={i} disciplines={disciplines} onSaved={onSaved} />)}
       </div>
     </div>

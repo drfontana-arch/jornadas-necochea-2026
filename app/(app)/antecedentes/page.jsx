@@ -87,8 +87,8 @@ export default function AntecedentesPage() {
     showToast(`Se reconocieron ${matched.length} de ${lines.length} líneas pegadas.`);
   }
 
-  if (loading) return <p className="text-[#93A0BB] text-sm">Cargando…</p>;
-  if (!discipline || !category) return <p className="text-[#93A0BB] text-sm">No hay disciplinas cargadas.</p>;
+  if (loading) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
+  if (!discipline || !category) return <p className="text-[#9FB0D0] text-sm">No hay disciplinas cargadas.</p>;
 
   const seeded = seedOrder.filter((l) => registeredLabels.includes(l));
   const unseeded = registeredLabels.filter((l) => !seeded.includes(l));
@@ -106,54 +106,54 @@ export default function AntecedentesPage() {
       setSelCategory={setSelCategory}
     >
       <Card className="p-5">
-        <p className="text-sm text-[#93A0BB] mb-4">
+        <p className="text-sm text-[#9FB0D0] mb-4">
           Ordená los equipos con antecedente (mejor a peor). Sirve para "sembrar" el sorteo y que no se crucen
           en la primera ronda. Los que no tengan antecedente quedan en orden aleatorio al sortear.
         </p>
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#93A0BB] mb-2">Orden de siembra actual</p>
-            {seeded.length === 0 && <p className="text-sm text-[#7484A3] mb-2">Sin antecedentes cargados aún.</p>}
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#9FB0D0] mb-2">Orden de siembra actual</p>
+            {seeded.length === 0 && <p className="text-sm text-[#7A8FBE] mb-2">Sin antecedentes cargados aún.</p>}
             <ol className="space-y-1.5 mb-4">
               {seeded.map((label, i) => (
-                <li key={label} className="flex items-center gap-2 bg-[#101C33] border border-[#24334F] rounded-lg px-3 py-1.5 text-sm">
+                <li key={label} className="flex items-center gap-2 bg-[#0C2043] border border-[#21426E] rounded-lg px-3 py-1.5 text-sm">
                   <span className="font-mono text-[#C9A227] font-semibold w-5">{i + 1}</span>
                   <span className="flex-1">{label}</span>
-                  <button onClick={() => moveSeed(label, -1)} className="text-[#93A0BB]"><ChevronUp className="w-4 h-4" /></button>
-                  <button onClick={() => moveSeed(label, 1)} className="text-[#93A0BB]"><ChevronDown className="w-4 h-4" /></button>
-                  <button onClick={() => removeSeed(label)} className="text-[#7484A3] hover:text-[#E0684A]"><X className="w-4 h-4" /></button>
+                  <button onClick={() => moveSeed(label, -1)} className="text-[#9FB0D0]"><ChevronUp className="w-4 h-4" /></button>
+                  <button onClick={() => moveSeed(label, 1)} className="text-[#9FB0D0]"><ChevronDown className="w-4 h-4" /></button>
+                  <button onClick={() => removeSeed(label)} className="text-[#7A8FBE] hover:text-[#E0684A]"><X className="w-4 h-4" /></button>
                 </li>
               ))}
             </ol>
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#93A0BB] mb-2">Sin antecedente</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#9FB0D0] mb-2">Sin antecedente</p>
             <ul className="space-y-1.5">
               {unseeded.map((label) => (
-                <li key={label} className="flex items-center gap-2 bg-[#101C33] border border-[#24334F] rounded-lg px-3 py-1.5 text-sm">
+                <li key={label} className="flex items-center gap-2 bg-[#0C2043] border border-[#21426E] rounded-lg px-3 py-1.5 text-sm">
                   <span className="flex-1">{label}</span>
                   <button onClick={() => moveSeed(label, 0)} className="text-xs text-[#C9A227] hover:underline">Agregar a la siembra</button>
                 </li>
               ))}
-              {unseeded.length === 0 && <li className="text-sm text-[#7484A3]">—</li>}
+              {unseeded.length === 0 && <li className="text-sm text-[#7A8FBE]">—</li>}
             </ul>
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#93A0BB] mb-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#9FB0D0] mb-2">
               Pegar orden (uno por línea, mejor a peor)
             </p>
             <textarea
-              className="w-full bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-2 text-sm h-40"
+              className="w-full bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-2 text-sm h-40"
               value={pasteText}
               onChange={(e) => setPasteText(e.target.value)}
               placeholder={"Necochea\nMar del Plata\nLa Plata"}
             />
-            <button onClick={parsePaste} className="mt-2 flex items-center gap-1.5 bg-[#C9A227] text-[#132A4C] text-sm px-3 py-2 rounded-lg hover:bg-[#A9841C]">
+            <button onClick={parsePaste} className="mt-2 flex items-center gap-1.5 bg-[#C9A227] text-[#0C2043] text-sm px-3 py-2 rounded-lg hover:bg-[#A9841C]">
               Aplicar orden pegado
             </button>
           </div>
         </div>
       </Card>
       {toast && (
-        <div className="fixed bottom-5 right-5 bg-[#C9A227] text-[#132A4C] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>
+        <div className="fixed bottom-5 right-5 bg-[#C9A227] text-[#0C2043] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>
       )}
     </SelectorBar>
   );

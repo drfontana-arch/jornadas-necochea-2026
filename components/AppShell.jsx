@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Users, Settings2, ClipboardList, ListChecks, Shuffle, CalendarDays,
-  ClipboardCheck, Trophy,
+  ClipboardCheck, Scale,
 } from "lucide-react";
 
 const TABS = [
@@ -47,23 +47,23 @@ export default function AppShell({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#101C33] text-[#EDE7D6]">
-      <div className="bg-[#C9A227] text-[#101C33] border-b-4 border-[#132A4C]">
+    <div className="min-h-screen bg-[#0C2043] text-[#EDE7D6]">
+      <div className="bg-[#C9A227] text-[#0C2043] border-b-4 border-[#0C2043]">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <div>
-            <p className="text-xs tracking-[0.25em] uppercase text-[#132A4C] font-semibold">
+            <p className="text-xs tracking-[0.25em] uppercase text-[#0C2043] font-semibold">
               Colegio de Magistrados y Funcionarios · Pcia. de Buenos Aires
             </p>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight mt-1">Jornadas Necochea 2026</h1>
-            <p className="text-[11px] text-[#4A5D82] mt-1">
+            <p className="text-[11px] text-[#35528A] mt-1">
               Herramienta interna de organización — sorteo, auditoría y supervisión.
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={salir} className="text-xs text-[#4A5D82] hover:text-[#132A4C] underline underline-offset-2">
+            <button onClick={salir} className="text-xs text-[#35528A] hover:text-[#0C2043] underline underline-offset-2">
               Salir
             </button>
-            <Trophy className="w-10 h-10 text-[#132A4C] hidden md:block" />
+            <Scale className="w-10 h-10 text-[#0C2043] hidden md:block" />
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-6 flex flex-wrap gap-1 pb-0">
@@ -75,7 +75,7 @@ export default function AppShell({ children }) {
                 key={t.href}
                 onClick={() => router.push(t.href)}
                 className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors ${
-                  active ? "bg-[#101C33] text-[#C9A227]" : "text-[#4A5D82] hover:bg-[#A9841C]"
+                  active ? "bg-[#0C2043] text-[#C9A227]" : "text-[#35528A] hover:bg-[#A9841C]"
                 }`}
               >
                 <Icon className="w-4 h-4" />

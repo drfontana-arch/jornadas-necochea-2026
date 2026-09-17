@@ -42,7 +42,7 @@ export default function DepartamentalesPage() {
     load();
   }
 
-  if (loading) return <p className="text-[#93A0BB] text-sm">Cargando…</p>;
+  if (loading) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
 
   return (
     <Card className="p-5">
@@ -52,27 +52,27 @@ export default function DepartamentalesPage() {
       <div className="flex gap-2 mb-4">
         <input
           type="text"
-          className="flex-1 bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-2 text-sm"
+          className="flex-1 bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-2 text-sm"
           placeholder="Nombre de la nueva departamental"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addDept()}
         />
-        <button onClick={addDept} className="flex items-center gap-1.5 bg-[#C9A227] text-[#132A4C] text-sm px-3 py-2 rounded-lg hover:bg-[#A9841C]">
+        <button onClick={addDept} className="flex items-center gap-1.5 bg-[#C9A227] text-[#0C2043] text-sm px-3 py-2 rounded-lg hover:bg-[#A9841C]">
           <Plus className="w-4 h-4" /> Agregar
         </button>
       </div>
       <ul className="space-y-1.5">
         {list.map((d) => (
-          <li key={d.id} className="flex items-center justify-between bg-[#101C33] border border-[#24334F] rounded-lg px-3 py-2 text-sm">
+          <li key={d.id} className="flex items-center justify-between bg-[#0C2043] border border-[#21426E] rounded-lg px-3 py-2 text-sm">
             <span>{d.name}</span>
             <div className="flex gap-2">
-              <button onClick={() => rename(d.id, d.name)} className="text-[#93A0BB] hover:text-[#C9A227] px-1">✎</button>
-              <button onClick={() => remove(d.id)} className="text-[#7484A3] hover:text-[#E0684A] px-1"><Trash2 className="w-4 h-4" /></button>
+              <button onClick={() => rename(d.id, d.name)} className="text-[#9FB0D0] hover:text-[#C9A227] px-1">✎</button>
+              <button onClick={() => remove(d.id)} className="text-[#7A8FBE] hover:text-[#E0684A] px-1"><Trash2 className="w-4 h-4" /></button>
             </div>
           </li>
         ))}
-        {list.length === 0 && <p className="text-sm text-[#7484A3]">No hay departamentales cargadas todavía.</p>}
+        {list.length === 0 && <p className="text-sm text-[#7A8FBE]">No hay departamentales cargadas todavía.</p>}
       </ul>
     </Card>
   );

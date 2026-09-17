@@ -98,7 +98,7 @@ export default function SorteoPage() {
     }
   }
 
-  if (loading || !category) return <p className="text-[#93A0BB] text-sm">Cargando…</p>;
+  if (loading || !category) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
 
   function teamLabel(entry) {
     const count = entries.filter((e) => e.dept === entry.dept).length;
@@ -122,7 +122,7 @@ export default function SorteoPage() {
         <Card className="p-5">
           <div className="flex flex-wrap items-end gap-4 mb-4">
             <div>
-              <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Modalidad</label>
+              <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Modalidad</label>
               <div className="flex gap-2">
                 {[
                   { id: "grupos", label: "Grupos" },
@@ -133,7 +133,7 @@ export default function SorteoPage() {
                     key={m.id}
                     onClick={() => updateSettings({ modality: m.id })}
                     className={`text-sm px-3 py-1.5 rounded-lg border ${
-                      category.modality === m.id ? "bg-[#C9A227] text-[#132A4C] border-[#C9A227]" : "border-[#2B3B5C] text-[#C7CEDC]"
+                      category.modality === m.id ? "bg-[#C9A227] text-[#0C2043] border-[#C9A227]" : "border-[#2A4E85] text-[#C9D6EC]"
                     }`}
                   >
                     {m.label}
@@ -143,34 +143,34 @@ export default function SorteoPage() {
             </div>
             {category.modality !== "draw" && (
               <>
-                <label className="text-xs text-[#93A0BB]">
+                <label className="text-xs text-[#9FB0D0]">
                   Equipos por grupo
                   <input
                     type="number" min={2} defaultValue={category.group_size}
                     onBlur={(e) => updateSettings({ group_size: Number(e.target.value) })}
-                    className="block w-20 mt-1 bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-sm"
+                    className="block w-20 mt-1 bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-sm"
                   />
                 </label>
                 {category.modality === "grupos_playoff" && (
-                  <label className="text-xs text-[#93A0BB]">
+                  <label className="text-xs text-[#9FB0D0]">
                     Clasifican por grupo
                     <input
                       type="number" min={1} defaultValue={category.advance_per_group}
                       onBlur={(e) => updateSettings({ advance_per_group: Number(e.target.value) })}
-                      className="block w-20 mt-1 bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-sm"
+                      className="block w-20 mt-1 bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-sm"
                     />
                   </label>
                 )}
               </>
             )}
           </div>
-          <p className="text-sm text-[#93A0BB] mb-3">
+          <p className="text-sm text-[#9FB0D0] mb-3">
             {registeredLabels.length} equipo(s)/participante(s) inscriptos en {disciplineCategory?.name}.
           </p>
           <button
             onClick={runDraw}
             disabled={busy || registeredLabels.length < 2}
-            className="flex items-center gap-2 bg-[#C9A227] text-[#132A4C] font-semibold text-sm px-4 py-2.5 rounded-lg hover:brightness-95 disabled:opacity-50"
+            className="flex items-center gap-2 bg-[#C9A227] text-[#0C2043] font-semibold text-sm px-4 py-2.5 rounded-lg hover:brightness-95 disabled:opacity-50"
           >
             <Shuffle className="w-4 h-4" /> {category.drawn ? "Volver a sortear" : "Sortear"}
           </button>
@@ -181,12 +181,12 @@ export default function SorteoPage() {
             <h3 className="font-bold mb-3">Grupos</h3>
             <div className="grid md:grid-cols-2 gap-4">
               {(category.groups || []).map((g, gi) => (
-                <div key={gi} className="border border-[#24334F] rounded-lg p-3">
+                <div key={gi} className="border border-[#21426E] rounded-lg p-3">
                   <p className="font-semibold text-sm mb-2">Grupo {groupLetter(gi)}</p>
                   <ul className="text-sm space-y-0.5 mb-3">
                     {g.map((t) => <li key={t}>{t}</li>)}
                   </ul>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-[#93A0BB] mb-1">Partidos</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#9FB0D0] mb-1">Partidos</p>
                   <ul className="text-xs font-mono space-y-1">
                     {matches.groupMatches.filter((m) => m.group === gi).map((m) => (
                       <li key={m.id}>{m.teamA} vs {m.teamB} — {DAY_LABEL[m.day] || m.day || "sin día"} {m.time || ""}</li>
@@ -203,13 +203,13 @@ export default function SorteoPage() {
             <h3 className="font-bold mb-3">Posiciones finales de grupo</h3>
             <div className="grid md:grid-cols-2 gap-4 mb-4">
               {category.groups.map((g, gi) => (
-                <div key={gi} className="border border-[#24334F] rounded-lg p-3">
+                <div key={gi} className="border border-[#21426E] rounded-lg p-3">
                   <p className="font-semibold text-sm mb-2">Grupo {groupLetter(gi)}</p>
                   {Array.from({ length: category.advance_per_group }, (_, r) => (
                     <div key={r} className="flex items-center gap-2 mb-1.5 text-sm">
                       <span className="w-6 text-[#C9A227] font-mono font-semibold">{r + 1}°</span>
                       <select
-                        className="flex-1 bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-sm"
+                        className="flex-1 bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-sm"
                         value={(category.group_standings[gi] || [])[r] || ""}
                         onChange={(e) => setStanding(gi, r, e.target.value)}
                       >
@@ -221,12 +221,12 @@ export default function SorteoPage() {
                 </div>
               ))}
             </div>
-            <button onClick={generatePlayoff} disabled={busy} className="flex items-center gap-2 bg-[#132A4C] text-[#C9A227] text-sm px-4 py-2.5 rounded-lg hover:brightness-95">
+            <button onClick={generatePlayoff} disabled={busy} className="flex items-center gap-2 bg-[#0C2043] text-[#C9A227] text-sm px-4 py-2.5 rounded-lg hover:brightness-95">
               <RefreshCw className="w-4 h-4" /> Generar llave de playoff
             </button>
             {matches.playoffMatches.length > 0 && (
               <div className="mt-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-[#93A0BB] mb-1">Llave de playoff</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-[#9FB0D0] mb-1">Llave de playoff</p>
                 <ul className="text-sm font-mono space-y-1">
                   {matches.playoffMatches.map((m) => (
                     <li key={m.id}>{m.label}: {m.teamA || "?"} vs {m.teamB || "?"} {m.day ? `— ${DAY_LABEL[m.day] || m.day} ${m.time}` : ""}</li>
@@ -242,7 +242,7 @@ export default function SorteoPage() {
             <h3 className="font-bold mb-3">Llave</h3>
             {Array.from(new Set(matches.drawMatches.map((m) => m.round))).map((r) => (
               <div key={r} className="mb-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-[#93A0BB] mb-1">
+                <p className="text-xs font-semibold uppercase tracking-wide text-[#9FB0D0] mb-1">
                   {r === Math.max(...matches.drawMatches.map((m) => m.round)) ? "Final" : `Ronda ${r}`}
                 </p>
                 <ul className="text-sm font-mono space-y-1">
@@ -259,7 +259,7 @@ export default function SorteoPage() {
         )}
       </div>
       {toast && (
-        <div className="fixed bottom-5 right-5 bg-[#C9A227] text-[#132A4C] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>
+        <div className="fixed bottom-5 right-5 bg-[#C9A227] text-[#0C2043] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>
       )}
     </SelectorBar>
   );

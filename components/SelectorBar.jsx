@@ -6,9 +6,9 @@ export default function SelectorBar({ disciplines, selDiscipline, setSelDiscipli
     <div>
       <Card className="p-4 mb-5 flex flex-wrap gap-4 items-end">
         <div>
-          <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Disciplina</label>
+          <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Disciplina</label>
           <select
-            className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm min-w-[220px]"
+            className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm min-w-[220px]"
             value={selDiscipline}
             onChange={(e) => setSelDiscipline(e.target.value)}
           >
@@ -17,9 +17,9 @@ export default function SelectorBar({ disciplines, selDiscipline, setSelDiscipli
         </div>
         {discipline && (
           <div>
-            <label className="block text-xs font-semibold text-[#93A0BB] mb-1">Categoría</label>
+            <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Categoría</label>
             <select
-              className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm min-w-[220px]"
+              className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm min-w-[220px]"
               value={selCategory}
               onChange={(e) => setSelCategory(e.target.value)}
             >

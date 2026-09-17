@@ -57,7 +57,7 @@ export default function DisciplinasPage() {
     load();
   }
 
-  if (loading) return <p className="text-[#93A0BB] text-sm">Cargando…</p>;
+  if (loading) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
 
   return (
     <div className="space-y-3">
@@ -68,7 +68,7 @@ export default function DisciplinasPage() {
             <div className="flex items-center justify-between cursor-pointer" onClick={() => setOpen(isOpen ? null : d.id)}>
               <div>
                 <p className="font-bold">{d.name}</p>
-                <p className="text-xs text-[#93A0BB]">{d.categories.length} categorías · {d.venues.length} sedes · {d.courts} cancha(s) · {d.duration} min</p>
+                <p className="text-xs text-[#9FB0D0]">{d.categories.length} categorías · {d.venues.length} sedes · {d.courts} cancha(s) · {d.duration} min</p>
               </div>
               <span className="text-[#C9A227] text-sm">{isOpen ? "Cerrar ▲" : "Ver ▼"}</span>
             </div>
@@ -77,45 +77,45 @@ export default function DisciplinasPage() {
               <div className="mt-4 grid md:grid-cols-2 gap-6">
                 <div>
                   <div className="flex items-center gap-3 mb-3">
-                    <label className="text-xs text-[#93A0BB]">
+                    <label className="text-xs text-[#9FB0D0]">
                       Canchas
                       <input
                         type="number" min={1} defaultValue={d.courts}
                         onBlur={(e) => updateDiscipline(d.id, { courts: Number(e.target.value) })}
-                        className="block w-20 mt-1 bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-sm text-[#EDE7D6]"
+                        className="block w-20 mt-1 bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-sm text-[#EDE7D6]"
                       />
                     </label>
-                    <label className="text-xs text-[#93A0BB]">
+                    <label className="text-xs text-[#9FB0D0]">
                       Duración (min)
                       <input
                         type="number" min={5} defaultValue={d.duration}
                         onBlur={(e) => updateDiscipline(d.id, { duration: Number(e.target.value) })}
-                        className="block w-24 mt-1 bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-sm text-[#EDE7D6]"
+                        className="block w-24 mt-1 bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-sm text-[#EDE7D6]"
                       />
                     </label>
                   </div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-[#93A0BB] mb-2">Sedes / horarios</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#9FB0D0] mb-2">Sedes / horarios</p>
                   <div className="space-y-1.5 mb-2">
                     {d.venues.map((v) => (
                       <div key={v.id} className="flex items-center gap-1.5 text-sm">
                         <select
                           defaultValue={v.day}
                           onChange={(e) => updateVenue(v.id, { day: e.target.value })}
-                          className="bg-[#101C33] border border-[#2B3B5C] rounded px-1.5 py-1 text-xs"
+                          className="bg-[#0C2043] border border-[#2A4E85] rounded px-1.5 py-1 text-xs"
                         >
                           {DAYS.map((day) => <option key={day} value={day}>{DAY_LABEL[day]}</option>)}
                         </select>
                         <input
                           type="time" defaultValue={v.time}
                           onBlur={(e) => updateVenue(v.id, { time: e.target.value })}
-                          className="bg-[#101C33] border border-[#2B3B5C] rounded px-1.5 py-1 text-xs"
+                          className="bg-[#0C2043] border border-[#2A4E85] rounded px-1.5 py-1 text-xs"
                         />
                         <input
                           type="text" placeholder="Lugar" defaultValue={v.location || ""}
                           onBlur={(e) => updateVenue(v.id, { location: e.target.value })}
-                          className="flex-1 bg-[#101C33] border border-[#2B3B5C] rounded px-1.5 py-1 text-xs"
+                          className="flex-1 bg-[#0C2043] border border-[#2A4E85] rounded px-1.5 py-1 text-xs"
                         />
-                        <button onClick={() => removeVenue(v.id)} className="text-[#7484A3] hover:text-[#E0684A]"><X className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => removeVenue(v.id)} className="text-[#7A8FBE] hover:text-[#E0684A]"><X className="w-3.5 h-3.5" /></button>
                       </div>
                     ))}
                   </div>
@@ -126,17 +126,17 @@ export default function DisciplinasPage() {
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-[#93A0BB]">Categorías</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[#9FB0D0]">Categorías</p>
                     <button onClick={() => addCategory(d.id)} className="text-xs flex items-center gap-1 text-[#C9A227] hover:underline">
                       <Plus className="w-3.5 h-3.5" /> Agregar
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {d.categories.map((c) => (
-                      <span key={c.id} className="flex items-center gap-1 bg-[#101C33] border border-[#24334F] rounded-full px-2.5 py-1 text-xs">
+                      <span key={c.id} className="flex items-center gap-1 bg-[#0C2043] border border-[#21426E] rounded-full px-2.5 py-1 text-xs">
                         {c.name}
                         {c.max_teams > 1 && <span className="text-[#C9A227] font-semibold">×{c.max_teams}</span>}
-                        <button onClick={() => removeCategory(c.id)} className="text-[#7484A3] hover:text-[#E0684A]"><X className="w-3 h-3" /></button>
+                        <button onClick={() => removeCategory(c.id)} className="text-[#7A8FBE] hover:text-[#E0684A]"><X className="w-3 h-3" /></button>
                       </span>
                     ))}
                   </div>

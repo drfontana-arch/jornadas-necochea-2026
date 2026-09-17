@@ -13,18 +13,18 @@ function ReprogramarControl({ match, onSaved }) {
   const [court, setCourt] = useState(match.court);
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="flex items-center gap-1 text-xs bg-[#16233F] border border-[#2B3B5C] px-2.5 py-1.5 rounded-lg hover:bg-[#101C33]">
+      <button onClick={() => setOpen(true)} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#0C2043]">
         <RefreshCw className="w-3.5 h-3.5" /> Reprogramar este partido
       </button>
     );
   }
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      <select className="bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-xs" value={day} onChange={(e) => setDay(e.target.value)}>
+      <select className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs" value={day} onChange={(e) => setDay(e.target.value)}>
         {DAYS.map((d) => <option key={d} value={d}>{DAY_LABEL[d]}</option>)}
       </select>
-      <input type="time" className="bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-xs" value={time} onChange={(e) => setTime(e.target.value)} />
-      <input type="number" min={1} className="bg-[#101C33] border border-[#2B3B5C] rounded px-2 py-1 text-xs w-16" value={court} onChange={(e) => setCourt(Number(e.target.value))} />
+      <input type="time" className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs" value={time} onChange={(e) => setTime(e.target.value)} />
+      <input type="number" min={1} className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs w-16" value={court} onChange={(e) => setCourt(Number(e.target.value))} />
       <button
         onClick={async () => {
           await fetch(`/api/matches/${match.id}`, {
@@ -34,7 +34,7 @@ function ReprogramarControl({ match, onSaved }) {
           setOpen(false);
           onSaved();
         }}
-        className="text-xs bg-[#C9A227] text-[#132A4C] px-2.5 py-1.5 rounded-lg"
+        className="text-xs bg-[#C9A227] text-[#0C2043] px-2.5 py-1.5 rounded-lg"
       >
         Guardar
       </button>
@@ -77,7 +77,7 @@ export default function CalendarioPage() {
     return label.replace(/\s+\d+$/, "").trim();
   }
 
-  if (loading) return <p className="text-[#93A0BB] text-sm">Cargando…</p>;
+  if (loading) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
 
   const visibleConflicts = conflicts.filter((c) => !ignored[c.pairId]);
   const sorted = matches
@@ -98,10 +98,10 @@ export default function CalendarioPage() {
                 <p className="font-mono text-xs mb-1">{c.m1.disciplineName} · {c.m1.categoryName} — {c.m1.teamA} vs {c.m1.teamB} — {DAY_LABEL[c.m1.day] || c.m1.day} {c.m1.time}</p>
                 <p className="font-mono text-xs mb-2">{c.m2.disciplineName} · {c.m2.categoryName} — {c.m2.teamA} vs {c.m2.teamB} — {DAY_LABEL[c.m2.day] || c.m2.day} {c.m2.time}</p>
                 <div className="flex gap-2 flex-wrap">
-                  <button onClick={() => setIgnored((prev) => ({ ...prev, [c.pairId]: true }))} className="flex items-center gap-1 text-xs bg-[#16233F] border border-[#2B3B5C] px-2.5 py-1.5 rounded-lg hover:bg-[#101C33]">
+                  <button onClick={() => setIgnored((prev) => ({ ...prev, [c.pairId]: true }))} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#0C2043]">
                     <Check className="w-3.5 h-3.5" /> Seguir igual con el sorteo
                   </button>
-                  <button onClick={() => autoResolve(c)} className="flex items-center gap-1 text-xs bg-[#C9A227] text-[#132A4C] px-2.5 py-1.5 rounded-lg hover:bg-[#A9841C]">
+                  <button onClick={() => autoResolve(c)} className="flex items-center gap-1 text-xs bg-[#C9A227] text-[#0C2043] px-2.5 py-1.5 rounded-lg hover:bg-[#A9841C]">
                     <RefreshCw className="w-3.5 h-3.5" /> Autoresolver (buscar horario libre)
                   </button>
                   <ReprogramarControl match={c.m2} onSaved={load} />
@@ -115,7 +115,7 @@ export default function CalendarioPage() {
       <Card className="p-5">
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <h2 className="font-bold text-lg">Fixture general</h2>
-          <select className="bg-[#101C33] border border-[#2B3B5C] rounded-lg px-3 py-1.5 text-sm" value={filterDept} onChange={(e) => setFilterDept(e.target.value)}>
+          <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={filterDept} onChange={(e) => setFilterDept(e.target.value)}>
             <option value="">Todas las departamentales</option>
             {departamentales.map((d) => <option key={d.id} value={d.name}>{d.name}</option>)}
           </select>
@@ -123,7 +123,7 @@ export default function CalendarioPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-[#93A0BB] border-b border-[#24334F]">
+              <tr className="text-left text-xs uppercase tracking-wide text-[#9FB0D0] border-b border-[#21426E]">
                 <th className="py-2 pr-3">Día</th><th className="py-2 pr-3">Hora</th><th className="py-2 pr-3">Cancha</th>
                 <th className="py-2 pr-3">Disciplina</th><th className="py-2 pr-3">Categoría</th><th className="py-2 pr-3">Etapa</th><th className="py-2 pr-3">Partido</th>
               </tr>
@@ -132,7 +132,7 @@ export default function CalendarioPage() {
               {sorted.map((m) => {
                 const inConflict = visibleConflicts.some((c) => c.m1.id === m.id || c.m2.id === m.id);
                 return (
-                  <tr key={m.id} className={`border-b border-[#1E2C47] ${inConflict ? "bg-[#3A241F]" : ""}`}>
+                  <tr key={m.id} className={`border-b border-[#12294C] ${inConflict ? "bg-[#3A241F]" : ""}`}>
                     <td className="py-1.5 pr-3 font-mono">{DAY_LABEL[m.day] || m.day}</td>
                     <td className="py-1.5 pr-3 font-mono">{m.time}</td>
                     <td className="py-1.5 pr-3">{m.court}</td>
@@ -144,13 +144,13 @@ export default function CalendarioPage() {
                 );
               })}
               {sorted.length === 0 && (
-                <tr><td colSpan={7} className="py-6 text-center text-[#7484A3]">Todavía no hay partidos sorteados y programados.</td></tr>
+                <tr><td colSpan={7} className="py-6 text-center text-[#7A8FBE]">Todavía no hay partidos sorteados y programados.</td></tr>
               )}
             </tbody>
           </table>
         </div>
       </Card>
-      {toast && <div className="fixed bottom-5 right-5 bg-[#C9A227] text-[#132A4C] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>}
+      {toast && <div className="fixed bottom-5 right-5 bg-[#C9A227] text-[#0C2043] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>}
     </div>
   );
 }
