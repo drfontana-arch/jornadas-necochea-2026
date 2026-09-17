@@ -27,6 +27,15 @@ export default function PosterPage({ params }) {
     const svgEl = svgRef.current;
     const clone = svgEl.cloneNode(true);
     clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    const viewBox = clone.getAttribute("viewBox");
+    if (viewBox) {
+      const parts = viewBox.split(/\s+/).map(Number);
+      if (parts.length === 4) {
+        clone.setAttribute("width", String(parts[2]));
+        clone.setAttribute("height", String(parts[3]));
+      }
+    }
+    clone.removeAttribute("style");
     const serializer = new XMLSerializer();
     let source = serializer.serializeToString(clone);
     if (!source.startsWith("<?xml")) {
