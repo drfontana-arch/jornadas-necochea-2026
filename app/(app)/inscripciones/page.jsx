@@ -13,6 +13,7 @@ export default function InscripcionesPage() {
   const [selDiscipline, setSelDiscipline] = useState("");
   const [selCategory, setSelCategory] = useState("");
   const [entries, setEntries] = useState([]);
+  const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSplit, setShowSplit] = useState(false);
   const [oroPicks, setOroPicks] = useState({});
@@ -45,6 +46,7 @@ export default function InscripcionesPage() {
     setShowSplit(false);
     setOroPicks({});
     fetch(`/api/categorias/${selCategory}/team-entries`).then((r) => r.json()).then((d) => setEntries(d.entries || []));
+    fetch(`/api/categorias/${selCategory}/participantes`).then((r) => r.json()).then((d) => setParticipants(d.participants || []));
   }, [selCategory]);
 
   const discipline = disciplines.find((d) => d.id === selDiscipline);
@@ -203,18 +205,31 @@ export default function InscripcionesPage() {
         </Card>
 
         <Card className="p-5">
-          <h3 className="font-bold mb-3">Inscriptos ({entries.length})</h3>
-          {entries.length === 0 ? (
+          <h3 className="font-bold mb-3">Personas inscriptas ({participants.length})</h3>
+          {participants.length === 0 ? (
             <p className="text-sm text-[#7A8FBE]">Todavía no hay nadie inscripto en esta categoría.</p>
           ) : (
-            <ul className="space-y-1.5">
-              {entries.map((e) => (
-                <li key={e.id} className="flex items-center gap-2 bg-[#0C2043] border border-[#21426E] rounded-lg px-3 py-1.5 text-sm">
-                  <span className="flex-1">{teamLabel(e)}</span>
-                  <button onClick={() => removeEntry(e.id)} className="text-[#7A8FBE] hover:text-[#E0684A]"><Trash2 className="w-3.5 h-3.5" /></button>
-                </li>
+            <div className="space-y-3 max-h-[460px] overflow-y-auto pr-1">
+              {Object.entries(
+                participants.reduce((acc, p) => {
+                  const key = p.teamLabel || p.departamental;
+                  (acc[key] = acc[key] || []).push(p);
+                  return acc;
+                }, {})
+              ).map(([grupo, personas]) => (
+                <div key={grupo} className="bg-[#0C2043] border border-[#21426E] rounded-lg p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#2FD3C4] mb-1.5">{grupo}</p>
+                  <ul className="space-y-1 text-sm">
+                    {personas.map((p, i) => (
+                      <li key={i} className="flex justify-between">
+                        <span>{p.fullName}</span>
+                        {!p.teamLabel && <span className="text-[#7A8FBE] text-xs">{p.departamental}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </Card>
       </div>
