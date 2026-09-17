@@ -111,6 +111,11 @@ export default function PosterPage({ params }) {
           <p className="text-center text-[#5A6B85] py-10">Esta categoría todavía no tiene sorteo cargado.</p>
         )}
       </div>
+      <style jsx global>{`
+        @media print {
+          @page { size: A1 landscape; margin: 10mm; }
+        }
+      `}</style>
     </div>
   );
 }

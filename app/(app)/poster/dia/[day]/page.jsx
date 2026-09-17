@@ -96,6 +96,11 @@ export default function PosterDiaPage({ params }) {
           ))
         )}
       </div>
+      <style jsx global>{`
+        @media print {
+          @page { size: A1 portrait; margin: 12mm; }
+        }
+      `}</style>
     </div>
   );
 }
