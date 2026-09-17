@@ -4,7 +4,7 @@ import { Plus, Trash2, Medal } from "lucide-react";
 import Card from "../../../components/Card";
 import SelectorBar from "../../../components/SelectorBar";
 
-const COPA_ORO_PLATA_DISCIPLINES = ["futbolReducido", "basquet", "voley", "hockey"];
+const COPA_ORO_PLATA_DISCIPLINES = ["futbol11", "futbolReducido", "basquet", "voley", "hockey"];
 const COPA_ORO_PLATA_MIN_EQUIPOS = 12;
 
 export default function InscripcionesPage() {
