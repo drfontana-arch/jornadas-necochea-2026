@@ -16,4 +16,6 @@ body {
     print-color-adjust: exact !important;
     color-adjust: exact !important;
   }
+  #app-shell-root { background: white !important; min-height: 0 !important; }
+  #app-shell-content { max-width: none !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
 }

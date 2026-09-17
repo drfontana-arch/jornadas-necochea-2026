@@ -74,13 +74,14 @@ export default function PosterPage({ params }) {
         </button>
       </div>
 
-      <div id="poster" className="bg-white rounded-lg p-6 mx-auto" style={{ maxWidth: 1450 }}>
+      <div id="poster" className="bg-white rounded-lg p-6 mx-auto print:max-w-none print:p-0 print:m-0 print:w-full" style={{ maxWidth: 1450 }}>
         <PosterSVG category={category} matches={matches} forwardedRef={svgRef} />
       </div>
 
       <style jsx global>{`
         @media print {
           @page { size: A1 landscape; margin: 10mm; }
+          #poster { max-width: none !important; }
         }
       `}</style>
     </div>

@@ -51,7 +51,7 @@ export default function PosterDiaPage({ params }) {
         </button>
       </div>
 
-      <div className="bg-white text-[#0F274A] rounded-lg p-10 mx-auto" style={{ maxWidth: 1200 }}>
+      <div className="bg-white text-[#0F274A] rounded-lg p-10 mx-auto print:max-w-none print:p-6 print:m-0" style={{ maxWidth: 1200 }}>
         <div className="text-center mb-8 pb-6" style={{ borderBottom: `3px solid ${NAVY}` }}>
           <p className="text-xs tracking-[0.3em] uppercase font-semibold" style={{ color: NAVY }}>
             Colegio de Magistrados y Funcionarios · Provincia de Buenos Aires

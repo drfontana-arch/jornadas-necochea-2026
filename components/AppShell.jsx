@@ -47,7 +47,7 @@ export default function AppShell({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0C2043] text-[#EDE7D6]">
+    <div id="app-shell-root" className="min-h-screen bg-[#0C2043] text-[#EDE7D6]">
       <div className="no-print bg-[#2FD3C4] text-[#0C2043] border-b-4 border-[#0C2043]">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <div>
@@ -95,7 +95,7 @@ export default function AppShell({ children }) {
           })}
         </div>
       </div>
-      <div className="max-w-7xl mx-auto px-6 py-6">{children}</div>
+      <div id="app-shell-content" className="max-w-7xl mx-auto px-6 py-6">{children}</div>
     </div>
   );
 }
