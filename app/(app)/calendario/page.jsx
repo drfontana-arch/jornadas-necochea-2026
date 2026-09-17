@@ -57,6 +57,8 @@ export default function CalendarioPage() {
   const [toast, setToast] = useState(null);
   const [sorteandoTodo, setSorteandoTodo] = useState(false);
   const [ultimoDetalle, setUltimoDetalle] = useState(null);
+  const [revision, setRevision] = useState(null);
+  const [revisionLoading, setRevisionLoading] = useState(false);
 
   function showToast(msg) { setToast(msg); setTimeout(() => setToast(null), 4200); }
 
@@ -84,8 +86,20 @@ export default function CalendarioPage() {
     load();
   }
 
-  async function sortearTodo() {
-    if (!confirm("Esto va a sortear automáticamente TODAS las categorías con equipos inscriptos que todavía no tengan sorteo. ¿Confirmás?")) return;
+  async function abrirRevision() {
+    setRevisionLoading(true);
+    const res = await fetch("/api/sorteo-global");
+    const data = await res.json();
+    setRevision(data.pendientes || []);
+    setRevisionLoading(false);
+  }
+
+  async function actualizarConfigCategoria(catId, patch) {
+    await fetch(`/api/categorias/${catId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
+    abrirRevision();
+  }
+
+  async function confirmarSorteoTodo() {
     setSorteandoTodo(true);
     setUltimoDetalle(null);
     try {
@@ -93,6 +107,7 @@ export default function CalendarioPage() {
       const data = await res.json();
       if (!res.ok) { showToast(data.error || "No se pudo completar el sorteo global."); return; }
       setUltimoDetalle(data);
+      setRevision(null);
       showToast(`Sorteo global terminado: ${data.sorteadas} categoría(s) sorteada(s), ${data.saltadas} sin poder sortear.`);
       load();
     } finally {
@@ -189,6 +204,74 @@ export default function CalendarioPage() {
         </Card>
       )}
 
+      {revision && (
+        <Card className="p-5 border-[#E0C15A]">
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <div>
+              <h2 className="font-bold text-lg">Revisión antes de sortear todo</h2>
+              <p className="text-xs text-[#9FB0D0]">
+                Ajustá la modalidad, el tamaño de grupo o cuántos clasifican por grupo de cada categoría antes de confirmar.
+                Las que están en rojo no se van a poder sortear tal como están configuradas.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setRevision(null)} className="text-xs bg-[#163A67] border border-[#2A4E85] px-3 py-2 rounded-lg">Cancelar</button>
+              <button
+                onClick={confirmarSorteoTodo}
+                disabled={sorteandoTodo}
+                className="text-xs bg-[#2FD3C4] text-[#0C2043] font-semibold px-3 py-2 rounded-lg disabled:opacity-50"
+              >
+                {sorteandoTodo ? "Sorteando…" : "Confirmar y sortear todo"}
+              </button>
+            </div>
+          </div>
+          <div className="max-h-[420px] overflow-y-auto space-y-1.5">
+            {revision.length === 0 && <p className="text-sm text-[#4FAE72]">No hay categorías pendientes de sortear.</p>}
+            {revision.map((r) => (
+              <div key={r.id} className={`text-sm rounded-lg px-3 py-2 border ${r.ok ? "border-[#21426E] bg-[#0C2043]" : "border-[#5C3A32] bg-[#3A241F]"}`}>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <span className="font-semibold">{r.disciplineName} — {r.name} <span className="text-[#7A8FBE] font-normal">({r.teamCount} equipo/s)</span></span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <select
+                      className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs"
+                      value={r.modality}
+                      onChange={(e) => actualizarConfigCategoria(r.id, { modality: e.target.value })}
+                    >
+                      <option value="draw">Llave directa</option>
+                      <option value="grupos">Grupos</option>
+                      <option value="grupos_playoff">Grupos + playoff</option>
+                    </select>
+                    {r.modality !== "draw" && (
+                      <>
+                        <label className="text-xs text-[#9FB0D0] flex items-center gap-1">
+                          Tamaño grupo
+                          <input
+                            type="number" min={2} defaultValue={r.groupSize}
+                            className="w-14 bg-[#0C2043] border border-[#2A4E85] rounded px-1.5 py-1 text-xs"
+                            onBlur={(e) => actualizarConfigCategoria(r.id, { group_size: Number(e.target.value) })}
+                          />
+                        </label>
+                        {r.modality === "grupos_playoff" && (
+                          <label className="text-xs text-[#9FB0D0] flex items-center gap-1">
+                            Clasifican
+                            <input
+                              type="number" min={1} defaultValue={r.advancePerGroup}
+                              className="w-14 bg-[#0C2043] border border-[#2A4E85] rounded px-1.5 py-1 text-xs"
+                              onBlur={(e) => actualizarConfigCategoria(r.id, { advance_per_group: Number(e.target.value) })}
+                            />
+                          </label>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+                {!r.ok && <p className="text-xs text-[#E0684A] mt-1">{r.reason}</p>}
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {ultimoDetalle && (
         <Card className="p-5 border-[#2A4E85]">
           <div className="flex items-center justify-between mb-3">
@@ -215,11 +298,11 @@ export default function CalendarioPage() {
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <h2 className="font-bold text-lg">Fixture general</h2>
           <button
-            onClick={sortearTodo}
-            disabled={sorteandoTodo}
+            onClick={abrirRevision}
+            disabled={revisionLoading}
             className="flex items-center gap-2 bg-[#E0C15A] text-[#132A4C] text-sm font-semibold px-3 py-2 rounded-lg hover:brightness-95 disabled:opacity-50"
           >
-            {sorteandoTodo ? "Sorteando…" : "Sortear todo lo pendiente"}
+            {revisionLoading ? "Cargando…" : "Revisar y sortear todo lo pendiente"}
           </button>
         </div>
         <div className="flex flex-wrap gap-2 mb-4">

@@ -1,8 +1,48 @@
 import { NextResponse } from "next/server";
 import { listDisciplines } from "../../../lib/db";
+import { getSupabase } from "../../../lib/supabase";
 import { runSorteoForCategory } from "../../../lib/sorteoRunner";
+import { validateGroupConfig } from "../../../lib/sorteoLogic";
 
 export const dynamic = "force-dynamic";
+
+export async function GET() {
+  try {
+    const disciplines = await listDisciplines();
+    const sb = getSupabase();
+    const { data: entries, error } = await sb.from("team_entries").select("category_id");
+    if (error) throw error;
+    const countByCategory = {};
+    (entries || []).forEach((e) => { countByCategory[e.category_id] = (countByCategory[e.category_id] || 0) + 1; });
+
+    const pendientes = [];
+    disciplines.forEach((d) => {
+      d.categories.forEach((c) => {
+        if (c.drawn) return;
+        const teamCount = countByCategory[c.id] || 0;
+        let validation = { ok: true };
+        if (c.modality !== "draw" && teamCount >= 2) {
+          validation = validateGroupConfig(teamCount, c.group_size || 4);
+        }
+        pendientes.push({
+          id: c.id,
+          name: c.name,
+          disciplineId: d.id,
+          disciplineName: d.name,
+          modality: c.modality,
+          groupSize: c.group_size,
+          advancePerGroup: c.advance_per_group,
+          teamCount,
+          ok: teamCount >= 2 && validation.ok,
+          reason: teamCount < 2 ? "Menos de 2 equipos inscriptos." : (!validation.ok ? validation.message : null),
+        });
+      });
+    });
+    return NextResponse.json({ pendientes });
+  } catch (e) {
+    return NextResponse.json({ error: e.message }, { status: 500 });
+  }
+}
 
 export async function POST(req) {
   try {
