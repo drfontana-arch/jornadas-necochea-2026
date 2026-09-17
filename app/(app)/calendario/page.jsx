@@ -337,8 +337,9 @@ export default function CalendarioPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wide text-[#9FB0D0] border-b border-[#21426E]">
-                <th className="py-2 pr-3">Día</th><th className="py-2 pr-3">Hora</th><th className="py-2 pr-3">Cancha</th>
-                <th className="py-2 pr-3">Disciplina</th><th className="py-2 pr-3">Categoría</th><th className="py-2 pr-3">Etapa</th><th className="py-2 pr-3">Partido</th>
+                <th className="py-2 pr-3">Día</th><th className="py-2 pr-3">Hora</th><th className="py-2 pr-3">Disciplina</th>
+                <th className="py-2 pr-3">Sede</th><th className="py-2 pr-3">Cancha</th>
+                <th className="py-2 pr-3">Categoría</th><th className="py-2 pr-3">Etapa</th><th className="py-2 pr-3">Partido</th>
               </tr>
             </thead>
             <tbody>
@@ -348,8 +349,9 @@ export default function CalendarioPage() {
                   <tr key={m.id} className={`border-b border-[#12294C] ${inConflict ? "bg-[#3A241F]" : ""}`}>
                     <td className="py-1.5 pr-3 font-mono">{DAY_LABEL[m.day] || m.day}</td>
                     <td className="py-1.5 pr-3 font-mono">{m.time}</td>
-                    <td className="py-1.5 pr-3">{m.court}</td>
                     <td className="py-1.5 pr-3">{m.disciplineName}</td>
+                    <td className="py-1.5 pr-3 text-[#9FB0D0]">{m.location || "—"}</td>
+                    <td className="py-1.5 pr-3">{m.court}</td>
                     <td className="py-1.5 pr-3">{m.categoryName}</td>
                     <td className="py-1.5 pr-3">{m.stage}</td>
                     <td className="py-1.5 pr-3">{m.bye ? `${m.teamA || "?"} vs BYE` : matchLabel(m)}</td>
