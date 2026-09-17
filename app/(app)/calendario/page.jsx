@@ -189,6 +189,12 @@ export default function CalendarioPage() {
             <option value="">Todas las departamentales</option>
             {departamentales.map((d) => <option key={d.id} value={d.name}>{d.name}</option>)}
           </select>
+          <span className="text-[#7A8FBE] text-sm self-center">Póster del día:</span>
+          {DAYS.map((d) => (
+            <a key={d} href={`/poster/dia/${d}`} target="_blank" rel="noreferrer" className="text-sm text-[#2FD3C4] hover:underline self-center">
+              {DAY_LABEL[d]}
+            </a>
+          ))}
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
