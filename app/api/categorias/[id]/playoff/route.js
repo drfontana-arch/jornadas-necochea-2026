@@ -32,7 +32,7 @@ export async function POST(req, { params }) {
     for (let r = 0; r < k; r++) {
       groups.forEach((g, gi) => {
         const arr = standings[gi] || [];
-        qualifiers.push(arr[r] || `${r + 1}° Grupo ${groupLetter(gi)}`);
+        qualifiers.push(arr[r] || `${r + 1}${groupLetter(gi)}`);
       });
     }
 
@@ -42,13 +42,13 @@ export async function POST(req, { params }) {
       roundCounters[m.round] = (roundCounters[m.round] ?? -1) + 1;
       return { ...m, seq: roundCounters[m.round] };
     });
-    const schedulable = matches.filter((m) => !m.placeholder && !m.bye);
+    const schedulable = matches.filter((m) => !m.bye);
     const allMatches = await listAllMatches(); // incluye los propios partidos de grupos de esta categoría
     const individualBusy = await getIndividualDisciplineBusyMatches();
     const restrictions = await listRestrictions();
     const { assignments, unresolved } = assignSlotsAvoidingConflicts(schedulable, discipline, transitionMinutes, allMatches.concat(individualBusy), restrictions);
     const withSlots = matches.map((m) => {
-      if (m.placeholder || m.bye) return { ...m, day: null, time: null, court: null, disciplineId: discipline.id };
+      if (m.bye) return { ...m, day: null, time: null, court: null, disciplineId: discipline.id };
       const s = assignments[m.id];
       return { ...m, day: s ? s.day : null, time: s ? s.time : null, court: s ? s.court : null, disciplineId: discipline.id };
     });
