@@ -89,14 +89,14 @@ export default function InscripcionesPage() {
               const depEntries = entries.filter((e) => e.departamentalId === dep.id);
               const checked = depEntries.length > 0;
               return (
-                <div key={dep.id} className={`border rounded-lg px-3 py-2 text-sm ${checked ? "border-[#C9A227] bg-[#2A2410]" : "border-[#21426E]"}`}>
+                <div key={dep.id} className={`border rounded-lg px-3 py-2 text-sm ${checked ? "border-[#2FD3C4] bg-[#2A2410]" : "border-[#21426E]"}`}>
                   <div className="flex items-center justify-between">
                     <label className="flex items-center gap-2 flex-1 cursor-pointer">
                       <input type="checkbox" checked={checked} onChange={() => toggleDept(dep.id)} />
                       {dep.name}
                     </label>
                     {checked && category.max_teams > 1 && depEntries.length < category.max_teams && (
-                      <button onClick={() => addExtra(dep.id)} className="text-xs text-[#C9A227] hover:underline">+1 equipo</button>
+                      <button onClick={() => addExtra(dep.id)} className="text-xs text-[#2FD3C4] hover:underline">+1 equipo</button>
                     )}
                   </div>
                   {checked && depEntries.length > 1 && (

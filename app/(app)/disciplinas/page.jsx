@@ -70,7 +70,7 @@ export default function DisciplinasPage() {
                 <p className="font-bold">{d.name}</p>
                 <p className="text-xs text-[#9FB0D0]">{d.categories.length} categorías · {d.venues.length} sedes · {d.courts} cancha(s) · {d.duration} min</p>
               </div>
-              <span className="text-[#C9A227] text-sm">{isOpen ? "Cerrar ▲" : "Ver ▼"}</span>
+              <span className="text-[#2FD3C4] text-sm">{isOpen ? "Cerrar ▲" : "Ver ▼"}</span>
             </div>
 
             {isOpen && (
@@ -119,7 +119,7 @@ export default function DisciplinasPage() {
                       </div>
                     ))}
                   </div>
-                  <button onClick={() => addVenue(d.id)} className="text-xs flex items-center gap-1 text-[#C9A227] hover:underline">
+                  <button onClick={() => addVenue(d.id)} className="text-xs flex items-center gap-1 text-[#2FD3C4] hover:underline">
                     <Plus className="w-3.5 h-3.5" /> Agregar sede
                   </button>
                 </div>
@@ -127,7 +127,7 @@ export default function DisciplinasPage() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-xs font-semibold uppercase tracking-wide text-[#9FB0D0]">Categorías</p>
-                    <button onClick={() => addCategory(d.id)} className="text-xs flex items-center gap-1 text-[#C9A227] hover:underline">
+                    <button onClick={() => addCategory(d.id)} className="text-xs flex items-center gap-1 text-[#2FD3C4] hover:underline">
                       <Plus className="w-3.5 h-3.5" /> Agregar
                     </button>
                   </div>
@@ -135,7 +135,7 @@ export default function DisciplinasPage() {
                     {d.categories.map((c) => (
                       <span key={c.id} className="flex items-center gap-1 bg-[#0C2043] border border-[#21426E] rounded-full px-2.5 py-1 text-xs">
                         {c.name}
-                        {c.max_teams > 1 && <span className="text-[#C9A227] font-semibold">×{c.max_teams}</span>}
+                        {c.max_teams > 1 && <span className="text-[#2FD3C4] font-semibold">×{c.max_teams}</span>}
                         <button onClick={() => removeCategory(c.id)} className="text-[#7A8FBE] hover:text-[#E0684A]"><X className="w-3 h-3" /></button>
                       </span>
                     ))}

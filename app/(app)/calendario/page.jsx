@@ -34,7 +34,7 @@ function ReprogramarControl({ match, onSaved }) {
           setOpen(false);
           onSaved();
         }}
-        className="text-xs bg-[#C9A227] text-[#0C2043] px-2.5 py-1.5 rounded-lg"
+        className="text-xs bg-[#2FD3C4] text-[#0C2043] px-2.5 py-1.5 rounded-lg"
       >
         Guardar
       </button>
@@ -101,7 +101,7 @@ export default function CalendarioPage() {
                   <button onClick={() => setIgnored((prev) => ({ ...prev, [c.pairId]: true }))} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#0C2043]">
                     <Check className="w-3.5 h-3.5" /> Seguir igual con el sorteo
                   </button>
-                  <button onClick={() => autoResolve(c)} className="flex items-center gap-1 text-xs bg-[#C9A227] text-[#0C2043] px-2.5 py-1.5 rounded-lg hover:bg-[#A9841C]">
+                  <button onClick={() => autoResolve(c)} className="flex items-center gap-1 text-xs bg-[#2FD3C4] text-[#0C2043] px-2.5 py-1.5 rounded-lg hover:bg-[#1E9C90]">
                     <RefreshCw className="w-3.5 h-3.5" /> Autoresolver (buscar horario libre)
                   </button>
                   <ReprogramarControl match={c.m2} onSaved={load} />
@@ -150,7 +150,7 @@ export default function CalendarioPage() {
           </table>
         </div>
       </Card>
-      {toast && <div className="fixed bottom-5 right-5 bg-[#C9A227] text-[#0C2043] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>}
+      {toast && <div className="fixed bottom-5 right-5 bg-[#2FD3C4] text-[#0C2043] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>}
     </div>
   );
 }

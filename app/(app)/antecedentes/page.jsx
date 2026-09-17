@@ -117,7 +117,7 @@ export default function AntecedentesPage() {
             <ol className="space-y-1.5 mb-4">
               {seeded.map((label, i) => (
                 <li key={label} className="flex items-center gap-2 bg-[#0C2043] border border-[#21426E] rounded-lg px-3 py-1.5 text-sm">
-                  <span className="font-mono text-[#C9A227] font-semibold w-5">{i + 1}</span>
+                  <span className="font-mono text-[#2FD3C4] font-semibold w-5">{i + 1}</span>
                   <span className="flex-1">{label}</span>
                   <button onClick={() => moveSeed(label, -1)} className="text-[#9FB0D0]"><ChevronUp className="w-4 h-4" /></button>
                   <button onClick={() => moveSeed(label, 1)} className="text-[#9FB0D0]"><ChevronDown className="w-4 h-4" /></button>
@@ -130,7 +130,7 @@ export default function AntecedentesPage() {
               {unseeded.map((label) => (
                 <li key={label} className="flex items-center gap-2 bg-[#0C2043] border border-[#21426E] rounded-lg px-3 py-1.5 text-sm">
                   <span className="flex-1">{label}</span>
-                  <button onClick={() => moveSeed(label, 0)} className="text-xs text-[#C9A227] hover:underline">Agregar a la siembra</button>
+                  <button onClick={() => moveSeed(label, 0)} className="text-xs text-[#2FD3C4] hover:underline">Agregar a la siembra</button>
                 </li>
               ))}
               {unseeded.length === 0 && <li className="text-sm text-[#7A8FBE]">—</li>}
@@ -146,14 +146,14 @@ export default function AntecedentesPage() {
               onChange={(e) => setPasteText(e.target.value)}
               placeholder={"Necochea\nMar del Plata\nLa Plata"}
             />
-            <button onClick={parsePaste} className="mt-2 flex items-center gap-1.5 bg-[#C9A227] text-[#0C2043] text-sm px-3 py-2 rounded-lg hover:bg-[#A9841C]">
+            <button onClick={parsePaste} className="mt-2 flex items-center gap-1.5 bg-[#2FD3C4] text-[#0C2043] text-sm px-3 py-2 rounded-lg hover:bg-[#1E9C90]">
               Aplicar orden pegado
             </button>
           </div>
         </div>
       </Card>
       {toast && (
-        <div className="fixed bottom-5 right-5 bg-[#C9A227] text-[#0C2043] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>
+        <div className="fixed bottom-5 right-5 bg-[#2FD3C4] text-[#0C2043] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>
       )}
     </SelectorBar>
   );

@@ -48,7 +48,7 @@ export default function AppShell({ children }) {
 
   return (
     <div className="min-h-screen bg-[#0C2043] text-[#EDE7D6]">
-      <div className="bg-[#C9A227] text-[#0C2043] border-b-4 border-[#0C2043]">
+      <div className="bg-[#2FD3C4] text-[#0C2043] border-b-4 border-[#0C2043]">
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <div>
             <p className="text-xs tracking-[0.25em] uppercase text-[#0C2043] font-semibold">
@@ -75,7 +75,7 @@ export default function AppShell({ children }) {
                 key={t.href}
                 onClick={() => router.push(t.href)}
                 className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors ${
-                  active ? "bg-[#0C2043] text-[#C9A227]" : "text-[#35528A] hover:bg-[#A9841C]"
+                  active ? "bg-[#0C2043] text-[#2FD3C4]" : "text-[#35528A] hover:bg-[#1E9C90]"
                 }`}
               >
                 <Icon className="w-4 h-4" />

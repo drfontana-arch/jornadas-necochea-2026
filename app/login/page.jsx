@@ -37,7 +37,7 @@ export default function LoginPage() {
         <p className="text-xs tracking-[0.25em] uppercase text-[#9FB0D0] font-semibold mb-1">
           Colegio de Magistrados y Funcionarios
         </p>
-        <h1 className="text-lg font-bold text-[#C9A227] mb-4">Jornadas Necochea 2026 — Acceso restringido</h1>
+        <h1 className="text-lg font-bold text-[#2FD3C4] mb-4">Jornadas Necochea 2026 — Acceso restringido</h1>
         <p className="text-sm text-[#9FB0D0] mb-3">Ingresá la contraseña de acceso para esta herramienta.</p>
         <input
           type="password"
@@ -52,7 +52,7 @@ export default function LoginPage() {
         <button
           onClick={submit}
           disabled={loading}
-          className="w-full bg-[#C9A227] text-[#0C2043] text-sm font-medium py-2 rounded-lg hover:bg-[#A9841C] disabled:opacity-60"
+          className="w-full bg-[#2FD3C4] text-[#0C2043] text-sm font-medium py-2 rounded-lg hover:bg-[#1E9C90] disabled:opacity-60"
         >
           {loading ? "Verificando…" : "Entrar"}
         </button>

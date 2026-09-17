@@ -58,7 +58,7 @@ export default function DepartamentalesPage() {
           onChange={(e) => setNewName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addDept()}
         />
-        <button onClick={addDept} className="flex items-center gap-1.5 bg-[#C9A227] text-[#0C2043] text-sm px-3 py-2 rounded-lg hover:bg-[#A9841C]">
+        <button onClick={addDept} className="flex items-center gap-1.5 bg-[#2FD3C4] text-[#0C2043] text-sm px-3 py-2 rounded-lg hover:bg-[#1E9C90]">
           <Plus className="w-4 h-4" /> Agregar
         </button>
       </div>
@@ -67,7 +67,7 @@ export default function DepartamentalesPage() {
           <li key={d.id} className="flex items-center justify-between bg-[#0C2043] border border-[#21426E] rounded-lg px-3 py-2 text-sm">
             <span>{d.name}</span>
             <div className="flex gap-2">
-              <button onClick={() => rename(d.id, d.name)} className="text-[#9FB0D0] hover:text-[#C9A227] px-1">✎</button>
+              <button onClick={() => rename(d.id, d.name)} className="text-[#9FB0D0] hover:text-[#2FD3C4] px-1">✎</button>
               <button onClick={() => remove(d.id)} className="text-[#7A8FBE] hover:text-[#E0684A] px-1"><Trash2 className="w-4 h-4" /></button>
             </div>
           </li>

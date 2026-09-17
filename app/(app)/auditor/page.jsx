@@ -17,7 +17,7 @@ function estadoColor(estado) {
 }
 
 function StatCard({ label, value, sub, tone = "neutral" }) {
-  const tones = { neutral: "text-[#C9A227]", good: "text-[#4FAE72]", warn: "text-[#E0C15A]", bad: "text-[#E0684A]" };
+  const tones = { neutral: "text-[#2FD3C4]", good: "text-[#4FAE72]", warn: "text-[#E0C15A]", bad: "text-[#E0684A]" };
   return (
     <Card className="p-4">
       <p className="text-xs font-semibold uppercase tracking-wide text-[#9FB0D0] mb-1">{label}</p>
@@ -85,7 +85,7 @@ export default function AuditorPage() {
               key={s.id}
               onClick={() => setSub(s.id)}
               className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors ${
-                active ? "bg-[#163A67] border border-b-0 border-[#21426E] text-[#C9A227]" : "text-[#9FB0D0] hover:text-[#C9A227]"
+                active ? "bg-[#163A67] border border-b-0 border-[#21426E] text-[#2FD3C4]" : "text-[#9FB0D0] hover:text-[#2FD3C4]"
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -133,7 +133,7 @@ function ResumenTab({ stats, matches, results, disciplines }) {
           {stats.asistenciaPorDia.map((a) => (
             <div key={a.day} className="border border-[#21426E] rounded-lg p-3">
               <p className="text-sm font-semibold">{DAY_LABEL[a.day]}</p>
-              <p className="text-xl font-bold text-[#C9A227]">{a.presentes}/{a.total}</p>
+              <p className="text-xl font-bold text-[#2FD3C4]">{a.presentes}/{a.total}</p>
               <p className="text-xs text-[#7A8FBE]">departamentales presentes</p>
             </div>
           ))}
@@ -158,7 +158,7 @@ function ResumenTab({ stats, matches, results, disciplines }) {
                   <td className="py-1.5 pr-3">{d.jugados}</td>
                   <td className="py-1.5 pr-3 w-40">
                     <div className="h-2 bg-[#12294C] rounded-full overflow-hidden">
-                      <div className="h-2 bg-[#C9A227]" style={{ width: `${d.programados ? Math.round((d.jugados / d.programados) * 100) : 0}%` }} />
+                      <div className="h-2 bg-[#2FD3C4]" style={{ width: `${d.programados ? Math.round((d.jugados / d.programados) * 100) : 0}%` }} />
                     </div>
                   </td>
                 </tr>
@@ -204,7 +204,7 @@ function ResultadosTab({ matches, results, disciplines, onSaved }) {
             {disciplines.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
           </select>
         </div>
-        <label className="flex items-center gap-2 text-sm text-[#C9A227] mb-1.5">
+        <label className="flex items-center gap-2 text-sm text-[#2FD3C4] mb-1.5">
           <input type="checkbox" checked={onlyPending} onChange={(e) => setOnlyPending(e.target.checked)} /> Solo pendientes de carga
         </label>
       </Card>
@@ -379,7 +379,7 @@ function IncidentCard({ incident, disciplines, onSaved }) {
             <textarea className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs w-full" rows={2} value={resolucion} onChange={(e) => setResolucion(e.target.value)} />
           </div>
           <div className="flex gap-2">
-            <button onClick={guardar} className="text-xs bg-[#C9A227] text-[#0C2043] px-3 py-1.5 rounded-lg">Guardar</button>
+            <button onClick={guardar} className="text-xs bg-[#2FD3C4] text-[#0C2043] px-3 py-1.5 rounded-lg">Guardar</button>
             <button onClick={() => setEditing(false)} className="text-xs bg-[#163A67] border border-[#2A4E85] px-3 py-1.5 rounded-lg">Cancelar</button>
           </div>
         </div>
@@ -418,7 +418,7 @@ function IncidenciasTab({ disciplines, departamentales, incidents, onSaved }) {
             {INCIDENT_STATES.map((s) => <option key={s} value={s}>{s} ({incidents.filter((i) => i.estado === s).length})</option>)}
           </select>
         </div>
-        <button onClick={() => setShowForm((v) => !v)} className="flex items-center gap-2 bg-[#C9A227] text-[#0C2043] text-sm px-4 py-2.5 rounded-lg hover:bg-[#A9841C]">
+        <button onClick={() => setShowForm((v) => !v)} className="flex items-center gap-2 bg-[#2FD3C4] text-[#0C2043] text-sm px-4 py-2.5 rounded-lg hover:bg-[#1E9C90]">
           <Plus className="w-4 h-4" /> Registrar incidencia
         </button>
       </Card>
@@ -473,7 +473,7 @@ function IncidenciasTab({ disciplines, departamentales, incidents, onSaved }) {
             <input type="text" className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm w-full" value={form.responsable} onChange={(e) => setForm({ ...form, responsable: e.target.value })} />
           </div>
           <div className="flex gap-2">
-            <button onClick={submit} className="bg-[#C9A227] text-[#0C2043] text-sm font-semibold px-4 py-2 rounded-lg hover:brightness-95">Guardar incidencia</button>
+            <button onClick={submit} className="bg-[#2FD3C4] text-[#0C2043] text-sm font-semibold px-4 py-2 rounded-lg hover:brightness-95">Guardar incidencia</button>
             <button onClick={() => setShowForm(false)} className="bg-[#163A67] border border-[#2A4E85] text-sm px-4 py-2 rounded-lg">Cancelar</button>
           </div>
         </Card>

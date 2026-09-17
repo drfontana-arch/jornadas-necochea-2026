@@ -133,7 +133,7 @@ export default function SorteoPage() {
                     key={m.id}
                     onClick={() => updateSettings({ modality: m.id })}
                     className={`text-sm px-3 py-1.5 rounded-lg border ${
-                      category.modality === m.id ? "bg-[#C9A227] text-[#0C2043] border-[#C9A227]" : "border-[#2A4E85] text-[#C9D6EC]"
+                      category.modality === m.id ? "bg-[#2FD3C4] text-[#0C2043] border-[#2FD3C4]" : "border-[#2A4E85] text-[#C9D6EC]"
                     }`}
                   >
                     {m.label}
@@ -170,7 +170,7 @@ export default function SorteoPage() {
           <button
             onClick={runDraw}
             disabled={busy || registeredLabels.length < 2}
-            className="flex items-center gap-2 bg-[#C9A227] text-[#0C2043] font-semibold text-sm px-4 py-2.5 rounded-lg hover:brightness-95 disabled:opacity-50"
+            className="flex items-center gap-2 bg-[#2FD3C4] text-[#0C2043] font-semibold text-sm px-4 py-2.5 rounded-lg hover:brightness-95 disabled:opacity-50"
           >
             <Shuffle className="w-4 h-4" /> {category.drawn ? "Volver a sortear" : "Sortear"}
           </button>
@@ -207,7 +207,7 @@ export default function SorteoPage() {
                   <p className="font-semibold text-sm mb-2">Grupo {groupLetter(gi)}</p>
                   {Array.from({ length: category.advance_per_group }, (_, r) => (
                     <div key={r} className="flex items-center gap-2 mb-1.5 text-sm">
-                      <span className="w-6 text-[#C9A227] font-mono font-semibold">{r + 1}°</span>
+                      <span className="w-6 text-[#2FD3C4] font-mono font-semibold">{r + 1}°</span>
                       <select
                         className="flex-1 bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-sm"
                         value={(category.group_standings[gi] || [])[r] || ""}
@@ -221,7 +221,7 @@ export default function SorteoPage() {
                 </div>
               ))}
             </div>
-            <button onClick={generatePlayoff} disabled={busy} className="flex items-center gap-2 bg-[#0C2043] text-[#C9A227] text-sm px-4 py-2.5 rounded-lg hover:brightness-95">
+            <button onClick={generatePlayoff} disabled={busy} className="flex items-center gap-2 bg-[#0C2043] text-[#2FD3C4] text-sm px-4 py-2.5 rounded-lg hover:brightness-95">
               <RefreshCw className="w-4 h-4" /> Generar llave de playoff
             </button>
             {matches.playoffMatches.length > 0 && (
@@ -259,7 +259,7 @@ export default function SorteoPage() {
         )}
       </div>
       {toast && (
-        <div className="fixed bottom-5 right-5 bg-[#C9A227] text-[#0C2043] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>
+        <div className="fixed bottom-5 right-5 bg-[#2FD3C4] text-[#0C2043] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>
       )}
     </SelectorBar>
   );
