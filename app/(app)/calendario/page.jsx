@@ -49,20 +49,28 @@ export default function CalendarioPage() {
   const [ignored, setIgnored] = useState({});
   const [ignoredViolations, setIgnoredViolations] = useState({});
   const [departamentales, setDepartamentales] = useState([]);
+  const [disciplines, setDisciplines] = useState([]);
   const [filterDept, setFilterDept] = useState("");
+  const [filterDay, setFilterDay] = useState("");
+  const [filterDisc, setFilterDisc] = useState("");
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
+  const [sorteandoTodo, setSorteandoTodo] = useState(false);
 
-  function showToast(msg) { setToast(msg); setTimeout(() => setToast(null), 3600); }
+  function showToast(msg) { setToast(msg); setTimeout(() => setToast(null), 4200); }
 
   async function load() {
-    const [mRes, depRes] = await Promise.all([fetch("/api/matches?withConflicts=1"), fetch("/api/departamentales")]);
+    const [mRes, depRes, dRes] = await Promise.all([
+      fetch("/api/matches?withConflicts=1"), fetch("/api/departamentales"), fetch("/api/disciplinas"),
+    ]);
     const mData = await mRes.json();
     const depData = await depRes.json();
+    const dData = await dRes.json();
     setMatches(mData.matches || []);
     setConflicts(mData.conflicts || []);
     setViolations(mData.violations || []);
     setDepartamentales(depData.departamentales || []);
+    setDisciplines(dData.disciplines || []);
     setLoading(false);
   }
   useEffect(() => { load(); }, []);
@@ -73,6 +81,20 @@ export default function CalendarioPage() {
     if (!res.ok) { showToast(data.error || "No se pudo autoresolver."); return; }
     showToast(`Partido reprogramado automáticamente a ${DAY_LABEL[data.slot.day] || data.slot.day} ${data.slot.time} (cancha ${data.slot.court}).`);
     load();
+  }
+
+  async function sortearTodo() {
+    if (!confirm("Esto va a sortear automáticamente TODAS las categorías con equipos inscriptos que todavía no tengan sorteo. ¿Confirmás?")) return;
+    setSorteandoTodo(true);
+    try {
+      const res = await fetch("/api/sorteo-global", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error || "No se pudo completar el sorteo global."); return; }
+      showToast(`Sorteo global terminado: ${data.sorteadas} categoría(s) sorteada(s)${data.saltadas ? `, ${data.saltadas} sin equipos suficientes` : ""}.`);
+      load();
+    } finally {
+      setSorteandoTodo(false);
+    }
   }
 
   function baseDept(label) {
@@ -86,6 +108,8 @@ export default function CalendarioPage() {
   const visibleViolations = violations.filter((v) => !ignoredViolations[v.id]);
   const sorted = matches
     .filter((m) => !filterDept || baseDept(m.teamA) === filterDept || baseDept(m.teamB) === filterDept)
+    .filter((m) => !filterDay || m.day === filterDay)
+    .filter((m) => !filterDisc || m.disciplineId === filterDisc)
     .sort((a, b) => (a.day || "").localeCompare(b.day || "") || (a.time || "").localeCompare(b.time || ""));
 
   return (
@@ -144,6 +168,23 @@ export default function CalendarioPage() {
       <Card className="p-5">
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <h2 className="font-bold text-lg">Fixture general</h2>
+          <button
+            onClick={sortearTodo}
+            disabled={sorteandoTodo}
+            className="flex items-center gap-2 bg-[#E0C15A] text-[#132A4C] text-sm font-semibold px-3 py-2 rounded-lg hover:brightness-95 disabled:opacity-50"
+          >
+            {sorteandoTodo ? "Sorteando…" : "Sortear todo lo pendiente"}
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-2 mb-4">
+          <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={filterDay} onChange={(e) => setFilterDay(e.target.value)}>
+            <option value="">Todos los días</option>
+            {DAYS.map((d) => <option key={d} value={d}>{DAY_LABEL[d]}</option>)}
+          </select>
+          <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={filterDisc} onChange={(e) => setFilterDisc(e.target.value)}>
+            <option value="">Todas las disciplinas</option>
+            {disciplines.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+          </select>
           <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={filterDept} onChange={(e) => setFilterDept(e.target.value)}>
             <option value="">Todas las departamentales</option>
             {departamentales.map((d) => <option key={d.id} value={d.name}>{d.name}</option>)}
