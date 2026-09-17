@@ -28,7 +28,7 @@ export default function AppShell({ children }) {
       try {
         const res = await fetch("/api/matches?withConflicts=1");
         const data = await res.json();
-        if (!cancelled) setConflictCount(data.conflicts?.length || 0);
+        if (!cancelled) setConflictCount((data.conflicts?.length || 0) + (data.violations?.length || 0));
       } catch (e) { /* noop */ }
       try {
         const res = await fetch("/api/incidencias");

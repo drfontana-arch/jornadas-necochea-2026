@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { listAllMatches, rescheduleMatch } from "../../../../../lib/db";
+import { listAllMatches, rescheduleMatch, listRestrictions } from "../../../../../lib/db";
 import { getSupabase } from "../../../../../lib/supabase";
-import { buildSlotPool, overlaps, baseDept } from "../../../../../lib/sorteoLogic";
+import { buildSlotPool, overlaps, baseDept, slotBlockedByRestrictions } from "../../../../../lib/sorteoLogic";
 
 export async function POST(req, { params }) {
   try {
@@ -23,15 +23,18 @@ export async function POST(req, { params }) {
     };
 
     const otherMatches = allMatches.filter((m) => m.id !== target.id);
+    const restrictions = await listRestrictions();
     const poolSize = discipline.venues.length * discipline.courts * 6 + 12;
     const pool = buildSlotPool(discipline, poolSize, transitionMinutes);
-    const depts = [baseDept(target.teamA), baseDept(target.teamB)].filter(Boolean);
+    const teamLabels = [target.teamA, target.teamB].filter(Boolean);
+    const depts = teamLabels.map(baseDept);
     const usedInDisc = new Set(
       otherMatches.filter((m) => m.disciplineId === target.disciplineId).map((m) => `${m.day}::${m.time}::${m.court}`)
     );
     const found = pool.find((s) => {
       const key = `${s.day}::${s.time}::${s.court}`;
       if (usedInDisc.has(key)) return false;
+      if (depts.some((d, i) => slotBlockedByRestrictions(d, teamLabels[i], s.day, s.time, discipline.duration, restrictions))) return false;
       return !depts.some((d) =>
         otherMatches.some((m) => {
           const mDepts = [baseDept(m.teamA), baseDept(m.teamB)].filter(Boolean);

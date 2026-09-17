@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCategory, listAllMatches, replaceMatchesForStage, updateCategorySettings } from "../../../../../lib/db";
+import { getCategory, listAllMatches, replaceMatchesForStage, updateCategorySettings, listRestrictions } from "../../../../../lib/db";
 import { getSupabase } from "../../../../../lib/supabase";
 import { buildDrawMatches, assignSlotsAvoidingConflicts, groupLetter } from "../../../../../lib/sorteoLogic";
 
@@ -37,7 +37,8 @@ export async function POST(req, { params }) {
     const matches = buildDrawMatches(qualifiers);
     const schedulable = matches.filter((m) => !m.placeholder && !m.bye);
     const allMatches = await listAllMatches(); // incluye los propios partidos de grupos de esta categoría
-    const { assignments, unresolved } = assignSlotsAvoidingConflicts(schedulable, discipline, transitionMinutes, allMatches);
+    const restrictions = await listRestrictions();
+    const { assignments, unresolved } = assignSlotsAvoidingConflicts(schedulable, discipline, transitionMinutes, allMatches, restrictions);
     const withSlots = matches.map((m) => {
       if (m.placeholder || m.bye) return { ...m, day: null, time: null, court: null, disciplineId: discipline.id };
       const s = assignments[m.id];

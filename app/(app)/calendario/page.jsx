@@ -45,7 +45,9 @@ function ReprogramarControl({ match, onSaved }) {
 export default function CalendarioPage() {
   const [matches, setMatches] = useState([]);
   const [conflicts, setConflicts] = useState([]);
+  const [violations, setViolations] = useState([]);
   const [ignored, setIgnored] = useState({});
+  const [ignoredViolations, setIgnoredViolations] = useState({});
   const [departamentales, setDepartamentales] = useState([]);
   const [filterDept, setFilterDept] = useState("");
   const [loading, setLoading] = useState(true);
@@ -59,13 +61,14 @@ export default function CalendarioPage() {
     const depData = await depRes.json();
     setMatches(mData.matches || []);
     setConflicts(mData.conflicts || []);
+    setViolations(mData.violations || []);
     setDepartamentales(depData.departamentales || []);
     setLoading(false);
   }
   useEffect(() => { load(); }, []);
 
-  async function autoResolve(c) {
-    const res = await fetch(`/api/matches/${c.m2.id}/autoresolver`, { method: "POST" });
+  async function autoResolve(matchId) {
+    const res = await fetch(`/api/matches/${matchId}/autoresolver`, { method: "POST" });
     const data = await res.json();
     if (!res.ok) { showToast(data.error || "No se pudo autoresolver."); return; }
     showToast(`Partido reprogramado automáticamente a ${DAY_LABEL[data.slot.day] || data.slot.day} ${data.slot.time} (cancha ${data.slot.court}).`);
@@ -80,12 +83,38 @@ export default function CalendarioPage() {
   if (loading) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
 
   const visibleConflicts = conflicts.filter((c) => !ignored[c.pairId]);
+  const visibleViolations = violations.filter((v) => !ignoredViolations[v.id]);
   const sorted = matches
     .filter((m) => !filterDept || baseDept(m.teamA) === filterDept || baseDept(m.teamB) === filterDept)
     .sort((a, b) => (a.day || "").localeCompare(b.day || "") || (a.time || "").localeCompare(b.time || ""));
 
   return (
     <div className="space-y-5">
+      {visibleViolations.length > 0 && (
+        <Card className="p-5 border-[#E0C15A]">
+          <h2 className="font-bold text-lg mb-3 flex items-center gap-2 text-[#E0C15A]">
+            <AlertTriangle className="w-5 h-5" /> Partidos que violan una restricción horaria ({visibleViolations.length})
+          </h2>
+          <div className="space-y-3">
+            {visibleViolations.map((v) => (
+              <div key={v.id} className="border border-[#5C4A22] bg-[#2E2712] rounded-lg p-3 text-sm">
+                <p className="font-semibold mb-1">{v.label} tiene una restricción para este horario:</p>
+                <p className="font-mono text-xs mb-2">{v.match.disciplineName} · {v.match.categoryName} — {v.match.teamA} vs {v.match.teamB} — {DAY_LABEL[v.match.day] || v.match.day} {v.match.time}</p>
+                <div className="flex gap-2 flex-wrap">
+                  <button onClick={() => setIgnoredViolations((prev) => ({ ...prev, [v.id]: true }))} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#0C2043]">
+                    <Check className="w-3.5 h-3.5" /> Seguir igual
+                  </button>
+                  <button onClick={() => autoResolve(v.match.id)} className="flex items-center gap-1 text-xs bg-[#2FD3C4] text-[#0C2043] px-2.5 py-1.5 rounded-lg hover:bg-[#1E9C90]">
+                    <RefreshCw className="w-3.5 h-3.5" /> Autoresolver (buscar horario libre)
+                  </button>
+                  <ReprogramarControl match={v.match} onSaved={load} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {visibleConflicts.length > 0 && (
         <Card className="p-5 border-[#E0684A]">
           <h2 className="font-bold text-lg mb-3 flex items-center gap-2 text-[#E0684A]">
@@ -101,7 +130,7 @@ export default function CalendarioPage() {
                   <button onClick={() => setIgnored((prev) => ({ ...prev, [c.pairId]: true }))} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#0C2043]">
                     <Check className="w-3.5 h-3.5" /> Seguir igual con el sorteo
                   </button>
-                  <button onClick={() => autoResolve(c)} className="flex items-center gap-1 text-xs bg-[#2FD3C4] text-[#0C2043] px-2.5 py-1.5 rounded-lg hover:bg-[#1E9C90]">
+                  <button onClick={() => autoResolve(c.m2.id)} className="flex items-center gap-1 text-xs bg-[#2FD3C4] text-[#0C2043] px-2.5 py-1.5 rounded-lg hover:bg-[#1E9C90]">
                     <RefreshCw className="w-3.5 h-3.5" /> Autoresolver (buscar horario libre)
                   </button>
                   <ReprogramarControl match={c.m2} onSaved={load} />

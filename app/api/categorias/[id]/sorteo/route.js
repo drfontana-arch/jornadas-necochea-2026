@@ -3,6 +3,7 @@ import {
   getCategory, listTeamEntries, listAllMatches, replaceMatchesForStage, updateCategorySettings,
 } from "../../../../../lib/db";
 import { getSupabase } from "../../../../../lib/supabase";
+import { listRestrictions } from "../../../../../lib/db";
 import {
   buildSeedOrder, buildDrawMatches, roundRobinRounds, distributeGroupsSnake,
   groupLetter, assignSlotsAvoidingConflicts, uid,
@@ -46,11 +47,12 @@ export async function POST(req, { params }) {
     const order = buildSeedOrder(teams, category.seed_order || []);
     const allMatches = await listAllMatches();
     const otherMatches = allMatches.filter((m) => m.key !== categoryId);
+    const restrictions = await listRestrictions();
 
     if (category.modality === "draw") {
       const matches = buildDrawMatches(order);
       const schedulable = matches.filter((m) => !m.placeholder && !m.bye);
-      const { assignments, unresolved } = assignSlotsAvoidingConflicts(schedulable, discipline, transitionMinutes, otherMatches);
+      const { assignments, unresolved } = assignSlotsAvoidingConflicts(schedulable, discipline, transitionMinutes, otherMatches, restrictions);
       const withSlots = matches.map((m) => {
         if (m.placeholder || m.bye) return { ...m, day: null, time: null, court: null, disciplineId: discipline.id };
         const s = assignments[m.id];
@@ -78,7 +80,7 @@ export async function POST(req, { params }) {
       });
     });
     flatMatches.sort((a, b) => a.round - b.round);
-    const { assignments, unresolved } = assignSlotsAvoidingConflicts(flatMatches, discipline, transitionMinutes, otherMatches);
+    const { assignments, unresolved } = assignSlotsAvoidingConflicts(flatMatches, discipline, transitionMinutes, otherMatches, restrictions);
     flatMatches = flatMatches.map((m) => {
       const s = assignments[m.id];
       return { ...m, day: s ? s.day : null, time: s ? s.time : null, court: s ? s.court : null };

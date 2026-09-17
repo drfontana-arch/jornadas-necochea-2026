@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { listAllMatches } from "../../../lib/db";
-import { computeConflicts } from "../../../lib/sorteoLogic";
+import { listAllMatches, listRestrictions } from "../../../lib/db";
+import { computeConflicts, computeRestrictionViolations } from "../../../lib/sorteoLogic";
 
 export async function GET(req) {
   try {
@@ -8,7 +8,9 @@ export async function GET(req) {
     const matches = await listAllMatches();
     if (searchParams.get("withConflicts")) {
       const conflicts = computeConflicts(matches, 10);
-      return NextResponse.json({ matches, conflicts });
+      const restrictions = await listRestrictions();
+      const violations = computeRestrictionViolations(matches, restrictions);
+      return NextResponse.json({ matches, conflicts, violations });
     }
     return NextResponse.json({ matches });
   } catch (e) {
