@@ -56,6 +56,7 @@ export default function CalendarioPage() {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
   const [sorteandoTodo, setSorteandoTodo] = useState(false);
+  const [ultimoDetalle, setUltimoDetalle] = useState(null);
 
   function showToast(msg) { setToast(msg); setTimeout(() => setToast(null), 4200); }
 
@@ -86,11 +87,13 @@ export default function CalendarioPage() {
   async function sortearTodo() {
     if (!confirm("Esto va a sortear automáticamente TODAS las categorías con equipos inscriptos que todavía no tengan sorteo. ¿Confirmás?")) return;
     setSorteandoTodo(true);
+    setUltimoDetalle(null);
     try {
       const res = await fetch("/api/sorteo-global", { method: "POST" });
       const data = await res.json();
       if (!res.ok) { showToast(data.error || "No se pudo completar el sorteo global."); return; }
-      showToast(`Sorteo global terminado: ${data.sorteadas} categoría(s) sorteada(s)${data.saltadas ? `, ${data.saltadas} sin equipos suficientes` : ""}.`);
+      setUltimoDetalle(data);
+      showToast(`Sorteo global terminado: ${data.sorteadas} categoría(s) sorteada(s), ${data.saltadas} sin poder sortear.`);
       load();
     } finally {
       setSorteandoTodo(false);
@@ -161,6 +164,28 @@ export default function CalendarioPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </Card>
+      )}
+
+      {ultimoDetalle && (
+        <Card className="p-5 border-[#2A4E85]">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-bold text-lg">Resultado del sorteo global</h2>
+            <button onClick={() => setUltimoDetalle(null)} className="text-xs text-[#7A8FBE] hover:text-[#EDE7D6]">Cerrar</button>
+          </div>
+          <p className="text-sm text-[#9FB0D0] mb-3">
+            {ultimoDetalle.sorteadas} categoría(s) sorteada(s) · {ultimoDetalle.saltadas} sin poder sortear.
+          </p>
+          <div className="max-h-[300px] overflow-y-auto space-y-1">
+            {ultimoDetalle.detalle.filter((d) => !d.ok).map((d, i) => (
+              <div key={i} className="text-sm bg-[#2E2712] border border-[#5C4A22] rounded px-3 py-1.5">
+                <strong>{d.categoria}</strong> — {d.error}
+              </div>
+            ))}
+            {ultimoDetalle.detalle.filter((d) => !d.ok).length === 0 && (
+              <p className="text-sm text-[#4FAE72]">Se sortearon todas las categorías con equipos suficientes.</p>
+            )}
           </div>
         </Card>
       )}
