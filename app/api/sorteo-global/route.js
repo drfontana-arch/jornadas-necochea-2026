@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { listDisciplines } from "../../../lib/db";
+import { listDisciplines, INDIVIDUAL_DISCIPLINES } from "../../../lib/db";
 import { getSupabase } from "../../../lib/supabase";
 import { runSorteoForCategory } from "../../../lib/sorteoRunner";
 import { validateGroupConfig } from "../../../lib/sorteoLogic";
@@ -17,6 +17,7 @@ export async function GET() {
 
     const pendientes = [];
     disciplines.forEach((d) => {
+      if (INDIVIDUAL_DISCIPLINES.includes(d.id)) return;
       d.categories.forEach((c) => {
         if (c.drawn) return;
         const teamCount = countByCategory[c.id] || 0;
@@ -52,6 +53,7 @@ export async function POST(req) {
     const disciplines = await listDisciplines();
     const pendientes = [];
     disciplines.forEach((d) => {
+      if (INDIVIDUAL_DISCIPLINES.includes(d.id)) return;
       d.categories.forEach((c) => {
         if (!c.drawn) pendientes.push({ id: c.id, name: c.name, disciplineName: d.name });
       });
