@@ -104,6 +104,12 @@ export default function CalendarioPage() {
     if (!label) return label;
     return label.replace(/\s+\d+$/, "").trim();
   }
+  function isReal(m) {
+    return m && !String(m.id).startsWith("ind-");
+  }
+  function matchLabel(m) {
+    return m.teamB ? `${m.teamA} vs ${m.teamB}` : `${m.teamA} (horario de competencia)`;
+  }
 
   if (loading) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
 
@@ -126,15 +132,21 @@ export default function CalendarioPage() {
             {visibleViolations.map((v) => (
               <div key={v.id} className="border border-[#5C4A22] bg-[#2E2712] rounded-lg p-3 text-sm">
                 <p className="font-semibold mb-1">{v.label} tiene una restricción para este horario:</p>
-                <p className="font-mono text-xs mb-2">{v.match.disciplineName} · {v.match.categoryName} — {v.match.teamA} vs {v.match.teamB} — {DAY_LABEL[v.match.day] || v.match.day} {v.match.time}</p>
+                <p className="font-mono text-xs mb-2">{v.match.disciplineName} · {v.match.categoryName} — {matchLabel(v.match)} — {DAY_LABEL[v.match.day] || v.match.day} {v.match.time}</p>
                 <div className="flex gap-2 flex-wrap">
                   <button onClick={() => setIgnoredViolations((prev) => ({ ...prev, [v.id]: true }))} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#0C2043]">
                     <Check className="w-3.5 h-3.5" /> Seguir igual
                   </button>
-                  <button onClick={() => autoResolve(v.match.id)} className="flex items-center gap-1 text-xs bg-[#2FD3C4] text-[#0C2043] px-2.5 py-1.5 rounded-lg hover:bg-[#1E9C90]">
-                    <RefreshCw className="w-3.5 h-3.5" /> Autoresolver (buscar horario libre)
-                  </button>
-                  <ReprogramarControl match={v.match} onSaved={load} />
+                  {isReal(v.match) ? (
+                    <>
+                      <button onClick={() => autoResolve(v.match.id)} className="flex items-center gap-1 text-xs bg-[#2FD3C4] text-[#0C2043] px-2.5 py-1.5 rounded-lg hover:bg-[#1E9C90]">
+                        <RefreshCw className="w-3.5 h-3.5" /> Autoresolver (buscar horario libre)
+                      </button>
+                      <ReprogramarControl match={v.match} onSaved={load} />
+                    </>
+                  ) : (
+                    <span className="text-xs text-[#7A8FBE] self-center">Horario fijo de disciplina individual — no se reprograma desde acá.</span>
+                  )}
                 </div>
               </div>
             ))}
@@ -148,22 +160,31 @@ export default function CalendarioPage() {
             <AlertTriangle className="w-5 h-5" /> Superposiciones horarias detectadas ({visibleConflicts.length})
           </h2>
           <div className="space-y-3">
-            {visibleConflicts.map((c) => (
-              <div key={c.pairId} className="border border-[#5C3A32] bg-[#3A241F] rounded-lg p-3 text-sm">
-                <p className="font-semibold mb-1">{c.dept} juega en dos lugares a la vez:</p>
-                <p className="font-mono text-xs mb-1">{c.m1.disciplineName} · {c.m1.categoryName} — {c.m1.teamA} vs {c.m1.teamB} — {DAY_LABEL[c.m1.day] || c.m1.day} {c.m1.time}</p>
-                <p className="font-mono text-xs mb-2">{c.m2.disciplineName} · {c.m2.categoryName} — {c.m2.teamA} vs {c.m2.teamB} — {DAY_LABEL[c.m2.day] || c.m2.day} {c.m2.time}</p>
-                <div className="flex gap-2 flex-wrap">
-                  <button onClick={() => setIgnored((prev) => ({ ...prev, [c.pairId]: true }))} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#0C2043]">
-                    <Check className="w-3.5 h-3.5" /> Seguir igual con el sorteo
-                  </button>
-                  <button onClick={() => autoResolve(c.m2.id)} className="flex items-center gap-1 text-xs bg-[#2FD3C4] text-[#0C2043] px-2.5 py-1.5 rounded-lg hover:bg-[#1E9C90]">
-                    <RefreshCw className="w-3.5 h-3.5" /> Autoresolver (buscar horario libre)
-                  </button>
-                  <ReprogramarControl match={c.m2} onSaved={load} />
+            {visibleConflicts.map((c) => {
+              const target = isReal(c.m2) ? c.m2 : isReal(c.m1) ? c.m1 : null;
+              return (
+                <div key={c.pairId} className="border border-[#5C3A32] bg-[#3A241F] rounded-lg p-3 text-sm">
+                  <p className="font-semibold mb-1">{c.dept} juega en dos lugares a la vez:</p>
+                  <p className="font-mono text-xs mb-1">{c.m1.disciplineName} · {c.m1.categoryName} — {matchLabel(c.m1)} — {DAY_LABEL[c.m1.day] || c.m1.day} {c.m1.time}</p>
+                  <p className="font-mono text-xs mb-2">{c.m2.disciplineName} · {c.m2.categoryName} — {matchLabel(c.m2)} — {DAY_LABEL[c.m2.day] || c.m2.day} {c.m2.time}</p>
+                  <div className="flex gap-2 flex-wrap">
+                    <button onClick={() => setIgnored((prev) => ({ ...prev, [c.pairId]: true }))} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#0C2043]">
+                      <Check className="w-3.5 h-3.5" /> Seguir igual con el sorteo
+                    </button>
+                    {target ? (
+                      <>
+                        <button onClick={() => autoResolve(target.id)} className="flex items-center gap-1 text-xs bg-[#2FD3C4] text-[#0C2043] px-2.5 py-1.5 rounded-lg hover:bg-[#1E9C90]">
+                          <RefreshCw className="w-3.5 h-3.5" /> Autoresolver (buscar horario libre)
+                        </button>
+                        <ReprogramarControl match={target} onSaved={load} />
+                      </>
+                    ) : (
+                      <span className="text-xs text-[#7A8FBE] self-center">Ambos horarios son de disciplinas individuales — no se reprograman desde acá.</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </Card>
       )}

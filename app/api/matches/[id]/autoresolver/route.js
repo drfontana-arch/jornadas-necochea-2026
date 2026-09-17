@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { listAllMatches, rescheduleMatch, listRestrictions } from "../../../../../lib/db";
+import { listAllMatches, rescheduleMatch, listRestrictions, getIndividualDisciplineBusyMatches } from "../../../../../lib/db";
 import { getSupabase } from "../../../../../lib/supabase";
 import { buildSlotPool, overlaps, baseDept, slotBlockedByRestrictions } from "../../../../../lib/sorteoLogic";
 
@@ -24,7 +24,7 @@ export async function POST(req, { params }) {
       venues: venuesRaw.map((v) => ({ day: v.day, time: v.time.slice(0, 5) })),
     };
 
-    const otherMatches = allMatches.filter((m) => m.id !== target.id);
+    const otherMatches = allMatches.filter((m) => m.id !== target.id).concat(await getIndividualDisciplineBusyMatches());
     const restrictions = await listRestrictions();
     const poolSize = discipline.venues.length * discipline.courts * 6 + 12;
     const pool = buildSlotPool(discipline, poolSize, transitionMinutes);
