@@ -63,7 +63,7 @@ export async function POST(req, { params }) {
     const found = candidates.find((s) => {
       const key = `${s.day}::${s.time}::${s.court}`;
       if (usedInDisc.has(key)) return false;
-      if (depts.some((d, i) => slotBlockedByRestrictions(d, teamLabels[i], s.day, s.time, discipline.duration, restrictions))) return false;
+      if (depts.some((d, i) => slotBlockedByRestrictions(d, teamLabels[i], s.day, s.time, discipline.duration, restrictions, target.key))) return false;
       return !depts.some((d) =>
         otherMatches.some((m) => {
           const mDepts = [baseDept(m.teamA), baseDept(m.teamB)].filter(Boolean);

@@ -20,6 +20,7 @@ export async function POST(req, { params }) {
     if (venuesErr) throw venuesErr;
     const discipline = {
       id: category.discipline_id,
+      categoryId,
       duration: category.disciplines.duration_minutes,
       courts: category.disciplines.courts,
       venues: venuesRaw.map((v) => ({ day: v.day, time: v.time.slice(0, 5) })),

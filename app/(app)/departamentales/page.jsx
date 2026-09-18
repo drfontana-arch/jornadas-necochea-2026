@@ -180,8 +180,12 @@ function RestriccionesSection({ departamentales }) {
               <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Equipo o pareja inscripto</label>
               <select className="w-full bg-[#163A67] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={form.teamLabel} onChange={(e) => setForm({ ...form, teamLabel: e.target.value })} disabled={!form.departamentalId || optionsLoading}>
                 <option value="">{!form.departamentalId ? "-- primero elegí la departamental --" : optionsLoading ? "Cargando…" : options.teams.length === 0 ? "Esta departamental no tiene equipos inscriptos" : "-- elegir --"}</option>
-                {options.teams.map((t) => (
-                  <option key={t.label} value={t.label}>{t.label} — {t.categories.join("; ")}</option>
+                {[...new Set(options.teams.map((t) => t.categoryName))].map((cat) => (
+                  <optgroup key={cat} label={cat}>
+                    {options.teams.filter((t) => t.categoryName === cat).map((t) => (
+                      <option key={t.value} value={t.value}>{t.label}</option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </div>
@@ -246,7 +250,7 @@ function RestriccionesSection({ departamentales }) {
               <div>
                 <p className="font-medium">
                   {r.departamental_name}
-                  {r.scope === "equipo" && ` — equipo "${r.team_label}"`}
+                  {r.scope === "equipo" && ` — equipo "${r.team_display || r.team_label}"${r.team_category_name ? ` (${r.team_category_name})` : ""}`}
                   {r.scope === "individual" && ` — ${r.participant_name}`}
                   {r.scope === "individual" && (
                     <span className="ml-2 inline-flex items-center gap-1 text-[10px] text-[#E0C15A]">
