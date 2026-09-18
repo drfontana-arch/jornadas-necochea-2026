@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCategory, listAllMatches, replaceMatchesForStage, updateCategorySettings, listRestrictions, getIndividualDisciplineBusyMatches } from "../../../../../lib/db";
 import { getSupabase } from "../../../../../lib/supabase";
-import { buildDrawMatches, assignSlotsAvoidingConflicts, groupLetter } from "../../../../../lib/sorteoLogic";
+import { buildDrawMatches, scheduleRoundsProgressively, groupLetter } from "../../../../../lib/sorteoLogic";
 
 export const dynamic = "force-dynamic";
 
@@ -46,7 +46,19 @@ export async function POST(req, { params }) {
     const allMatches = await listAllMatches(); // incluye los propios partidos de grupos de esta categoría
     const individualBusy = await getIndividualDisciplineBusyMatches();
     const restrictions = await listRestrictions();
-    const { assignments, unresolved } = assignSlotsAvoidingConflicts(schedulable, discipline, transitionMinutes, allMatches.concat(individualBusy), restrictions);
+    // El playoff no puede empezar antes de que termine la fase de grupos.
+    const groupMatchesOfThisCategory = allMatches.filter((m) => m.key === categoryId && m.stage === "Grupos");
+    let groupsMaxEnd = 0;
+    groupMatchesOfThisCategory.forEach((m) => {
+      if (!m.time) return;
+      const [h, mm] = m.time.split(":").map(Number);
+      const endMin = h * 60 + mm + discipline.duration;
+      if (endMin > groupsMaxEnd) groupsMaxEnd = endMin;
+    });
+    const playoffNotBefore = groupsMaxEnd > 0 ? groupsMaxEnd + transitionMinutes : 0;
+    const { assignments, unresolved } = scheduleRoundsProgressively(
+      schedulable, discipline, transitionMinutes, allMatches.concat(individualBusy), restrictions, playoffNotBefore
+    );
     const withSlots = matches.map((m) => {
       if (m.bye) return { ...m, day: null, time: null, court: null, disciplineId: discipline.id };
       const s = assignments[m.id];
