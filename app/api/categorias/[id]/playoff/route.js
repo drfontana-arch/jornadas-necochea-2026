@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCategory, listAllMatches, replaceMatchesForStage, updateCategorySettings, listRestrictions, getIndividualDisciplineBusyMatches } from "../../../../../lib/db";
 import { getSupabase } from "../../../../../lib/supabase";
-import { buildDrawMatches, scheduleRoundsProgressively, groupLetter } from "../../../../../lib/sorteoLogic";
+import { buildDrawMatches, scheduleRoundsProgressively, groupLetter, absoluteMinutes } from "../../../../../lib/sorteoLogic";
 
 export const dynamic = "force-dynamic";
 
@@ -50,9 +50,8 @@ export async function POST(req, { params }) {
     const groupMatchesOfThisCategory = allMatches.filter((m) => m.key === categoryId && m.stage === "Grupos");
     let groupsMaxEnd = 0;
     groupMatchesOfThisCategory.forEach((m) => {
-      if (!m.time) return;
-      const [h, mm] = m.time.split(":").map(Number);
-      const endMin = h * 60 + mm + discipline.duration;
+      if (!m.time || !m.day) return;
+      const endMin = absoluteMinutes(m.day, m.time) + discipline.duration;
       if (endMin > groupsMaxEnd) groupsMaxEnd = endMin;
     });
     const playoffNotBefore = groupsMaxEnd > 0 ? groupsMaxEnd + transitionMinutes : 0;
