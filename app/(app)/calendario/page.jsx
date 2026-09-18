@@ -1,7 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
-import { AlertTriangle, Check, RefreshCw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { AlertTriangle, Check, RefreshCw, Download } from "lucide-react";
 import Card from "../../../components/Card";
+import { CourtGrid, AgendaGrid, CategoryLegend } from "../../../components/FixtureGrids";
+import { buildCategoryColors, catKeyOf, catLabelOf } from "../../../lib/fixtureGrid";
+import { exportFixtureXlsx } from "../../../lib/fixtureExcel";
 
 const DAYS = ["2026-10-09", "2026-10-10", "2026-10-11"];
 const DAY_LABEL = { "2026-10-09": "Vie 09/10", "2026-10-10": "Sáb 10/10", "2026-10-11": "Dom 11/10" };
@@ -53,6 +56,13 @@ export default function CalendarioPage() {
   const [filterDept, setFilterDept] = useState("");
   const [filterDay, setFilterDay] = useState("");
   const [filterDisc, setFilterDisc] = useState("");
+  const [filterCat, setFilterCat] = useState("");
+  const [filterTeam, setFilterTeam] = useState("");
+  const [sortMode, setSortMode] = useState("cron");
+  const [viewMode, setViewMode] = useState("lista"); // lista | cancha | agenda
+  const [selected, setSelected] = useState({});
+  const [gridScope, setGridScope] = useState("filtrados"); // filtrados | seleccionados
+  const [exporting, setExporting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
   const [sorteandoTodo, setSorteandoTodo] = useState(false);
@@ -134,15 +144,52 @@ export default function CalendarioPage() {
     return "A definir vs A definir";
   }
 
+  // El color de cada categoría se calcula sobre TODOS los partidos, así no
+  // cambia al filtrar.
+  const colors = useMemo(() => buildCategoryColors(matches), [matches]);
+
   if (loading) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
 
   const visibleConflicts = conflicts.filter((c) => !ignored[c.pairId]);
   const visibleViolations = violations.filter((v) => !ignoredViolations[v.id]);
+  const isRealTeam = (t) => t && !/^[1-9][A-Z]$/.test(t);
+  const matchesInDisc = matches.filter((m) => !filterDisc || m.disciplineId === filterDisc);
+  const catOptions = [...new Map(matchesInDisc.map((m) => [catKeyOf(m), catLabelOf(m)])).entries()]
+    .sort((a, b) => a[1].localeCompare(b[1], "es"));
+  const teamOptions = [...new Set(
+    matchesInDisc
+      .filter((m) => !filterCat || catKeyOf(m) === filterCat)
+      .flatMap((m) => [m.teamA, m.teamB])
+      .filter(isRealTeam)
+  )].sort((a, b) => a.localeCompare(b, "es", { numeric: true }));
+
+  const byDayTime = (a, b) => (a.day || "").localeCompare(b.day || "") || (a.time || "").localeCompare(b.time || "");
+  const sortCmp = {
+    cron: byDayTime,
+    disciplina: (a, b) => (a.disciplineName || "").localeCompare(b.disciplineName || "", "es") || byDayTime(a, b),
+    categoria: (a, b) => catLabelOf(a).localeCompare(catLabelOf(b), "es") || byDayTime(a, b),
+  }[sortMode];
   const sorted = matches
     .filter((m) => !filterDept || baseDept(m.teamA) === filterDept || baseDept(m.teamB) === filterDept)
     .filter((m) => !filterDay || m.day === filterDay)
     .filter((m) => !filterDisc || m.disciplineId === filterDisc)
-    .sort((a, b) => (a.day || "").localeCompare(b.day || "") || (a.time || "").localeCompare(b.time || ""));
+    .filter((m) => !filterCat || catKeyOf(m) === filterCat)
+    .filter((m) => !filterTeam || m.teamA === filterTeam || m.teamB === filterTeam)
+    .sort(sortCmp);
+  const selectedCount = sorted.filter((m) => selected[m.id]).length;
+  const gridMatches = gridScope === "seleccionados" ? sorted.filter((m) => selected[m.id]) : sorted;
+  const allVisibleSelected = sorted.length > 0 && selectedCount === sorted.length;
+
+  async function exportar() {
+    setExporting(true);
+    try {
+      await exportFixtureXlsx(gridMatches, colors);
+    } catch (e) {
+      showToast("No se pudo generar el Excel: " + e.message);
+    } finally {
+      setExporting(false);
+    }
+  }
 
   return (
     <div className="space-y-5">
@@ -318,9 +365,17 @@ export default function CalendarioPage() {
             <option value="">Todos los días</option>
             {DAYS.map((d) => <option key={d} value={d}>{DAY_LABEL[d]}</option>)}
           </select>
-          <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={filterDisc} onChange={(e) => setFilterDisc(e.target.value)}>
+          <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={filterDisc} onChange={(e) => { setFilterDisc(e.target.value); setFilterCat(""); setFilterTeam(""); }}>
             <option value="">Todas las disciplinas</option>
             {disciplines.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+          </select>
+          <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm max-w-[260px]" value={filterCat} onChange={(e) => { setFilterCat(e.target.value); setFilterTeam(""); }}>
+            <option value="">Todas las categorías</option>
+            {catOptions.map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+          </select>
+          <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm max-w-[220px]" value={filterTeam} onChange={(e) => setFilterTeam(e.target.value)}>
+            <option value="">Todos los equipos</option>
+            {teamOptions.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
           <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={filterDept} onChange={(e) => setFilterDept(e.target.value)}>
             <option value="">Todas las departamentales</option>
@@ -333,10 +388,60 @@ export default function CalendarioPage() {
             </a>
           ))}
         </div>
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="inline-flex rounded-lg overflow-hidden border border-[#2A4E85]">
+            {[["lista", "Lista"], ["cancha", "Grilla por cancha"], ["agenda", "Grilla agenda"]].map(([k, label]) => (
+              <button
+                key={k}
+                onClick={() => setViewMode(k)}
+                className={`text-sm px-3 py-1.5 ${viewMode === k ? "bg-[#2FD3C4] text-[#0C2043] font-semibold" : "bg-[#0C2043] text-[#9FB0D0] hover:bg-[#163A67]"}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {viewMode === "lista" && (
+            <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={sortMode} onChange={(e) => setSortMode(e.target.value)}>
+              <option value="cron">Ordenar por día y hora</option>
+              <option value="disciplina">Ordenar por disciplina</option>
+              <option value="categoria">Ordenar por categoría</option>
+            </select>
+          )}
+          {viewMode !== "lista" && (
+            <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={gridScope} onChange={(e) => setGridScope(e.target.value)}>
+              <option value="filtrados">Mostrar todos los partidos filtrados ({sorted.length})</option>
+              <option value="seleccionados">Mostrar solo los seleccionados ({selectedCount})</option>
+            </select>
+          )}
+          <span className="text-xs text-[#7A8FBE]">{sorted.length} partido(s){selectedCount > 0 ? ` · ${selectedCount} seleccionado(s)` : ""}</span>
+          {selectedCount > 0 && (
+            <button onClick={() => setSelected({})} className="text-xs text-[#9FB0D0] hover:text-[#EDE7D6] underline">Limpiar selección</button>
+          )}
+          <button
+            onClick={exportar}
+            disabled={exporting || gridMatches.length === 0}
+            className="ml-auto flex items-center gap-1.5 text-sm bg-[#163A67] border border-[#2A4E85] px-3 py-1.5 rounded-lg hover:bg-[#0C2043] disabled:opacity-50"
+            title="Genera un .xlsx con colores por categoría, que abre en Excel y en Google Sheets"
+          >
+            <Download className="w-4 h-4" /> {exporting ? "Generando…" : `Descargar Excel (${gridMatches.length})`}
+          </button>
+        </div>
+        {viewMode !== "lista" && <CategoryLegend matches={gridMatches} colors={colors} />}
+        {viewMode === "cancha" && <CourtGrid matches={gridMatches} colors={colors} />}
+        {viewMode === "agenda" && <AgendaGrid matches={gridMatches} colors={colors} />}
+        {viewMode === "lista" && (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wide text-[#9FB0D0] border-b border-[#21426E]">
+                <th className="py-2 pr-2 w-6">
+                  <input
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    onChange={(e) => setSelected(e.target.checked ? Object.fromEntries(sorted.map((m) => [m.id, true])) : {})}
+                    title="Seleccionar todos los partidos visibles"
+                  />
+                </th>
                 <th className="py-2 pr-3">Día</th><th className="py-2 pr-3">Hora</th><th className="py-2 pr-3">Disciplina</th>
                 <th className="py-2 pr-3">Sede</th><th className="py-2 pr-3">Cancha</th>
                 <th className="py-2 pr-3">Categoría</th><th className="py-2 pr-3">Etapa</th><th className="py-2 pr-3">Partido</th>
@@ -347,23 +452,30 @@ export default function CalendarioPage() {
                 const inConflict = visibleConflicts.some((c) => c.m1.id === m.id || c.m2.id === m.id);
                 return (
                   <tr key={m.id} className={`border-b border-[#12294C] ${inConflict ? "bg-[#3A241F]" : ""}`}>
+                    <td className="py-1.5 pr-2">
+                      <input type="checkbox" checked={!!selected[m.id]} onChange={(e) => setSelected((prev) => ({ ...prev, [m.id]: e.target.checked }))} />
+                    </td>
                     <td className="py-1.5 pr-3 font-mono">{DAY_LABEL[m.day] || m.day}</td>
                     <td className="py-1.5 pr-3 font-mono">{m.time}</td>
                     <td className="py-1.5 pr-3">{m.disciplineName}</td>
                     <td className="py-1.5 pr-3 text-[#9FB0D0]">{m.location || "—"}</td>
                     <td className="py-1.5 pr-3">{m.court}</td>
-                    <td className="py-1.5 pr-3">{m.categoryName}</td>
+                    <td className="py-1.5 pr-3">
+                      <span className="inline-block w-2.5 h-2.5 rounded-sm mr-1.5 align-middle" style={{ background: (colors[catKeyOf(m)] || {}).bg }} />
+                      {m.categoryName}
+                    </td>
                     <td className="py-1.5 pr-3">{m.stage}</td>
                     <td className="py-1.5 pr-3">{m.bye ? `${m.teamA || "?"} vs BYE` : matchLabel(m)}</td>
                   </tr>
                 );
               })}
               {sorted.length === 0 && (
-                <tr><td colSpan={7} className="py-6 text-center text-[#7A8FBE]">Todavía no hay partidos sorteados y programados.</td></tr>
+                <tr><td colSpan={9} className="py-6 text-center text-[#7A8FBE]">Todavía no hay partidos sorteados y programados.</td></tr>
               )}
             </tbody>
           </table>
         </div>
+        )}
       </Card>
       {toast && <div className="fixed bottom-5 right-5 bg-[#2FD3C4] text-[#0C2043] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>}
     </div>

@@ -96,6 +96,9 @@ function RestriccionesSection({ departamentales }) {
     day: "", unavailableAllDay: false, notBefore: "", notAfter: "", note: "",
   });
 
+  const [options, setOptions] = useState({ teams: [], participants: [] });
+  const [optionsLoading, setOptionsLoading] = useState(false);
+
   async function load() {
     const res = await fetch("/api/restricciones");
     const data = await res.json();
@@ -104,8 +107,25 @@ function RestriccionesSection({ departamentales }) {
   }
   useEffect(() => { load(); }, []);
 
+  // Al elegir departamental, traemos sus equipos/parejas y personas
+  // inscriptos para que se elijan de una lista (sin tipear).
+  useEffect(() => {
+    setOptions({ teams: [], participants: [] });
+    if (!form.departamentalId || form.scope === "departamental") return;
+    let cancelled = false;
+    setOptionsLoading(true);
+    fetch(`/api/restricciones/opciones?departamentalId=${form.departamentalId}`)
+      .then((r) => r.json())
+      .then((data) => { if (!cancelled) setOptions({ teams: data.teams || [], participants: data.participants || [] }); })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setOptionsLoading(false); });
+    return () => { cancelled = true; };
+  }, [form.departamentalId, form.scope]);
+
   async function submit() {
     if (!form.departamentalId) { alert("Elegí una departamental."); return; }
+    if (form.scope === "equipo" && !form.teamLabel) { alert("Elegí el equipo o pareja de la lista."); return; }
+    if (form.scope === "individual" && !form.participantName) { alert("Elegí la persona de la lista."); return; }
     await fetch("/api/restricciones", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form),
     });
@@ -142,14 +162,14 @@ function RestriccionesSection({ departamentales }) {
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Departamental</label>
-              <select className="w-full bg-[#163A67] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={form.departamentalId} onChange={(e) => setForm({ ...form, departamentalId: e.target.value })}>
+              <select className="w-full bg-[#163A67] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={form.departamentalId} onChange={(e) => setForm({ ...form, departamentalId: e.target.value, teamLabel: "", participantName: "" })}>
                 <option value="">-- elegir --</option>
                 {departamentales.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Alcance</label>
-              <select className="w-full bg-[#163A67] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={form.scope} onChange={(e) => setForm({ ...form, scope: e.target.value })}>
+              <select className="w-full bg-[#163A67] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={form.scope} onChange={(e) => setForm({ ...form, scope: e.target.value, teamLabel: "", participantName: "" })}>
                 {Object.entries(SCOPE_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
             </div>
@@ -157,14 +177,24 @@ function RestriccionesSection({ departamentales }) {
 
           {form.scope === "equipo" && (
             <div>
-              <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Nombre exacto del equipo tal como aparece en el fixture (ej. "Necochea 2")</label>
-              <input type="text" className="w-full bg-[#163A67] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={form.teamLabel} onChange={(e) => setForm({ ...form, teamLabel: e.target.value })} />
+              <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Equipo o pareja inscripto</label>
+              <select className="w-full bg-[#163A67] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={form.teamLabel} onChange={(e) => setForm({ ...form, teamLabel: e.target.value })} disabled={!form.departamentalId || optionsLoading}>
+                <option value="">{!form.departamentalId ? "-- primero elegí la departamental --" : optionsLoading ? "Cargando…" : options.teams.length === 0 ? "Esta departamental no tiene equipos inscriptos" : "-- elegir --"}</option>
+                {options.teams.map((t) => (
+                  <option key={t.label} value={t.label}>{t.label} — {t.categories.join("; ")}</option>
+                ))}
+              </select>
             </div>
           )}
           {form.scope === "individual" && (
             <div>
-              <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Nombre de la persona</label>
-              <input type="text" className="w-full bg-[#163A67] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={form.participantName} onChange={(e) => setForm({ ...form, participantName: e.target.value })} />
+              <label className="block text-xs font-semibold text-[#9FB0D0] mb-1">Persona inscripta</label>
+              <select className="w-full bg-[#163A67] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={form.participantName} onChange={(e) => setForm({ ...form, participantName: e.target.value })} disabled={!form.departamentalId || optionsLoading}>
+                <option value="">{!form.departamentalId ? "-- primero elegí la departamental --" : optionsLoading ? "Cargando…" : options.participants.length === 0 ? "Esta departamental no tiene personas inscriptas" : "-- elegir --"}</option>
+                {options.participants.map((p) => (
+                  <option key={p.id} value={p.fullName}>{p.fullName} — {p.categories.join("; ")}</option>
+                ))}
+              </select>
             </div>
           )}
 

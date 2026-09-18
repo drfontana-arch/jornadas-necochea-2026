@@ -29,6 +29,12 @@ export async function POST(req) {
     if (!payload.departamental_id || !payload.scope) {
       return NextResponse.json({ error: "Falta departamental o alcance." }, { status: 400 });
     }
+    if (payload.scope === "equipo" && !payload.team_label) {
+      return NextResponse.json({ error: "Elegí el equipo o pareja." }, { status: 400 });
+    }
+    if (payload.scope === "individual" && !payload.participant_name) {
+      return NextResponse.json({ error: "Elegí la persona." }, { status: 400 });
+    }
     const restriction = await addRestriction(payload);
     return NextResponse.json({ restriction });
   } catch (e) {
