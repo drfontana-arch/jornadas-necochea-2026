@@ -28,6 +28,11 @@ _(vacío)_
 
 8. **El matcheo del CSV ahora ignora también la puntuación** (guiones, puntos, paréntesis, "+"), no solo acentos/mayúsculas/espacios. Antes, "Avellaneda-Lanús" en la base y "AVELLANEDA LANUS" en el CSV se consideraban distintos y se ofrecía crear una departamental duplicada; ahora matchean. Mismo criterio para disciplinas y categorías (ej. "Senior (+42)" matchea con "Senior 42").
 
+## Aplicadas (tanda 5)
+
+9. **Mapeo a mano en la carga del CSV**, para cuando el nombre real del CSV no coincide con el configurado en el sistema (ej. CSV dice "Hockey" y el sistema tiene "Hockey (Seven)"; o CSV dice "Senior (+42)" y el sistema tiene "Más 40"). En cada fila de "no se van a cargar" que sea por disciplina o categoría no configurada, aparece un desplegable para elegir a cuál disciplina/categoría YA EXISTENTE corresponde, y se reanaliza solo. El mapeo no renombra nada del sistema, solo hace que esas filas del CSV entren ahí. Si la disciplina/categoría todavía no existe ni con otro nombre, no aparece nada para mapear -- hay que crearla primero en "Disciplinas y sedes".
+   - Probado con el escenario real reportado (Hockey → "Hockey (Seven)", Fútbol Reducido "Senior (+42)" → "Más 40"): sin mapeo se omiten 307 filas correctamente clasificadas por tipo; con el mapeo aplicado, las 3450 filas del CSV real quedan válidas.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

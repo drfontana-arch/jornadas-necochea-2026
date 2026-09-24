@@ -8,7 +8,7 @@ export const maxDuration = 60;
 export async function POST(req) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { action, csv } = body;
+    const { action, csv, overrides } = body;
     if (!csv || typeof csv !== "string") {
       return NextResponse.json({ error: "Falta el contenido del CSV." }, { status: 400 });
     }
@@ -18,10 +18,10 @@ export async function POST(req) {
 
     // Se resuelve siempre en el momento (no se confía en nada calculado
     // antes en el navegador), tanto para la vista previa como para aplicar
-    // -- así la disciplina/categoría que se haya configurado justo antes
-    // de confirmar ya se tiene en cuenta.
+    // -- así la disciplina/categoría que se haya configurado o mapeado
+    // justo antes de confirmar ya se tiene en cuenta.
     const referenceData = await fetchImportReferenceData();
-    const resolved = resolveImportRows(csv, referenceData);
+    const resolved = resolveImportRows(csv, referenceData, overrides || {});
     if (resolved.fatalError) {
       return NextResponse.json({ error: resolved.fatalError }, { status: 400 });
     }
