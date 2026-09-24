@@ -24,6 +24,10 @@ _(vacío)_
    - Primero muestra una vista previa (cuánto se va a cargar, qué se va a crear, qué queda afuera y por qué) y recién después pide confirmar. No se aplica nada hasta que confirmás.
    - Detecta filas repetidas (misma persona, misma categoría, dos veces) y filas con datos incompletos, y las lista por separado sin frenar el resto de la carga.
 
+## Aplicadas (tanda 4)
+
+8. **El matcheo del CSV ahora ignora también la puntuación** (guiones, puntos, paréntesis, "+"), no solo acentos/mayúsculas/espacios. Antes, "Avellaneda-Lanús" en la base y "AVELLANEDA LANUS" en el CSV se consideraban distintos y se ofrecía crear una departamental duplicada; ahora matchean. Mismo criterio para disciplinas y categorías (ej. "Senior (+42)" matchea con "Senior 42").
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
