@@ -9,6 +9,7 @@ export default function AntecedentesPage() {
   const [selDiscipline, setSelDiscipline] = useState("");
   const [selCategory, setSelCategory] = useState("");
   const [entries, setEntries] = useState([]);
+  const [participants, setParticipants] = useState([]);
   const [seedOrder, setSeedOrder] = useState([]);
   const [pasteText, setPasteText] = useState("");
   const [loading, setLoading] = useState(true);
@@ -32,13 +33,16 @@ export default function AntecedentesPage() {
   useEffect(() => {
     if (!selCategory) return;
     (async () => {
-      const [entRes, catRes] = await Promise.all([
+      const [entRes, partRes, catRes] = await Promise.all([
         fetch(`/api/categorias/${selCategory}/team-entries`),
+        fetch(`/api/categorias/${selCategory}/participantes`),
         fetch(`/api/categorias/${selCategory}`),
       ]);
       const entData = await entRes.json();
+      const partData = await partRes.json();
       const catData = await catRes.json();
       setEntries(entData.entries || []);
+      setParticipants(partData.participants || []);
       setSeedOrder(catData.category?.seed_order || []);
     })();
   }, [selCategory]);
@@ -50,7 +54,10 @@ export default function AntecedentesPage() {
     const count = entries.filter((e) => e.dept === entry.dept).length;
     return count > 1 ? `${entry.dept} ${entry.num}` : entry.dept;
   }
-  const registeredLabels = entries.map(teamLabel);
+  // Igual que en Sorteo: si no hay equipos/parejas cargados pero sí
+  // personas inscriptas sueltas (Ajedrez, Tenis Singles, etc.), se ordenan
+  // esas personas en vez de mostrar la lista vacía.
+  const registeredLabels = entries.length > 0 ? entries.map(teamLabel) : participants.map((p) => `${p.fullName} (${p.departamental})`);
 
   async function persistSeedOrder(next) {
     setSeedOrder(next);

@@ -54,6 +54,14 @@ _(vacío)_
 14. **Sorteo persona contra persona** (Ajedrez, Tenis Singles, Tenis de Mesa Singles -- 9 categorías en el CSV real). Antes, cualquier categoría sin equipos/parejas cargados daba "Menos de 2 equipos inscriptos" aunque hubiera gente anotada, porque el motor solo sabía sortear equipo vs equipo. Ahora, si una categoría no tiene ningún equipo cargado pero sí tiene personas inscriptas individualmente, arma la llave/grupos directamente con esas personas ("Juan Pérez (Necochea)" en vez de "Necochea"), con las mismas opciones de modalidad (llave directa/grupos/grupos+playoff) que ya se configuran hoy. El detector de conflictos también reconoce estos partidos por persona real (si alguien juega Ajedrez y además juega en un equipo a la misma hora, se detecta igual que antes). Las restricciones horarias de "toda la departamental" también aplican, porque `baseDept` ahora sabe extraer la departamental de una etiqueta de persona.
 15. **Golf pasa a la lista de disciplinas individuales que no se sortean** (como Natación o Tiro): ocupa el horario de quien esté anotado, para el chequeo de conflictos, pero no arma partidos ni llave -- se juega por puntaje. Necesita tener sus sedes/horarios cargados en "Disciplinas y sedes" para aparecer en el Fixture.
 
+## Aplicadas (tanda 11)
+
+16. **Fix: las pantallas de vista previa/revisión no se habían enterado del sorteo por persona.** La tanda anterior arregló el MOTOR de sorteo, pero tres pantallas seguían mostrando "0 equipos" para Ajedrez y compañía porque contaban solo `team_entries`, sin el fallback a personas sueltas:
+    - "Revisar y sortear todo lo pendiente" (`/api/sorteo-global`): ahora cuenta personas inscriptas cuando la categoría no tiene equipos, así deja de aparecer en rojo.
+    - Pantalla **Sorteo**: el conteo y el botón "Sortear" ahora también consideran las personas sueltas.
+    - Pantalla **Antecedentes** (orden de cabezas de serie): ahora también se pueden ordenar las personas de estas categorías, no solo equipos.
+    No hacía falta recargar el CSV -- los datos ya estaban bien, era una cuenta que faltaba actualizar en estas 3 pantallas.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

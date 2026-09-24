@@ -13,6 +13,7 @@ export default function SorteoPage() {
   const [selCategory, setSelCategory] = useState("");
   const [category, setCategory] = useState(null);
   const [entries, setEntries] = useState([]);
+  const [participants, setParticipants] = useState([]);
   const [matches, setMatches] = useState({ groupMatches: [], playoffMatches: [], drawMatches: [] });
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -35,13 +36,15 @@ export default function SorteoPage() {
 
   async function loadCategoryData() {
     if (!selCategory) return;
-    const [catRes, entRes, matchRes] = await Promise.all([
+    const [catRes, entRes, partRes, matchRes] = await Promise.all([
       fetch(`/api/categorias/${selCategory}`),
       fetch(`/api/categorias/${selCategory}/team-entries`),
+      fetch(`/api/categorias/${selCategory}/participantes`),
       fetch(`/api/categorias/${selCategory}/matches`),
     ]);
     setCategory((await catRes.json()).category);
     setEntries((await entRes.json()).entries || []);
+    setParticipants((await partRes.json()).participants || []);
     setMatches(await matchRes.json());
   }
   useEffect(() => { loadCategoryData(); }, [selCategory]);
@@ -104,7 +107,11 @@ export default function SorteoPage() {
     const count = entries.filter((e) => e.dept === entry.dept).length;
     return count > 1 ? `${entry.dept} ${entry.num}` : entry.dept;
   }
-  const registeredLabels = entries.map(teamLabel);
+  // Si nadie está anotado en equipo/pareja pero sí hay personas inscriptas
+  // sueltas (Ajedrez, Tenis Singles, etc.), se cuentan y muestran esas
+  // personas en vez de "0 equipos" -- el sorteo también sabe armar la
+  // llave/grupos con ellas (ver runSorteoForCategory en sorteoRunner.js).
+  const registeredLabels = entries.length > 0 ? entries.map(teamLabel) : participants.map((p) => `${p.fullName} (${p.departamental})`);
 
   return (
     <SelectorBar

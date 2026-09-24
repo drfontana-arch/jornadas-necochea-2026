@@ -11,17 +11,28 @@ export async function GET() {
   try {
     const disciplines = await listDisciplines();
     const sb = getSupabase();
-    const { data: entries, error } = await sb.from("team_entries").select("category_id");
+    const [{ data: entries, error }, { data: regs, error: eRegs }] = await Promise.all([
+      sb.from("team_entries").select("category_id"),
+      sb.from("registrations").select("category_id, participant_id"),
+    ]);
     if (error) throw error;
+    if (eRegs) throw eRegs;
     const countByCategory = {};
     (entries || []).forEach((e) => { countByCategory[e.category_id] = (countByCategory[e.category_id] || 0) + 1; });
+    // Categorías SIN equipos/parejas cargados pero con personas anotadas
+    // una por una (Ajedrez, Tenis Singles, etc. -- ver runSorteoForCategory
+    // en sorteoRunner.js): se cuentan esas personas en vez de mostrar 0.
+    const peopleByCategory = {};
+    (regs || []).forEach((r) => {
+      (peopleByCategory[r.category_id] = peopleByCategory[r.category_id] || new Set()).add(r.participant_id);
+    });
 
     const pendientes = [];
     disciplines.forEach((d) => {
       if (INDIVIDUAL_DISCIPLINES.includes(d.id)) return;
       d.categories.forEach((c) => {
         if (c.drawn) return;
-        const teamCount = countByCategory[c.id] || 0;
+        const teamCount = countByCategory[c.id] || (peopleByCategory[c.id] ? peopleByCategory[c.id].size : 0);
         let validation = { ok: true };
         if (c.modality !== "draw" && teamCount >= 2) {
           validation = validateGroupConfig(teamCount, c.group_size || 4);
