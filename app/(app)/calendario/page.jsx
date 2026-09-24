@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Check, RefreshCw, Download } from "lucide-react";
+import { AlertTriangle, Check, RefreshCw, Download, RotateCcw } from "lucide-react";
 import Card from "../../../components/Card";
 import { CourtGrid, AgendaGrid, CategoryLegend } from "../../../components/FixtureGrids";
 import { buildCategoryColors, catKeyOf, catLabelOf } from "../../../lib/fixtureGrid";
 import { exportFixtureXlsx } from "../../../lib/fixtureExcel";
+import { INDIVIDUAL_DISCIPLINES } from "../../../lib/sorteoLogic";
 
 const DAYS = ["2026-10-09", "2026-10-10", "2026-10-11"];
 const DAY_LABEL = { "2026-10-09": "Vie 09/10", "2026-10-10": "Sáb 10/10", "2026-10-11": "Dom 11/10" };
@@ -45,6 +46,187 @@ function ReprogramarControl({ match, onSaved }) {
   );
 }
 
+/* Vista previa + confirmación para resetear el fixture de partidos de un
+   alcance (una categoría, una disciplina entera, o todo). Antes de dejar
+   confirmar, muestra las incompatibilidades horarias que hay AHORA MISMO
+   en ese alcance, para decidir si vale la pena resetear o conviene
+   resolverlas a mano sin perder el resto del fixture ya sorteado. */
+function ResetSorteoPanel({ disciplines, onClose, onDone, showToast }) {
+  const disciplinasSorteables = disciplines.filter((d) => !INDIVIDUAL_DISCIPLINES.includes(d.id));
+  const [scope, setScope] = useState("categoria");
+  const [disciplineId, setDisciplineId] = useState(disciplinasSorteables[0]?.id || "");
+  const [categoryId, setCategoryId] = useState("");
+  const [preview, setPreview] = useState(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const [error, setError] = useState(null);
+
+  const categoriasDeLaDisciplina = disciplinasSorteables.find((d) => d.id === disciplineId)?.categories || [];
+
+  // Si cambia la disciplina (o arranca el panel) y no hay categoría elegida
+  // todavía, arrancamos con la primera de la lista.
+  useEffect(() => {
+    if (scope === "categoria" && !categoryId && categoriasDeLaDisciplina[0]) {
+      setCategoryId(categoriasDeLaDisciplina[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scope, disciplineId, categoriasDeLaDisciplina.length]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function cargarPreview() {
+      setError(null);
+      if (scope === "categoria" && !categoryId) return;
+      if (scope === "disciplina" && !disciplineId) return;
+      setLoadingPreview(true);
+      setPreview(null);
+      try {
+        const params = new URLSearchParams({ scope });
+        if (scope === "disciplina") params.set("disciplineId", disciplineId);
+        if (scope === "categoria") params.set("categoryId", categoryId);
+        const res = await fetch(`/api/sorteo-global/reset?${params}`);
+        const data = await res.json();
+        if (cancelled) return;
+        if (!res.ok) { setError(data.error || "No se pudo calcular la vista previa."); return; }
+        setPreview(data);
+      } finally {
+        if (!cancelled) setLoadingPreview(false);
+      }
+    }
+    cargarPreview();
+    return () => { cancelled = true; };
+  }, [scope, disciplineId, categoryId]);
+
+  async function confirmar() {
+    if (!preview) return;
+    const scopeLabel =
+      scope === "total"
+        ? "TODO el sorteo"
+        : scope === "disciplina"
+        ? `toda la disciplina "${disciplinasSorteables.find((d) => d.id === disciplineId)?.name}"`
+        : `la categoría "${categoriasDeLaDisciplina.find((c) => c.id === categoryId)?.name}"`;
+    const ok = confirm(
+      `Vas a borrar ${preview.matchesCount} partido(s) de ${preview.categoriesCount} categoría(s) (${scopeLabel}).
+
+` +
+        `La modalidad/tamaño de grupo, las sedes y canchas, y las inscripciones NO se tocan.
+
+` +
+        `Esta acción no se puede deshacer. ¿Confirmás?`
+    );
+    if (!ok) return;
+    setResetting(true);
+    try {
+      const body = { scope };
+      if (scope === "disciplina") body.disciplineId = disciplineId;
+      if (scope === "categoria") body.categoryId = categoryId;
+      const res = await fetch("/api/sorteo-global/reset", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error || "No se pudo resetear el sorteo."); return; }
+      showToast(`Reseteado: ${data.matchesDeleted} partido(s) borrado(s) de ${data.categoriesCount} categoría(s). Ya podés volver a sortear.`);
+      onDone();
+    } finally {
+      setResetting(false);
+    }
+  }
+
+  const incompatCount = preview ? preview.conflicts.length + preview.violations.length : 0;
+
+  return (
+    <Card className="p-5 border-[#5C3A32]">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="font-bold text-lg text-[#E0684A] flex items-center gap-2">
+          <RotateCcw className="w-5 h-5" /> Resetear sorteo
+        </h2>
+        <button onClick={onClose} className="text-xs text-[#7A8FBE] hover:text-[#EDE7D6]">Cerrar</button>
+      </div>
+      <p className="text-xs text-[#9FB0D0] mb-3">
+        Borra el fixture de partidos ya sorteados del alcance elegido para volver a sortearlo de cero. NO toca la
+        modalidad/tamaño de grupo/clasificados de cada categoría, ni las sedes y canchas, ni las inscripciones.
+      </p>
+
+      <div className="flex flex-wrap gap-2 mb-3">
+        <select
+          className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm"
+          value={scope}
+          onChange={(e) => { setScope(e.target.value); setPreview(null); }}
+        >
+          <option value="categoria">Una categoría</option>
+          <option value="disciplina">Una disciplina completa</option>
+          <option value="total">Todo el sorteo</option>
+        </select>
+        {(scope === "disciplina" || scope === "categoria") && (
+          <select
+            className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm"
+            value={disciplineId}
+            onChange={(e) => { setDisciplineId(e.target.value); setCategoryId(""); }}
+          >
+            {disciplinasSorteables.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+          </select>
+        )}
+        {scope === "categoria" && (
+          <select
+            className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm"
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+          >
+            {categoriasDeLaDisciplina.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}{c.drawn ? "" : " (sin sortear)"}</option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      {error && <p className="text-sm text-[#E0684A] mb-3">{error}</p>}
+      {loadingPreview && <p className="text-sm text-[#9FB0D0]">Calculando…</p>}
+
+      {preview && !loadingPreview && (
+        <div className="space-y-3">
+          <p className="text-sm">
+            Se van a borrar <strong>{preview.matchesCount}</strong> partido(s) de <strong>{preview.categoriesCount}</strong> categoría(s).
+            {preview.matchesCount === 0 && " No hay nada sorteado todavía en este alcance."}
+          </p>
+
+          {incompatCount > 0 && (
+            <div className="border border-[#5C4A22] bg-[#2E2712] rounded-lg p-3">
+              <p className="text-sm font-semibold text-[#E0C15A] mb-2 flex items-center gap-1.5">
+                <AlertTriangle className="w-4 h-4" /> Este alcance tiene {incompatCount} incompatibilidad(es) horaria(s) ahora mismo
+              </p>
+              <p className="text-xs text-[#9FB0D0] mb-2">
+                Mirá si vale la pena resetear para corregirlas (se pierde el resto del fixture de este alcance), o si
+                conviene dejarlas así y resolverlas a mano desde "Fixture y conflictos" (Autoresolver o reprogramar)
+                sin resetear nada.
+              </p>
+              <ul className="space-y-1.5 text-xs font-mono">
+                {preview.conflicts.map((c) => (
+                  <li key={c.pairId}>
+                    {c.dept} juega en dos lugares a la vez: {c.m1.disciplineName} · {c.m1.categoryName} ({DAY_LABEL[c.m1.day] || c.m1.day} {c.m1.time}) — {c.m2.disciplineName} · {c.m2.categoryName} ({DAY_LABEL[c.m2.day] || c.m2.day} {c.m2.time})
+                  </li>
+                ))}
+                {preview.violations.map((v) => (
+                  <li key={v.id}>
+                    {v.label} tiene una restricción horaria sin respetar: {v.match.disciplineName} · {v.match.categoryName} ({DAY_LABEL[v.match.day] || v.match.day} {v.match.time})
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <button
+            onClick={confirmar}
+            disabled={resetting || preview.matchesCount === 0}
+            className="bg-[#E0684A] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:brightness-95 disabled:opacity-50"
+          >
+            {resetting ? "Reseteando…" : `Resetear (${preview.matchesCount} partido(s))`}
+          </button>
+        </div>
+      )}
+    </Card>
+  );
+}
+
 export default function CalendarioPage() {
   const [matches, setMatches] = useState([]);
   const [conflicts, setConflicts] = useState([]);
@@ -69,6 +251,7 @@ export default function CalendarioPage() {
   const [ultimoDetalle, setUltimoDetalle] = useState(null);
   const [revision, setRevision] = useState(null);
   const [revisionLoading, setRevisionLoading] = useState(false);
+  const [showReset, setShowReset] = useState(false);
 
   function showToast(msg) { setToast(msg); setTimeout(() => setToast(null), 4200); }
 
@@ -259,6 +442,15 @@ export default function CalendarioPage() {
         </Card>
       )}
 
+      {showReset && (
+        <ResetSorteoPanel
+          disciplines={disciplines}
+          onClose={() => setShowReset(false)}
+          onDone={() => { setShowReset(false); load(); }}
+          showToast={showToast}
+        />
+      )}
+
       {revision && (
         <Card className="p-5 border-[#E0C15A]">
           <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
@@ -352,13 +544,21 @@ export default function CalendarioPage() {
       <Card className="p-5">
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <h2 className="font-bold text-lg">Fixture general</h2>
-          <button
-            onClick={abrirRevision}
-            disabled={revisionLoading}
-            className="flex items-center gap-2 bg-[#E0C15A] text-[#132A4C] text-sm font-semibold px-3 py-2 rounded-lg hover:brightness-95 disabled:opacity-50"
-          >
-            {revisionLoading ? "Cargando…" : "Revisar y sortear todo lo pendiente"}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowReset((v) => !v)}
+              className="flex items-center gap-2 bg-[#3A241F] border border-[#5C3A32] text-[#E0684A] text-sm font-semibold px-3 py-2 rounded-lg hover:bg-[#472A22]"
+            >
+              <RotateCcw className="w-4 h-4" /> Resetear sorteo
+            </button>
+            <button
+              onClick={abrirRevision}
+              disabled={revisionLoading}
+              className="flex items-center gap-2 bg-[#E0C15A] text-[#132A4C] text-sm font-semibold px-3 py-2 rounded-lg hover:brightness-95 disabled:opacity-50"
+            >
+              {revisionLoading ? "Cargando…" : "Revisar y sortear todo lo pendiente"}
+            </button>
+          </div>
         </div>
         <div className="flex flex-wrap gap-2 mb-4">
           <select className="bg-[#0C2043] border border-[#2A4E85] rounded-lg px-3 py-1.5 text-sm" value={filterDay} onChange={(e) => setFilterDay(e.target.value)}>

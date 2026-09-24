@@ -13,6 +13,11 @@ _(vacío)_
 3. **Fixture: filtros por categoría y por equipo**, y orden por día/hora, disciplina o categoría.
 4. **Fixture: vistas de grilla** (por cancha con días en columnas; agenda con horas en vertical y días en horizontal), sobre todos los partidos filtrados o solo los seleccionados, con casillero de color por categoría, número de cancha, y descarga a **Excel (.xlsx)** que abre también en Google Sheets.
 
+## Aplicadas (tanda 2)
+
+5. **Botón "Resetear sorteo"** en Fixture y conflictos. Permite elegir el alcance (una categoría, una disciplina completa, o todo el sorteo) y borra SOLO el fixture de partidos de ese alcance (y los resultados ya cargados sobre esos partidos), dejando las categorías "sin sortear" para volver a correr el sorteo. NO toca la modalidad/tamaño de grupo/clasificados de cada categoría, ni las sedes/canchas, ni las inscripciones (equipos/personas). Antes de confirmar, muestra cuántos partidos y categorías se van a borrar.
+6. **Aviso de incompatibilidades antes de resetear.** Si el alcance elegido tiene ahora mismo superposiciones horarias o restricciones sin respetar, el panel las lista con el detalle (quién, en qué partidos, qué día y hora), para decidir si conviene resetear o resolverlas a mano sin perder el resto del fixture ya sorteado.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
