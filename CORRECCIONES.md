@@ -49,6 +49,11 @@ _(vacío)_
 
 13. **Resetear sorteo: se manda en tandas chicas.** Con alcance "Todo el sorteo" (100+ categorías), antes se mandaba un solo pedido con todos los ids juntos -- se cambió a tandas de a 40/200 para no arriesgar el límite de largo de URL de Supabase. Mismo comportamiento, más robusto para alcances grandes.
 
+## Aplicadas (tanda 10)
+
+14. **Sorteo persona contra persona** (Ajedrez, Tenis Singles, Tenis de Mesa Singles -- 9 categorías en el CSV real). Antes, cualquier categoría sin equipos/parejas cargados daba "Menos de 2 equipos inscriptos" aunque hubiera gente anotada, porque el motor solo sabía sortear equipo vs equipo. Ahora, si una categoría no tiene ningún equipo cargado pero sí tiene personas inscriptas individualmente, arma la llave/grupos directamente con esas personas ("Juan Pérez (Necochea)" en vez de "Necochea"), con las mismas opciones de modalidad (llave directa/grupos/grupos+playoff) que ya se configuran hoy. El detector de conflictos también reconoce estos partidos por persona real (si alguien juega Ajedrez y además juega en un equipo a la misma hora, se detecta igual que antes). Las restricciones horarias de "toda la departamental" también aplican, porque `baseDept` ahora sabe extraer la departamental de una etiqueta de persona.
+15. **Golf pasa a la lista de disciplinas individuales que no se sortean** (como Natación o Tiro): ocupa el horario de quien esté anotado, para el chequeo de conflictos, pero no arma partidos ni llave -- se juega por puntaje. Necesita tener sus sedes/horarios cargados en "Disciplinas y sedes" para aparecer en el Fixture.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
