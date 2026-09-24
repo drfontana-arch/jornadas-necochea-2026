@@ -37,6 +37,10 @@ _(vacío)_
 
 10. **Deshacer una división Copa Oro/Plata.** En "Inscripciones" aparece un panel arriba de todo, "Categorías ya divididas en Copa Oro/Plata", cuando hay alguna -- con un botón "Deshacer división" por cada una. Borra las dos categorías (Oro/Plata) con sus equipos, inscripciones y partidos si tenían, y reactiva la categoría única original (que hasta entonces queda oculta del selector, porque una categoría dividida se desactiva). Pensado para el caso real: se dividió con datos de prueba antes de tener el CSV real -- se deshace, se recarga el CSV sobre la categoría única, y recién con los números reales se vuelve a dividir.
 
+## Aplicadas (tanda 7)
+
+11. **Fix: `participants.id` es un uuid, no el número del CSV.** La carga fallaba con `invalid input syntax for type uuid: "2031"` porque se intentaba usar el `participante_id` del CSV (un número correlativo del padrón) directamente como id de la persona en la base. Ahora se genera un uuid propio para cada persona nueva y se usa ese id -- tanto al crearla como al vincular sus inscripciones -- sin depender de qué tipo de dato tenga esa columna.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
