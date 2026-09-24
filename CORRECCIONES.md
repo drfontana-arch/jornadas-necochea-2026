@@ -33,6 +33,10 @@ _(vacío)_
 9. **Mapeo a mano en la carga del CSV**, para cuando el nombre real del CSV no coincide con el configurado en el sistema (ej. CSV dice "Hockey" y el sistema tiene "Hockey (Seven)"; o CSV dice "Senior (+42)" y el sistema tiene "Más 40"). En cada fila de "no se van a cargar" que sea por disciplina o categoría no configurada, aparece un desplegable para elegir a cuál disciplina/categoría YA EXISTENTE corresponde, y se reanaliza solo. El mapeo no renombra nada del sistema, solo hace que esas filas del CSV entren ahí. Si la disciplina/categoría todavía no existe ni con otro nombre, no aparece nada para mapear -- hay que crearla primero en "Disciplinas y sedes".
    - Probado con el escenario real reportado (Hockey → "Hockey (Seven)", Fútbol Reducido "Senior (+42)" → "Más 40"): sin mapeo se omiten 307 filas correctamente clasificadas por tipo; con el mapeo aplicado, las 3450 filas del CSV real quedan válidas.
 
+## Aplicadas (tanda 6)
+
+10. **Deshacer una división Copa Oro/Plata.** En "Inscripciones" aparece un panel arriba de todo, "Categorías ya divididas en Copa Oro/Plata", cuando hay alguna -- con un botón "Deshacer división" por cada una. Borra las dos categorías (Oro/Plata) con sus equipos, inscripciones y partidos si tenían, y reactiva la categoría única original (que hasta entonces queda oculta del selector, porque una categoría dividida se desactiva). Pensado para el caso real: se dividió con datos de prueba antes de tener el CSV real -- se deshace, se recarga el CSV sobre la categoría única, y recién con los números reales se vuelve a dividir.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

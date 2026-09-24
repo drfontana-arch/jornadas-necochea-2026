@@ -1,11 +1,74 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Medal } from "lucide-react";
+import { Plus, Trash2, Medal, Undo2 } from "lucide-react";
 import Card from "../../../components/Card";
 import SelectorBar from "../../../components/SelectorBar";
 
 const COPA_ORO_PLATA_DISCIPLINES = ["futbol11", "futbolReducido", "basquet", "voley", "hockey"];
 const COPA_ORO_PLATA_MIN_EQUIPOS = 12;
+
+/* Categorías que ya se dividieron en Copa Oro/Plata, con la opción de
+   deshacer la división -- por ejemplo, si se dividió con datos de prueba
+   antes de cargar el CSV real, conviene deshacerla, recargar el CSV sobre
+   la categoría única, y recién ahí dividirla de nuevo con los números
+   reales. Mientras una categoría está dividida, la original queda oculta
+   del selector de arriba (solo se ven sus dos mitades). */
+function CopasDivididasPanel({ onReverted }) {
+  const [splits, setSplits] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [reverting, setReverting] = useState(null);
+
+  async function load() {
+    const res = await fetch("/api/categorias/copa-oro-plata");
+    const data = await res.json();
+    setSplits(data.splits || []);
+    setLoading(false);
+  }
+  useEffect(() => { load(); }, []);
+
+  async function deshacer(s) {
+    const ok = confirm(
+      `Vas a deshacer la división de "${s.parentName}" (${s.disciplineName}): se borran las categorías Copa de Oro y Copa de Plata ` +
+        `(con sus equipos, inscripciones y partidos si tenían) y vuelve a quedar una sola categoría "${s.parentName}". ¿Confirmás?`
+    );
+    if (!ok) return;
+    setReverting(s.parentId);
+    try {
+      const res = await fetch(`/api/categorias/${s.parentId}/revertir-copas`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || "No se pudo deshacer la división."); return; }
+      await load();
+      onReverted?.();
+    } finally {
+      setReverting(null);
+    }
+  }
+
+  if (loading || splits.length === 0) return null;
+
+  return (
+    <Card className="p-4 mb-5 border-[#2A4E85]">
+      <h3 className="font-bold text-sm mb-2 flex items-center gap-2"><Medal className="w-4 h-4 text-[#E0C15A]" /> Categorías ya divididas en Copa Oro/Plata</h3>
+      <ul className="space-y-1.5">
+        {splits.map((s) => (
+          <li key={s.parentId} className="flex items-center justify-between gap-3 bg-[#0C2043] border border-[#21426E] rounded-lg px-3 py-2 text-sm">
+            <span>
+              <strong>{s.disciplineName} · {s.parentName}</strong>
+              <span className="text-[#9FB0D0]"> — {s.children.map((c) => `${c.copa === "oro" ? "Oro" : "Plata"}: ${c.teamCount} equipo(s)`).join(", ")}</span>
+            </span>
+            <button
+              onClick={() => deshacer(s)}
+              disabled={reverting === s.parentId}
+              className="flex items-center gap-1.5 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#3A241F] hover:border-[#5C3A32] hover:text-[#E0684A] disabled:opacity-50 shrink-0"
+            >
+              <Undo2 className="w-3.5 h-3.5" /> {reverting === s.parentId ? "Deshaciendo…" : "Deshacer división"}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+}
 
 export default function InscripcionesPage() {
   const [disciplines, setDisciplines] = useState([]);
@@ -103,6 +166,15 @@ export default function InscripcionesPage() {
     return count > 1 ? `${entry.dept} ${entry.num}` : entry.dept;
   }
 
+  async function handleReverted() {
+    const disc = await loadAll();
+    const d = disc.find((x) => x.id === selDiscipline) || disc[0];
+    if (!d) return;
+    const stillExists = d.categories.some((c) => c.id === selCategory);
+    setSelDiscipline(d.id);
+    setSelCategory(stillExists ? selCategory : (d.categories[0]?.id || ""));
+  }
+
   if (loading) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
   if (!discipline || !category) return <p className="text-[#9FB0D0] text-sm">No hay disciplinas cargadas.</p>;
 
@@ -118,6 +190,8 @@ export default function InscripcionesPage() {
       selCategory={selCategory}
       setSelCategory={setSelCategory}
     >
+      <CopasDivididasPanel onReverted={handleReverted} />
+
       {category?.copa && (
         <Card className="p-4 mb-5 border-[#2FD3C4] flex items-center gap-2">
           <Medal className="w-4 h-4 text-[#2FD3C4]" />
