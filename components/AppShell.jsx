@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Users, Settings2, ClipboardList, ListChecks, Shuffle, CalendarDays,
-  ClipboardCheck, Scale,
+  ClipboardCheck, Scale, UploadCloud,
 } from "lucide-react";
 
 const TABS = [
+  { href: "/base-datos", label: "Base de datos", icon: UploadCloud },
   { href: "/departamentales", label: "Departamentales", icon: Users },
   { href: "/disciplinas", label: "Disciplinas y sedes", icon: Settings2 },
   { href: "/inscripciones", label: "Inscripciones", icon: ClipboardList },

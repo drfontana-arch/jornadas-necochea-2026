@@ -18,6 +18,12 @@ _(vacío)_
 5. **Botón "Resetear sorteo"** en Fixture y conflictos. Permite elegir el alcance (una categoría, una disciplina completa, o todo el sorteo) y borra SOLO el fixture de partidos de ese alcance (y los resultados ya cargados sobre esos partidos), dejando las categorías "sin sortear" para volver a correr el sorteo. NO toca la modalidad/tamaño de grupo/clasificados de cada categoría, ni las sedes/canchas, ni las inscripciones (equipos/personas). Antes de confirmar, muestra cuántos partidos y categorías se van a borrar.
 6. **Aviso de incompatibilidades antes de resetear.** Si el alcance elegido tiene ahora mismo superposiciones horarias o restricciones sin respetar, el panel las lista con el detalle (quién, en qué partidos, qué día y hora), para decidir si conviene resetear o resolverlas a mano sin perder el resto del fixture ya sorteado.
 
+## Aplicadas (tanda 3)
+
+7. **Pantalla nueva "Base de datos"** (nuevo tab en el menú). Permite subir el CSV de inscriptos (`participante_id, nombre, apellido, departamental, disciplina, categoria, equipo, equipo_nro`) y hacer un **reemplazo total**: borra TODAS las personas, equipos (team_entries) e inscripciones (registrations) actuales y las reconstruye desde cero con lo que dice el CSV. Las departamentales que falten se crean solas por nombre. Una disciplina o categoría que el sistema todavía no tenga configurada NO se crea sola -- esas filas quedan afuera y se listan aparte, con cuántas inscripciones afecta y algunos nombres de ejemplo, para configurarla primero en "Disciplinas y sedes". No toca sedes/canchas, la modalidad/tamaño de grupo/clasificados de cada categoría, ni los partidos ya sorteados.
+   - Primero muestra una vista previa (cuánto se va a cargar, qué se va a crear, qué queda afuera y por qué) y recién después pide confirmar. No se aplica nada hasta que confirmás.
+   - Detecta filas repetidas (misma persona, misma categoría, dos veces) y filas con datos incompletos, y las lista por separado sin frenar el resto de la carga.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
