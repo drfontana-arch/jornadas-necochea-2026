@@ -41,6 +41,10 @@ _(vacío)_
 
 11. **Fix: `participants.id` es un uuid, no el número del CSV.** La carga fallaba con `invalid input syntax for type uuid: "2031"` porque se intentaba usar el `participante_id` del CSV (un número correlativo del padrón) directamente como id de la persona en la base. Ahora se genera un uuid propio para cada persona nueva y se usa ese id -- tanto al crearla como al vincular sus inscripciones -- sin depender de qué tipo de dato tenga esa columna.
 
+## Aplicadas (tanda 8)
+
+12. **Travesía 4x4 y Pesca ya no generan conflicto de horario.** Aunque una misma persona esté anotada en Travesía 4x4 o Pesca Y en otra disciplina al mismo tiempo, ya no aparece como superposición en "Fixture y conflictos" ni en el aviso de incompatibilidades al resetear el sorteo. Siguen apareciendo como filas normales en el Fixture. No cambia cómo el sorteo elige horarios (eso sigue evitando pisarlas); si también querés que el sorteo pueda asignar libremente encima de ellas, decímelo aparte.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
