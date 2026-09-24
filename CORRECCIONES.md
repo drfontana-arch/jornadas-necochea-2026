@@ -45,6 +45,10 @@ _(vacío)_
 
 12. **Travesía 4x4 y Pesca ya no generan conflicto de horario.** Aunque una misma persona esté anotada en Travesía 4x4 o Pesca Y en otra disciplina al mismo tiempo, ya no aparece como superposición en "Fixture y conflictos" ni en el aviso de incompatibilidades al resetear el sorteo. Siguen apareciendo como filas normales en el Fixture. No cambia cómo el sorteo elige horarios (eso sigue evitando pisarlas); si también querés que el sorteo pueda asignar libremente encima de ellas, decímelo aparte.
 
+## Aplicadas (tanda 9)
+
+13. **Resetear sorteo: se manda en tandas chicas.** Con alcance "Todo el sorteo" (100+ categorías), antes se mandaba un solo pedido con todos los ids juntos -- se cambió a tandas de a 40/200 para no arriesgar el límite de largo de URL de Supabase. Mismo comportamiento, más robusto para alcances grandes.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
