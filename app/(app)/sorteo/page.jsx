@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Shuffle, RefreshCw } from "lucide-react";
+import { Shuffle, RefreshCw, AlertTriangle } from "lucide-react";
 import Card from "../../../components/Card";
 import SelectorBar from "../../../components/SelectorBar";
 
@@ -18,6 +18,10 @@ export default function SorteoPage() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState(null);
+  // Conflictos/restricciones que dejó el ÚLTIMO sorteo o playoff corrido
+  // en esta pantalla -- se limpia al cambiar de categoría, para no
+  // mostrar el resultado de otra.
+  const [sorteoIssues, setSorteoIssues] = useState(null);
 
   function showToast(msg) { setToast(msg); setTimeout(() => setToast(null), 3600); }
 
@@ -47,7 +51,7 @@ export default function SorteoPage() {
     setParticipants((await partRes.json()).participants || []);
     setMatches(await matchRes.json());
   }
-  useEffect(() => { loadCategoryData(); }, [selCategory]);
+  useEffect(() => { setSorteoIssues(null); loadCategoryData(); }, [selCategory]);
 
   const discipline = disciplines.find((d) => d.id === selDiscipline);
   const disciplineCategory = discipline?.categories.find((c) => c.id === selCategory);
@@ -61,15 +65,14 @@ export default function SorteoPage() {
 
   async function runDraw() {
     setBusy(true);
+    setSorteoIssues(null);
     try {
       const res = await fetch(`/api/categorias/${selCategory}/sorteo`, { method: "POST" });
       const data = await res.json();
       if (!res.ok) { showToast(data.error || "No se pudo sortear."); return; }
-      showToast(
-        data.unresolved > 0
-          ? `Sorteo generado. No se pudieron evitar ${data.unresolved} superposición(es) — revisalas en "Fixture y conflictos".`
-          : "Sorteo generado sin superposiciones detectadas."
-      );
+      const issueCount = (data.conflicts?.length || 0) + (data.violations?.length || 0);
+      setSorteoIssues({ conflicts: data.conflicts || [], violations: data.violations || [] });
+      showToast(issueCount > 0 ? `Sorteo generado. Quedaron ${issueCount} incompatibilidad(es), abajo el detalle.` : "Sorteo generado sin superposiciones detectadas.");
       loadCategoryData();
     } finally {
       setBusy(false);
@@ -86,15 +89,14 @@ export default function SorteoPage() {
 
   async function generatePlayoff() {
     setBusy(true);
+    setSorteoIssues(null);
     try {
       const res = await fetch(`/api/categorias/${selCategory}/playoff`, { method: "POST" });
       const data = await res.json();
       if (!res.ok) { showToast(data.error || "No se pudo generar el playoff."); return; }
-      showToast(
-        data.unresolved > 0
-          ? `Llave de playoff generada. No se pudieron evitar ${data.unresolved} superposición(es).`
-          : "Llave de playoff generada, sin superposiciones."
-      );
+      const issueCount = (data.conflicts?.length || 0) + (data.violations?.length || 0);
+      setSorteoIssues({ conflicts: data.conflicts || [], violations: data.violations || [] });
+      showToast(issueCount > 0 ? `Llave de playoff generada. Quedaron ${issueCount} incompatibilidad(es), abajo el detalle.` : "Llave de playoff generada, sin superposiciones.");
       loadCategoryData();
     } finally {
       setBusy(false);
@@ -189,6 +191,38 @@ export default function SorteoPage() {
             )}
           </div>
         </Card>
+
+        {sorteoIssues && (sorteoIssues.conflicts.length > 0 || sorteoIssues.violations.length > 0) && (
+          <Card className="p-5 border-[#E0684A]">
+            <h3 className="font-bold mb-1 flex items-center gap-2 text-[#E0684A]">
+              <AlertTriangle className="w-5 h-5" /> {sorteoIssues.conflicts.length + sorteoIssues.violations.length} incompatibilidad(es) generadas por este sorteo
+            </h3>
+            <p className="text-xs text-[#9FB0D0] mb-3">
+              Quedaron así después de armar los horarios de esta categoría. Se pueden resolver desde "Fixture y conflictos" (Autoresolver o reprogramar).
+            </p>
+            <ul className="space-y-1.5 text-sm">
+              {sorteoIssues.conflicts.map((c) => (
+                <li key={c.pairId} className="border border-[#5C3A32] bg-[#3A241F] rounded-lg px-3 py-2">
+                  <strong>{c.dept}</strong> juega en dos lugares a la vez:
+                  <div className="font-mono text-xs mt-1">
+                    {c.m1.disciplineName} · {c.m1.categoryName} — {DAY_LABEL[c.m1.day] || c.m1.day} {c.m1.time}
+                  </div>
+                  <div className="font-mono text-xs">
+                    {c.m2.disciplineName} · {c.m2.categoryName} — {DAY_LABEL[c.m2.day] || c.m2.day} {c.m2.time}
+                  </div>
+                </li>
+              ))}
+              {sorteoIssues.violations.map((v) => (
+                <li key={v.id} className="border border-[#5C4A22] bg-[#2E2712] rounded-lg px-3 py-2">
+                  <strong>{v.label}</strong> tiene una restricción horaria sin respetar:
+                  <div className="font-mono text-xs mt-1">
+                    {v.match.disciplineName} · {v.match.categoryName} — {DAY_LABEL[v.match.day] || v.match.day} {v.match.time}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        )}
 
         {category.modality === "grupos" && matches.groupMatches.length > 0 && (
           <Card className="p-5">

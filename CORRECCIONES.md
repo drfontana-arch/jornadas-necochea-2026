@@ -62,6 +62,10 @@ _(vacío)_
     - Pantalla **Antecedentes** (orden de cabezas de serie): ahora también se pueden ordenar las personas de estas categorías, no solo equipos.
     No hacía falta recargar el CSV -- los datos ya estaban bien, era una cuenta que faltaba actualizar en estas 3 pantallas.
 
+## Aplicadas (tanda 12)
+
+17. **Conflictos uno por uno en la pantalla de Sorteo.** Al apretar "Sortear"/"Volver a sortear" o "Generar llave de playoff", si el sorteo dejó superposiciones horarias o restricciones sin respetar, aparece una tarjeta roja debajo del botón con el detalle de cada una (quién, en qué partidos, qué día y hora) -- ya no hace falta ir a "Fixture y conflictos" a buscarlas. Se limpia al cambiar de categoría.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

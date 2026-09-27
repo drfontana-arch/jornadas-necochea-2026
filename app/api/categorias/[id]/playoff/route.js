@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCategory, listAllMatches, replaceMatchesForStage, updateCategorySettings, listRestrictions, getIndividualDisciplineBusyMatches } from "../../../../../lib/db";
+import { getCategory, listAllMatches, replaceMatchesForStage, updateCategorySettings, listRestrictions, getIndividualDisciplineBusyMatches, conflictsForCategory } from "../../../../../lib/db";
 import { getSupabase } from "../../../../../lib/supabase";
 import { buildDrawMatches, scheduleRoundsProgressively, groupLetter, absoluteMinutes } from "../../../../../lib/sorteoLogic";
 
@@ -65,7 +65,8 @@ export async function POST(req, { params }) {
       return { ...m, day: s ? s.day : null, time: s ? s.time : null, court: s ? s.court : null, disciplineId: discipline.id };
     });
     await replaceMatchesForStage(categoryId, "playoff", withSlots);
-    return NextResponse.json({ ok: true, unresolved });
+    const { conflicts, violations } = await conflictsForCategory(categoryId, transitionMinutes);
+    return NextResponse.json({ ok: true, unresolved, conflicts, violations });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
