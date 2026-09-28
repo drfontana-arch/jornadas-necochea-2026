@@ -366,7 +366,19 @@ export default function CalendarioPage() {
   async function exportar() {
     setExporting(true);
     try {
-      await exportFixtureXlsx(gridMatches, colors);
+      // Si está filtrado a una sola disciplina/categoría, el archivo sale
+      // nombrado así ("por disciplina y actividad"), para bajar uno por
+      // categoría sin que se pisen los nombres entre descargas.
+      let label = "fixture-jornadas-necochea-2026";
+      if (filterCat) {
+        const found = catOptions.find(([k]) => k === filterCat);
+        if (found) label = found[1];
+      } else if (filterDisc) {
+        const disc = disciplines.find((d) => d.id === filterDisc);
+        if (disc) label = disc.name;
+      }
+      const slug = label.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      await exportFixtureXlsx(gridMatches, colors, slug || "fixture-jornadas-necochea-2026");
     } catch (e) {
       showToast("No se pudo generar el Excel: " + e.message);
     } finally {
@@ -621,7 +633,7 @@ export default function CalendarioPage() {
             onClick={exportar}
             disabled={exporting || gridMatches.length === 0}
             className="ml-auto flex items-center gap-1.5 text-sm bg-[#163A67] border border-[#2A4E85] px-3 py-1.5 rounded-lg hover:bg-[#0C2043] disabled:opacity-50"
-            title="Genera un .xlsx con colores por categoría, que abre en Excel y en Google Sheets"
+            title="Genera un .xlsx con colores por categoría (abre en Excel y en Google Sheets). Filtrá por disciplina y categoría arriba para bajar solo esa actividad -- la hoja 'Listado' trae Equipo A/B con columnas Resultado y Ganador en blanco, listas para completar y subir a la página del evento."
           >
             <Download className="w-4 h-4" /> {exporting ? "Generando…" : `Descargar Excel (${gridMatches.length})`}
           </button>

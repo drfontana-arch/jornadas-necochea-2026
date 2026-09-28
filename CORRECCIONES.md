@@ -92,6 +92,12 @@ _(vacío)_
 23. **Fix: la primera ronda de la llave quedaba fuera de la hoja cuando había muchos equipos.** El póster tenía un ancho fijo (1400px); con muchas rondas (16+ equipos) la llave necesitaba más ancho que eso, y al centrarla la ronda 1 quedaba en una posición negativa -- literalmente fuera del dibujo, ilegible (afectaba tanto al PDF como al SVG, y también se veía así en pantalla). Ahora el ancho del póster crece para siempre poder contener la llave completa. Para categorías chicas (hasta 16 equipos aprox.) el póster queda exactamente igual que antes.
     - Probado con 8/16/32/64 equipos: antes, 32 equipos ya rompía (ronda 1 en x=-50); ahora entra siempre con margen (x=80 con 32 equipos, x=80 con 64), y 8/16 equipos no cambian ni un píxel.
 
+## Aplicadas (tanda 19)
+
+24. **Logo oficial incrustado en el póster de cada categoría (PDF y SVG).** Aparece como marca de agua grande y tenue (6% de opacidad) detrás de todo, y chico a color normal arriba a la izquierda del encabezado, junto al título. El logo queda soldado dentro del propio archivo (no es una imagen enlazada aparte), así que el SVG descargado sigue sirviendo para imprenta sin depender de internet ni de que el archivo original esté al lado.
+    - Verificado renderizado real en el navegador (no solo que compile): el logo se ve completo y sin roturas, tanto la marca de agua como la versión chica del encabezado, junto con la ronda 1 ya visible del fix anterior.
+25. **El Excel del Fixture ahora sirve para cargar resultados.** La hoja "Listado" separa "Equipo A"/"Equipo B" (antes era una sola columna "Partido") y suma "Resultado" y "Ganador" en blanco, listas para completar a mano y después cargar en la página pública del evento. Ya se podía filtrar por disciplina y categoría antes de descargar (para bajar "por disciplina y actividad"); ahora, si hay un filtro activo, el nombre del archivo también sale con ese nombre (ej. "voley-fem.xlsx") en vez del genérico, para no pisar descargas de distintas categorías.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

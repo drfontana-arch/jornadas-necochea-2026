@@ -1,5 +1,6 @@
 "use client";
 import { bracketDimensions, SHOW_SCHEDULE_IN_POSTER } from "../lib/bracketLayout";
+import { logoMarkupWithSuffix, LOGO_VIEWBOX_WIDTH, LOGO_VIEWBOX_HEIGHT } from "../lib/posterLogo";
 import BracketGroup from "./BracketGroup";
 
 const NAVY = "#1B3D6D";
@@ -71,6 +72,21 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
   const totalHeight = cursorY + 40;
   const title = `${category.disciplines.name} — ${category.name}`;
 
+  // Marca de agua: el logo centrado en la hoja, bien grande y bien tenue,
+  // detrás de todo lo demás. Logo chico del encabezado: arriba a la
+  // izquierda, junto al título, a color normal.
+  const watermarkWidth = width * 0.7;
+  const watermarkScale = watermarkWidth / LOGO_VIEWBOX_WIDTH;
+  const watermarkHeight = LOGO_VIEWBOX_HEIGHT * watermarkScale;
+  const watermarkX = (width - watermarkWidth) / 2;
+  const watermarkY = (totalHeight - watermarkHeight) / 2;
+
+  const headerLogoWidth = 150;
+  const headerLogoScale = headerLogoWidth / LOGO_VIEWBOX_WIDTH;
+  const headerLogoHeight = LOGO_VIEWBOX_HEIGHT * headerLogoScale;
+  const headerLogoX = marginX;
+  const headerLogoY = (150 - headerLogoHeight) / 2;
+
   return (
     <svg
       ref={forwardedRef}
@@ -80,6 +96,19 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <rect x={0} y={0} width={width} height={totalHeight} fill="#FFFFFF" />
+
+      {/* Marca de agua: el logo oficial, grande y tenue, detrás de todo. */}
+      <g
+        transform={`translate(${watermarkX}, ${watermarkY}) scale(${watermarkScale})`}
+        opacity={0.06}
+        dangerouslySetInnerHTML={{ __html: logoMarkupWithSuffix("wm") }}
+      />
+
+      {/* Logo chico en el encabezado, a color normal. */}
+      <g
+        transform={`translate(${headerLogoX}, ${headerLogoY}) scale(${headerLogoScale})`}
+        dangerouslySetInnerHTML={{ __html: logoMarkupWithSuffix("h") }}
+      />
 
       <text x={width / 2} y={40} textAnchor="middle" fontSize="13" fontWeight="700" letterSpacing="2" fill={NAVY} fontFamily="Arial, sans-serif">
         COLEGIO DE MAGISTRADOS Y FUNCIONARIOS · PROVINCIA DE BUENOS AIRES
