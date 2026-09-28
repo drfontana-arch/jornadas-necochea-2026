@@ -66,6 +66,10 @@ _(vacío)_
 
 17. **Conflictos uno por uno en la pantalla de Sorteo.** Al apretar "Sortear"/"Volver a sortear" o "Generar llave de playoff", si el sorteo dejó superposiciones horarias o restricciones sin respetar, aparece una tarjeta roja debajo del botón con el detalle de cada una (quién, en qué partidos, qué día y hora) -- ya no hace falta ir a "Fixture y conflictos" a buscarlas. Se limpia al cambiar de categoría.
 
+## Aplicadas (tanda 13)
+
+18. **Nombre de archivo al exportar el póster a PDF.** El botón "Descargar SVG" ya guardaba con el nombre de disciplina y categoría; "Imprimir / exportar PDF" no, porque el navegador usa el título de la pestaña como nombre sugerido, y era siempre el mismo genérico. Ahora, al abrir el póster de una categoría, el título de la pestaña pasa a ser "Disciplina — Categoría" (y en el póster por día, "Cronograma — Día"), así el PDF ya se guarda con ese nombre por defecto, sin tener que renombrarlo a mano.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

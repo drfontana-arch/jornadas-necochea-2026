@@ -23,6 +23,15 @@ export default function PosterDiaPage({ params }) {
     })();
   }, [day]);
 
+  // El navegador sugiere el título de la pestaña como nombre de archivo al
+  // exportar a PDF -- se pone acá el nombre del día para que ya salga
+  // bien. Se restaura el título general del sitio al salir.
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = `Cronograma — ${DAY_LABEL[day] || day}`;
+    return () => { document.title = prevTitle; };
+  }, [day]);
+
   if (loading) return <p className="text-[#9FB0D0] text-sm">Cargando…</p>;
 
   // sede aproximada: primera venue de esa disciplina para ese día

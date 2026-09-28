@@ -22,6 +22,17 @@ export default function PosterPage({ params }) {
     })();
   }, [categoryId]);
 
+  // El navegador sugiere el título de la pestaña como nombre de archivo al
+  // exportar a PDF (Imprimir → Guardar como PDF) -- se pone acá el nombre
+  // de disciplina + categoría para que ya salga bien, sin tener que
+  // renombrar a mano. Se restaura el título general del sitio al salir.
+  useEffect(() => {
+    if (!category) return;
+    const prevTitle = document.title;
+    document.title = `${category.disciplines.name} — ${category.name}`;
+    return () => { document.title = prevTitle; };
+  }, [category]);
+
   function descargarSVG() {
     if (!svgRef.current) return;
     const svgEl = svgRef.current;
