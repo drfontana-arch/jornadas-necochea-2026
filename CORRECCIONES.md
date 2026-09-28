@@ -74,6 +74,11 @@ _(vacío)_
 
 19. **Casilleros sin definir en las llaves quedan en blanco, no "A definir".** En el dibujo de la llave (usado en el póster de cada categoría), un casillero sin equipo asignado todavía ya no imprime el texto "A definir" -- queda en blanco, para completar el nombre del ganador a mano en el póster impreso. El BYE sigue mostrando "BYE (pasa directo)", porque ahí no hay nada que completar. No toqué la tabla de Fixture ni el Excel exportado, que siguen mostrando "A definir vs A definir" (ahí es información de pantalla, no algo para escribir a mano).
 
+## Aplicadas (tanda 15)
+
+20. **Evitar que dos equipos (o personas) de la misma departamental se crucen en primera ronda de una llave**, cuando sea posible. Aplica a "Llave directa" y a la llave de playoff de "Grupos + playoff" (ambas usan el mismo armado de llave). Es un "si es posible": si sortea un intercambio que separa a los dos sin generar un cruce nuevo en otro lado, lo hace; si es matemáticamente inevitable (ej. más de la mitad de los anotados son de la misma departamental), deja el mínimo posible de cruces sin tocar nada más. No aplica a la fase de grupos (round robin), donde no hay "primera ronda" en el mismo sentido.
+    - Probado: cruce forzado se resuelve a 0; con 4 de 8 del mismo departamento (evitable) da 0; con 5 de 8 (matemáticamente inevitable) da exactamente 1, el mínimo teórico; con 32 equipos resuelve en 1ms sin choques; funciona igual con nombres de persona (Ajedrez, Tenis Singles).
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
