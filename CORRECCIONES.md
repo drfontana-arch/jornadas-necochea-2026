@@ -83,6 +83,10 @@ _(vacío)_
 
 21. **En las llaves de Ajedrez, Tenis Singles y Tenis de Mesa Singles, el casillero muestra la departamental (no el nombre de la persona), con una línea punteada debajo para completar el nombre a mano.** Si dos personas de la misma departamental están anotadas en la misma categoría, los dos casilleros dicen lo mismo ("Necochea"), sin numerar -- se distinguen recién al completar el nombre. El recuadro de la llave se agranda un poco para estas categorías, para que entre la línea de abajo. El BYE sigue mostrando "BYE (pasa directo)" sin tocar. Las llaves de equipo (Vóley, Básquet, etc.) no cambian en nada.
 
+## Aplicadas (tanda 17)
+
+22. **Cancha y horario ocultos en el póster de cada categoría (PDF y SVG), por ahora.** Ni la llave ni la tabla de grupos muestran día/hora/cancha mientras esos datos todavía no están confirmados. Es una bandera (`SHOW_SCHEDULE_IN_POSTER` en `lib/bracketLayout.js`) que se puede volver a activar apenas estén listos, sin tener que rehacer nada. No toqué el póster por día (el de "Cronograma"), porque ese documento es justamente el horario -- ocultarlo ahí lo dejaría vacío.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

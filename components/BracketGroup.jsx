@@ -1,5 +1,5 @@
 "use client";
-import { bracketDimensions, isIndividualBracket, BRACKET_COL_WIDTH, BRACKET_BOX_WIDTH } from "../lib/bracketLayout";
+import { bracketDimensions, isIndividualBracket, SHOW_SCHEDULE_IN_POSTER, BRACKET_COL_WIDTH, BRACKET_BOX_WIDTH } from "../lib/bracketLayout";
 import { baseDept, isPersonEntrant } from "../lib/sorteoLogic";
 
 const NAVY = "#1B3D6D";
@@ -85,7 +85,7 @@ export default function BracketGroup({ matches, title, x = 0, y = 0 }) {
               {individual && !m.bye && (
                 <line x1={bx + 10} y1={by + boxHeight - 10} x2={bx + BRACKET_BOX_WIDTH - 10} y2={by + boxHeight - 10} stroke="#B9C4D4" strokeWidth="1" strokeDasharray="3,2" />
               )}
-              {m.day && (
+              {SHOW_SCHEDULE_IN_POSTER && m.day && (
                 <text x={bx + BRACKET_BOX_WIDTH - 8} y={by - 6} fontSize="12" textAnchor="end" fill="#5A6B85" fontFamily="Arial, sans-serif">
                   {(DAY_LABEL[m.day] || m.day) + " · " + m.time + " · Cancha " + m.court}
                 </text>

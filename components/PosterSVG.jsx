@@ -1,5 +1,5 @@
 "use client";
-import { bracketDimensions } from "../lib/bracketLayout";
+import { bracketDimensions, SHOW_SCHEDULE_IN_POSTER } from "../lib/bracketLayout";
 import BracketGroup from "./BracketGroup";
 
 const NAVY = "#1B3D6D";
@@ -115,9 +115,13 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
           <rect x={marginX} y={groupsTableHeaderY} width={contentWidth} height={30} fill={LIGHT} />
           <text x={marginX + 8} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">GRUPO</text>
           <text x={marginX + 160} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">PARTIDO</text>
-          <text x={marginX + contentWidth - 330} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">DÍA</text>
-          <text x={marginX + contentWidth - 220} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">HORA</text>
-          <text x={marginX + contentWidth - 110} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">CANCHA</text>
+          {SHOW_SCHEDULE_IN_POSTER && (
+            <>
+              <text x={marginX + contentWidth - 330} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">DÍA</text>
+              <text x={marginX + contentWidth - 220} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">HORA</text>
+              <text x={marginX + contentWidth - 110} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">CANCHA</text>
+            </>
+          )}
           {sortedGroupMatches.map((m, i) => {
             const ry = groupsTableY + i * 28;
             return (
@@ -125,9 +129,13 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
                 <line x1={marginX} y1={ry} x2={marginX + contentWidth} y2={ry} stroke={BORDER} strokeWidth="1" />
                 <text x={marginX + 8} y={ry + 19} fontSize="13" fill={NAVY_DARK} fontFamily="Arial, sans-serif">{m.groupLabel}</text>
                 <text x={marginX + 160} y={ry + 19} fontSize="13" fill={NAVY_DARK} fontFamily="Arial, sans-serif">{(m.teamA || "?") + " vs " + (m.teamB || "?")}</text>
-                <text x={marginX + contentWidth - 330} y={ry + 19} fontSize="13" fill={NAVY_DARK} fontFamily="Arial, sans-serif">{DAY_LABEL[m.day] || m.day || "—"}</text>
-                <text x={marginX + contentWidth - 220} y={ry + 19} fontSize="13" fill={NAVY_DARK} fontFamily="Arial, sans-serif">{m.time || "—"}</text>
-                <text x={marginX + contentWidth - 110} y={ry + 19} fontSize="13" fill={NAVY_DARK} fontFamily="Arial, sans-serif">{m.court || "—"}</text>
+                {SHOW_SCHEDULE_IN_POSTER && (
+                  <>
+                    <text x={marginX + contentWidth - 330} y={ry + 19} fontSize="13" fill={NAVY_DARK} fontFamily="Arial, sans-serif">{DAY_LABEL[m.day] || m.day || "—"}</text>
+                    <text x={marginX + contentWidth - 220} y={ry + 19} fontSize="13" fill={NAVY_DARK} fontFamily="Arial, sans-serif">{m.time || "—"}</text>
+                    <text x={marginX + contentWidth - 110} y={ry + 19} fontSize="13" fill={NAVY_DARK} fontFamily="Arial, sans-serif">{m.court || "—"}</text>
+                  </>
+                )}
               </g>
             );
           })}
