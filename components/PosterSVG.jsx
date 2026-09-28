@@ -1,6 +1,6 @@
 "use client";
 import { bracketDimensions, SHOW_SCHEDULE_IN_POSTER } from "../lib/bracketLayout";
-import { logoMarkupWithSuffix, LOGO_VIEWBOX_WIDTH, LOGO_VIEWBOX_HEIGHT } from "../lib/posterLogo";
+import { ISOLOGO_SVG_INNER, isologoTransform } from "../lib/posterLogo";
 import BracketGroup from "./BracketGroup";
 
 const NAVY = "#1B3D6D";
@@ -72,20 +72,17 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
   const totalHeight = cursorY + 40;
   const title = `${category.disciplines.name} — ${category.name}`;
 
-  // Marca de agua: el logo centrado en la hoja, bien grande y bien tenue,
-  // detrás de todo lo demás. Logo chico del encabezado: arriba a la
-  // izquierda, junto al título, a color normal.
-  const watermarkWidth = width * 0.7;
-  const watermarkScale = watermarkWidth / LOGO_VIEWBOX_WIDTH;
-  const watermarkHeight = LOGO_VIEWBOX_HEIGHT * watermarkScale;
-  const watermarkX = (width - watermarkWidth) / 2;
-  const watermarkY = (totalHeight - watermarkHeight) / 2;
+  // Isologo (solo el escudo, sin texto -- el texto ya está en el
+  // encabezado propio del póster) como marca de agua centrada y tenue
+  // detrás de todo, y chico a cada lado del encabezado, a color normal.
+  const watermarkWidth = width * 0.45;
+  const watermarkTf = isologoTransform((width - watermarkWidth) / 2, (totalHeight - watermarkWidth) / 2, watermarkWidth);
 
-  const headerLogoWidth = 150;
-  const headerLogoScale = headerLogoWidth / LOGO_VIEWBOX_WIDTH;
-  const headerLogoHeight = LOGO_VIEWBOX_HEIGHT * headerLogoScale;
-  const headerLogoX = marginX;
+  const headerLogoWidth = 60;
+  const headerLogoHeight = isologoTransform(0, 0, headerLogoWidth).height;
   const headerLogoY = (150 - headerLogoHeight) / 2;
+  const headerLogoTfLeft = isologoTransform(marginX, headerLogoY, headerLogoWidth);
+  const headerLogoTfRight = isologoTransform(width - marginX - headerLogoWidth, headerLogoY, headerLogoWidth);
 
   return (
     <svg
@@ -97,18 +94,12 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
     >
       <rect x={0} y={0} width={width} height={totalHeight} fill="#FFFFFF" />
 
-      {/* Marca de agua: el logo oficial, grande y tenue, detrás de todo. */}
-      <g
-        transform={`translate(${watermarkX}, ${watermarkY}) scale(${watermarkScale})`}
-        opacity={0.06}
-        dangerouslySetInnerHTML={{ __html: logoMarkupWithSuffix("wm") }}
-      />
+      {/* Marca de agua: el isologo (solo el escudo), grande y tenue, detrás de todo. */}
+      <g transform={watermarkTf.transform} opacity={0.06} dangerouslySetInnerHTML={{ __html: ISOLOGO_SVG_INNER }} />
 
-      {/* Logo chico en el encabezado, a color normal. */}
-      <g
-        transform={`translate(${headerLogoX}, ${headerLogoY}) scale(${headerLogoScale})`}
-        dangerouslySetInnerHTML={{ __html: logoMarkupWithSuffix("h") }}
-      />
+      {/* Isologo chico a cada lado del encabezado, a color normal. */}
+      <g transform={headerLogoTfLeft.transform} dangerouslySetInnerHTML={{ __html: ISOLOGO_SVG_INNER }} />
+      <g transform={headerLogoTfRight.transform} dangerouslySetInnerHTML={{ __html: ISOLOGO_SVG_INNER }} />
 
       <text x={width / 2} y={40} textAnchor="middle" fontSize="13" fontWeight="700" letterSpacing="2" fill={NAVY} fontFamily="Arial, sans-serif">
         COLEGIO DE MAGISTRADOS Y FUNCIONARIOS · PROVINCIA DE BUENOS AIRES

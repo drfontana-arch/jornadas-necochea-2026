@@ -98,6 +98,11 @@ _(vacío)_
     - Verificado renderizado real en el navegador (no solo que compile): el logo se ve completo y sin roturas, tanto la marca de agua como la versión chica del encabezado, junto con la ronda 1 ya visible del fix anterior.
 25. **El Excel del Fixture ahora sirve para cargar resultados.** La hoja "Listado" separa "Equipo A"/"Equipo B" (antes era una sola columna "Partido") y suma "Resultado" y "Ganador" en blanco, listas para completar a mano y después cargar en la página pública del evento. Ya se podía filtrar por disciplina y categoría antes de descargar (para bajar "por disciplina y actividad"); ahora, si hay un filtro activo, el nombre del archivo también sale con ese nombre (ej. "voley-fem.xlsx") en vez del genérico, para no pisar descargas de distintas categorías.
 
+## Aplicadas (tanda 20)
+
+26. **Solo el isologo (el escudo, sin texto) en el encabezado y la marca de agua del póster.** Antes iba el logo completo (escudo + "Jornadas Deportivas Interdepartamentales" + "Necochea"), redundante con el texto que el póster ya trae en su propio encabezado. Ahora: el escudo solo, a cada lado del encabezado (izquierda y derecha), y el escudo solo como marca de agua. Se recortó del archivo original midiendo el recuadro real con el navegador (no a ojo), y queda igual de autocontenido que antes -- sirve para imprenta sin depender de nada externo.
+    - Verificado renderizado real: las tres copias (header izquierda, header derecha, marca de agua) muestran la misma forma completa del escudo, sin roturas ni recortes.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
