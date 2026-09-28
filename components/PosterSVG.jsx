@@ -11,8 +11,19 @@ const DAY_LABEL = { "2026-10-09": "Vie 09/10", "2026-10-10": "Sáb 10/10", "2026
 function groupLetter(i) { return String.fromCharCode(65 + i); }
 
 export default function PosterSVG({ category, matches, forwardedRef }) {
-  const width = 1400;
   const marginX = 50;
+
+  // El ancho de las llaves se calcula ANTES que el ancho total del
+  // póster -- con muchos equipos (muchas rondas) la llave puede necesitar
+  // más de los 1400px de base. Si no, al centrarla la ronda 1 quedaba con
+  // coordenada negativa: literalmente fuera de la hoja, ilegible.
+  const hasPlayoff = matches.playoffMatches && matches.playoffMatches.length > 0;
+  const hasDraw = matches.drawMatches && matches.drawMatches.length > 0;
+  const playoffDim = hasPlayoff ? bracketDimensions(matches.playoffMatches) : { width: 0, height: 0 };
+  const drawDim = hasDraw ? bracketDimensions(matches.drawMatches) : { width: 0, height: 0 };
+  const widestBracket = Math.max(playoffDim.width, drawDim.width);
+  const width = Math.max(1400, widestBracket + marginX * 2);
+
   const contentWidth = width - marginX * 2;
   let cursorY = 190; // alto del header
 
@@ -39,19 +50,15 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
   }
 
   let playoffY = null;
-  let playoffDim = { width: 0, height: 0 };
-  if (matches.playoffMatches && matches.playoffMatches.length > 0) {
+  if (hasPlayoff) {
     cursorY += 10;
     playoffY = cursorY;
-    playoffDim = bracketDimensions(matches.playoffMatches);
     cursorY += playoffDim.height + 30;
   }
 
   let drawY = null;
-  let drawDim = { width: 0, height: 0 };
-  if (matches.drawMatches && matches.drawMatches.length > 0) {
+  if (hasDraw) {
     drawY = cursorY;
-    drawDim = bracketDimensions(matches.drawMatches);
     cursorY += drawDim.height + 30;
   }
 

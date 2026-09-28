@@ -87,6 +87,11 @@ _(vacío)_
 
 22. **Cancha y horario ocultos en el póster de cada categoría (PDF y SVG), por ahora.** Ni la llave ni la tabla de grupos muestran día/hora/cancha mientras esos datos todavía no están confirmados. Es una bandera (`SHOW_SCHEDULE_IN_POSTER` en `lib/bracketLayout.js`) que se puede volver a activar apenas estén listos, sin tener que rehacer nada. No toqué el póster por día (el de "Cronograma"), porque ese documento es justamente el horario -- ocultarlo ahí lo dejaría vacío.
 
+## Aplicadas (tanda 18)
+
+23. **Fix: la primera ronda de la llave quedaba fuera de la hoja cuando había muchos equipos.** El póster tenía un ancho fijo (1400px); con muchas rondas (16+ equipos) la llave necesitaba más ancho que eso, y al centrarla la ronda 1 quedaba en una posición negativa -- literalmente fuera del dibujo, ilegible (afectaba tanto al PDF como al SVG, y también se veía así en pantalla). Ahora el ancho del póster crece para siempre poder contener la llave completa. Para categorías chicas (hasta 16 equipos aprox.) el póster queda exactamente igual que antes.
+    - Probado con 8/16/32/64 equipos: antes, 32 equipos ya rompía (ronda 1 en x=-50); ahora entra siempre con margen (x=80 con 32 equipos, x=80 con 64), y 8/16 equipos no cambian ni un píxel.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
