@@ -50,8 +50,12 @@ export default function BracketGroup({ matches, title, x = 0, y = 0 }) {
         return round.map(function (m, i) {
           const bx = boxX(ci);
           const by = boxY(m.y);
-          const teamALabel = m.teamA || (m.bye ? "" : "A definir");
-          const teamBLabel = m.bye ? "BYE (pasa directo)" : (m.teamB || "A definir");
+          // Casillero sin definir todavía (ni equipo ni BYE): se deja en
+          // blanco a propósito -- en el póster impreso sirve para
+          // completar el nombre del ganador a mano, en vez de imprimir
+          // "A definir" y tener que tacharlo.
+          const teamALabel = m.teamA || "";
+          const teamBLabel = m.bye ? "BYE (pasa directo)" : (m.teamB || "");
           return (
             <g key={m.id}>
               <rect x={bx} y={by} width={BRACKET_BOX_WIDTH} height={BRACKET_BOX_HEIGHT} rx={6} fill="#FFFFFF" stroke={NAVY} strokeWidth="1.5" />

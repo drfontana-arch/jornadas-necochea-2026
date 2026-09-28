@@ -70,6 +70,10 @@ _(vacío)_
 
 18. **Nombre de archivo al exportar el póster a PDF.** El botón "Descargar SVG" ya guardaba con el nombre de disciplina y categoría; "Imprimir / exportar PDF" no, porque el navegador usa el título de la pestaña como nombre sugerido, y era siempre el mismo genérico. Ahora, al abrir el póster de una categoría, el título de la pestaña pasa a ser "Disciplina — Categoría" (y en el póster por día, "Cronograma — Día"), así el PDF ya se guarda con ese nombre por defecto, sin tener que renombrarlo a mano.
 
+## Aplicadas (tanda 14)
+
+19. **Casilleros sin definir en las llaves quedan en blanco, no "A definir".** En el dibujo de la llave (usado en el póster de cada categoría), un casillero sin equipo asignado todavía ya no imprime el texto "A definir" -- queda en blanco, para completar el nombre del ganador a mano en el póster impreso. El BYE sigue mostrando "BYE (pasa directo)", porque ahí no hay nada que completar. No toqué la tabla de Fixture ni el Excel exportado, que siguen mostrando "A definir vs A definir" (ahí es información de pantalla, no algo para escribir a mano).
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
