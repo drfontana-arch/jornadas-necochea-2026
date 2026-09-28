@@ -79,6 +79,10 @@ _(vacío)_
 20. **Evitar que dos equipos (o personas) de la misma departamental se crucen en primera ronda de una llave**, cuando sea posible. Aplica a "Llave directa" y a la llave de playoff de "Grupos + playoff" (ambas usan el mismo armado de llave). Es un "si es posible": si sortea un intercambio que separa a los dos sin generar un cruce nuevo en otro lado, lo hace; si es matemáticamente inevitable (ej. más de la mitad de los anotados son de la misma departamental), deja el mínimo posible de cruces sin tocar nada más. No aplica a la fase de grupos (round robin), donde no hay "primera ronda" en el mismo sentido.
     - Probado: cruce forzado se resuelve a 0; con 4 de 8 del mismo departamento (evitable) da 0; con 5 de 8 (matemáticamente inevitable) da exactamente 1, el mínimo teórico; con 32 equipos resuelve en 1ms sin choques; funciona igual con nombres de persona (Ajedrez, Tenis Singles).
 
+## Aplicadas (tanda 16)
+
+21. **En las llaves de Ajedrez, Tenis Singles y Tenis de Mesa Singles, el casillero muestra la departamental (no el nombre de la persona), con una línea punteada debajo para completar el nombre a mano.** Si dos personas de la misma departamental están anotadas en la misma categoría, los dos casilleros dicen lo mismo ("Necochea"), sin numerar -- se distinguen recién al completar el nombre. El recuadro de la llave se agranda un poco para estas categorías, para que entre la línea de abajo. El BYE sigue mostrando "BYE (pasa directo)" sin tocar. Las llaves de equipo (Vóley, Básquet, etc.) no cambian en nada.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
