@@ -125,7 +125,7 @@ _(vacío)_
 
 ## Aplicadas (tanda 24)
 
-33. **En Tenis, Pádel y Tenis de Mesa, dos parejas/singles de la misma departamental quedan en mitades OPUESTAS de la llave**, para que lo más pronto que puedan cruzarse sea la final -- no alcanza con separarlas de la ronda 1 (esa regla general sigue para el resto de las disciplinas). Aplica a la llave directa y a la llave de playoff (inicial y al regenerarla). Si es posible, se hace bien (probado en 20 sorteos con orden aleatorio, todos separados); con 3+ entradas de la misma departamental en un espacio para 2 por mitad, hace lo mejor que puede.
+33. **En TODAS las disciplinas, dos equipos/parejas/singles de la misma departamental quedan en mitades OPUESTAS de la llave**, para que lo más pronto que puedan cruzarse sea la final -- reemplaza a la regla anterior (que solo evitaba el cruce directo en ronda 1) como único criterio, ya no hace falta distinguir por disciplina. Aplica a la llave directa y a la llave de playoff (inicial y al regenerarla). Si es posible, se hace bien (probado en 20 sorteos con orden aleatorio, todos separados); con 3+ entradas de la misma departamental en un espacio para 2 por mitad, hace lo mejor que puede.
 
 ## Notas / limitaciones conocidas
 

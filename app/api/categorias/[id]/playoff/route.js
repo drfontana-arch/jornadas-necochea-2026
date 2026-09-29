@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCategory, listAllMatches, replaceMatchesForStage, updateCategorySettings, listRestrictions, getIndividualDisciplineBusyMatches, conflictsForCategory } from "../../../../../lib/db";
 import { getSupabase } from "../../../../../lib/supabase";
-import { buildDrawMatches, scheduleRoundsProgressively, groupLetter, absoluteMinutes, nextPow2, OPPOSITE_HALVES_DISCIPLINES } from "../../../../../lib/sorteoLogic";
+import { buildDrawMatches, scheduleRoundsProgressively, groupLetter, absoluteMinutes, nextPow2 } from "../../../../../lib/sorteoLogic";
 
 export const dynamic = "force-dynamic";
 
@@ -59,10 +59,7 @@ export async function POST(req, { params }) {
       qualifiers.push(...extraPicks);
     }
 
-    // Tenis, Pádel, Tenis de Mesa: dos parejas/singles de la misma
-    // departamental no deben poder cruzarse antes de la final.
-    const oppositeHalves = OPPOSITE_HALVES_DISCIPLINES.includes(category.discipline_id);
-    const rawMatches = buildDrawMatches(qualifiers, { oppositeHalves });
+    const rawMatches = buildDrawMatches(qualifiers);
     const roundCounters = {};
     const matches = rawMatches.map((m) => {
       roundCounters[m.round] = (roundCounters[m.round] ?? -1) + 1;
