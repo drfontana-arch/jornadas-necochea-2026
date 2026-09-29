@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCategory, listAllMatches, replaceMatchesForStage, updateCategorySettings, listRestrictions, getIndividualDisciplineBusyMatches, conflictsForCategory } from "../../../../../lib/db";
 import { getSupabase } from "../../../../../lib/supabase";
-import { buildDrawMatches, scheduleRoundsProgressively, groupLetter, absoluteMinutes } from "../../../../../lib/sorteoLogic";
+import { buildDrawMatches, scheduleRoundsProgressively, groupLetter, absoluteMinutes, nextPow2 } from "../../../../../lib/sorteoLogic";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +35,28 @@ export async function POST(req, { params }) {
         const arr = standings[gi] || [];
         qualifiers.push(arr[r] || `${r + 1}${groupLetter(gi)}`);
       });
+    }
+
+    // Si los clasificados directos no cierran en una potencia de 2, la
+    // semifinal/final quedaría con un BYE -- se completa con los
+    // clasificados del puesto siguiente que se hayan elegido a mano en
+    // Sorteo (ver "Completar la llave"), en vez de dejar un BYE ahí.
+    const neededExtra = Math.max(0, nextPow2(qualifiers.length) - qualifiers.length);
+    const extraPicks = (standings.extra || []).filter(Boolean);
+    if (neededExtra > 0) {
+      if (extraPicks.length < neededExtra) {
+        return NextResponse.json(
+          { error: `Faltan elegir ${neededExtra - extraPicks.length} equipo(s) más en "Completar la llave" para que la semifinal/final no quede con BYE.` },
+          { status: 400 }
+        );
+      }
+      if (extraPicks.length > neededExtra) {
+        return NextResponse.json(
+          { error: `Hay ${extraPicks.length - neededExtra} equipo(s) de más elegido(s) en "Completar la llave" -- dejá solo ${neededExtra}.` },
+          { status: 400 }
+        );
+      }
+      qualifiers.push(...extraPicks);
     }
 
     const rawMatches = buildDrawMatches(qualifiers);

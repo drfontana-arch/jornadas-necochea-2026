@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Shuffle, RefreshCw, AlertTriangle } from "lucide-react";
 import Card from "../../../components/Card";
 import SelectorBar from "../../../components/SelectorBar";
+import { nextPow2 } from "../../../lib/sorteoLogic";
 
 const DAY_LABEL = { "2026-10-09": "Vie 09/10", "2026-10-10": "Sáb 10/10", "2026-10-11": "Dom 11/10" };
 function groupLetter(i) { return String.fromCharCode(65 + i); }
@@ -129,6 +130,29 @@ export default function SorteoPage() {
     category.modality === "grupos_playoff" ? (category.advance_per_group || 0) : 0,
     isCopaOroPlataDiscipline ? 3 : 0
   );
+
+  // Si los clasificados directos (grupos × clasifican por grupo) no cierran
+  // en una potencia de 2, la semifinal/final quedaría con un BYE. Para
+  // evitarlo, se completa a mano con clasificados del puesto siguiente
+  // (ej. "el mejor segundo" entre todos los segundos), elegidos entre los
+  // que ya tengan ese puesto cargado arriba.
+  const numGroups = category.groups ? category.groups.length : 0;
+  const k = category.advance_per_group || 0;
+  const baseQualifierCount = numGroups * k;
+  const neededExtra = category.modality === "grupos_playoff" && baseQualifierCount > 0
+    ? Math.max(0, nextPow2(baseQualifierCount) - baseQualifierCount)
+    : 0;
+  const extraCandidates = neededExtra > 0
+    ? category.groups
+        .map((g, gi) => ({ gi, label: (category.group_standings[gi] || [])[k] }))
+        .filter((c) => c.label)
+    : [];
+  const extraPicks = category.group_standings.extra || [];
+
+  async function toggleExtraQualifier(label) {
+    const next = extraPicks.includes(label) ? extraPicks.filter((l) => l !== label) : [...extraPicks, label];
+    await updateSettings({ group_standings: { ...category.group_standings, extra: next } });
+  }
 
   return (
     <SelectorBar
@@ -289,8 +313,45 @@ export default function SorteoPage() {
                 </div>
               ))}
             </div>
+
+            {category.modality === "grupos_playoff" && neededExtra > 0 && (
+              <div className="border border-[#5C4A22] bg-[#2E2712] rounded-lg p-3 mb-4">
+                <p className="text-sm font-semibold text-[#E0C15A] mb-1">
+                  Completar la llave ({extraPicks.length} de {neededExtra} elegido{neededExtra > 1 ? "s" : ""})
+                </p>
+                <p className="text-xs text-[#9FB0D0] mb-2">
+                  Con {numGroups} grupo(s) y {k} clasificado(s) por grupo quedan {baseQualifierCount} clasificados directos --
+                  no alcanza para una llave sin BYE en semifinal/final. Elegí {neededExtra} equipo(s) del puesto {k + 1} (ej. "el mejor {k === 1 ? "segundo" : `puesto ${k + 1}`}") para completarla.
+                </p>
+                {extraCandidates.length === 0 ? (
+                  <p className="text-xs text-[#E0684A]">
+                    Todavía no cargaste el puesto {k + 1} de ningún grupo arriba -- cargalo primero para poder elegir acá.
+                  </p>
+                ) : (
+                  <div className="grid sm:grid-cols-2 gap-1.5">
+                    {extraCandidates.map((c) => (
+                      <label key={c.gi} className="flex items-center gap-2 text-sm bg-[#0C2043] border border-[#21426E] rounded-lg px-3 py-1.5 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={extraPicks.includes(c.label)}
+                          disabled={!extraPicks.includes(c.label) && extraPicks.length >= neededExtra}
+                          onChange={() => toggleExtraQualifier(c.label)}
+                        />
+                        {c.label} <span className="text-[#7A8FBE]">— Grupo {groupLetter(c.gi)}, puesto {k + 1}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {category.modality === "grupos_playoff" && (
-              <button onClick={generatePlayoff} disabled={busy} className="flex items-center gap-2 bg-[#0C2043] text-[#2FD3C4] text-sm px-4 py-2.5 rounded-lg hover:brightness-95">
+              <button
+                onClick={generatePlayoff}
+                disabled={busy || extraPicks.length !== neededExtra}
+                title={extraPicks.length !== neededExtra ? `Elegí ${neededExtra} equipo(s) en "Completar la llave" antes de generarla.` : ""}
+                className="flex items-center gap-2 bg-[#0C2043] text-[#2FD3C4] text-sm px-4 py-2.5 rounded-lg hover:brightness-95 disabled:opacity-50"
+              >
                 <RefreshCw className="w-4 h-4" /> Generar llave de playoff
               </button>
             )}

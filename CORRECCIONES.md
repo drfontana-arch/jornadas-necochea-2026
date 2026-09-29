@@ -112,6 +112,11 @@ _(vacío)_
 30. **Espacio para escribir los dos nombres en las llaves de pareja** (Tenis/Tenis de Mesa Dobles, Truco/Canasta/Generala/Burako Parejas). El casillero de la llave se agranda y agrega dos líneas punteadas por lado, para completar a mano los nombres de los dos integrantes de la pareja -- antes solo había lugar para una línea con el nombre de la departamental. Se detecta por el nombre de la categoría (si dice "Pareja" o "Dobles"); no toca las llaves de equipo completo (Vóley, Básquet, etc.) ni las individuales (Ajedrez, Singles).
     - Verificado renderizado real en el navegador: se ve "Necochea 1"/"Tandil 1" con dos líneas en blanco cada uno, con espacio claro para escribir.
 
+## Aplicadas (tanda 22)
+
+31. **La semifinal/final del playoff ya no queda con BYE cuando los clasificados directos no cierran en 4/8/16.** Caso típico: 3 grupos con 1 clasificado cada uno son 3 equipos, no alcanza para una semifinal completa. Ahora, en Sorteo, cuando pasa esto aparece un panel "Completar la llave" con los candidatos del puesto siguiente (ej. los segundos de cada grupo) que ya tengan ese puesto cargado -- se eligen a mano tantos como falten (ej. "el mejor segundo"), y recién con esa elección completa se puede generar la llave de playoff. El botón queda deshabilitado hasta que la cantidad elegida sea exactamente la necesaria.
+    - Probado: 3 grupos/1 clasificado necesita exactamente 1 extra; con esa elección la semifinal sale con 2 partidos completos, cero BYE; validación de "faltan"/"sobran" elegidos correcta; casos que ya cerraban en potencia de 2 no piden nada extra.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
