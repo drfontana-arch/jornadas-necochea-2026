@@ -80,7 +80,7 @@ export async function POST(req) {
       const result = await runSorteoForCategory(cat.id, transitionMinutes, context);
       if (result.ok) {
         sorteadas++;
-        detalle.push({ categoria: `${cat.disciplineName} - ${cat.name}`, ok: true, unresolved: result.unresolved || 0 });
+        detalle.push({ categoria: `${cat.disciplineName} - ${cat.name}`, ok: true, unresolved: result.unresolved || 0, playoffPendiente: !!result.playoffPendiente });
       } else {
         saltadas++;
         detalle.push({ categoria: `${cat.disciplineName} - ${cat.name}`, ok: false, error: result.error });

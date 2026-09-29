@@ -117,6 +117,11 @@ _(vacío)_
 31. **La semifinal/final del playoff ya no queda con BYE cuando los clasificados directos no cierran en 4/8/16.** Caso típico: 3 grupos con 1 clasificado cada uno son 3 equipos, no alcanza para una semifinal completa. Ahora, en Sorteo, cuando pasa esto aparece un panel "Completar la llave" con los candidatos del puesto siguiente (ej. los segundos de cada grupo) que ya tengan ese puesto cargado -- se eligen a mano tantos como falten (ej. "el mejor segundo"), y recién con esa elección completa se puede generar la llave de playoff. El botón queda deshabilitado hasta que la cantidad elegida sea exactamente la necesaria.
     - Probado: 3 grupos/1 clasificado necesita exactamente 1 extra; con esa elección la semifinal sale con 2 partidos completos, cero BYE; validación de "faltan"/"sobran" elegidos correcta; casos que ya cerraban en potencia de 2 no piden nada extra.
 
+## Aplicadas (tanda 23)
+
+32. **Fix: el BYE seguía apareciendo porque había OTRO lugar donde se arma el playoff, que no había tocado.** El botón manual "Generar llave de playoff" (tanda 22) ya evitaba el BYE, pero el sorteo inicial de una categoría "Grupos + playoff" arma esa llave SOLO al toque, con códigos "1A"/"1B"/"1C" antes de cargar ningún resultado -- ahí es de donde salía el BYE de tu captura. En ese momento no hay forma de saber quién es "el mejor segundo" real (todavía no se jugaron los grupos), así que ahora, si los clasificados directos no cierran en una llave completa, esa categoría sortea los grupos normalmente pero deja el playoff SIN armar (en vez de un BYE engañoso) -- avisa con un mensaje al sortear, y también se lista aparte en el resultado de "Revisar y sortear todo lo pendiente". Se arma completo más adelante con "Generar llave de playoff" en Sorteo, una vez cargadas las posiciones y elegido quién la completa.
+    - Si ya tenías una llave con BYE de este tipo (como la de la captura), hay que volver a sortear esa categoría puntual (o resetearla) para que deje de mostrar el BYE viejo, y después generar el playoff de nuevo con el comodín elegido.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

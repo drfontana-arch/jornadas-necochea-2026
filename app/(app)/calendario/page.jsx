@@ -550,6 +550,16 @@ export default function CalendarioPage() {
               <p className="text-sm text-[#4FAE72]">Se sortearon todas las categorías con equipos suficientes.</p>
             )}
           </div>
+          {ultimoDetalle.detalle.some((d) => d.playoffPendiente) && (
+            <div className="mt-3 pt-3 border-t border-[#21426E]">
+              <p className="text-xs font-semibold text-[#E0C15A] mb-1.5">
+                Estas categorías sortearon los grupos, pero la llave de playoff queda pendiente (los clasificados directos no cierran en una llave completa -- hay que cargar posiciones y elegir quién la completa, en Sorteo):
+              </p>
+              <ul className="text-xs text-[#9FB0D0] space-y-0.5">
+                {ultimoDetalle.detalle.filter((d) => d.playoffPendiente).map((d, i) => <li key={i}>• {d.categoria}</li>)}
+              </ul>
+            </div>
+          )}
         </Card>
       )}
 

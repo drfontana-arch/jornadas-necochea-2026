@@ -78,7 +78,10 @@ export default function SorteoPage() {
       if (!res.ok) { showToast(data.error || "No se pudo sortear."); return; }
       const issueCount = (data.conflicts?.length || 0) + (data.violations?.length || 0);
       setSorteoIssues({ conflicts: data.conflicts || [], violations: data.violations || [] });
-      showToast(issueCount > 0 ? `Sorteo generado. Quedaron ${issueCount} incompatibilidad(es), abajo el detalle.` : "Sorteo generado sin superposiciones detectadas.");
+      const pendingMsg = data.playoffPendiente
+        ? " La llave de playoff queda pendiente: los clasificados directos no cierran en una llave completa -- cargá las posiciones de grupo y elegí quién la completa más abajo."
+        : "";
+      showToast((issueCount > 0 ? `Sorteo generado. Quedaron ${issueCount} incompatibilidad(es), abajo el detalle.` : "Sorteo generado sin superposiciones detectadas.") + pendingMsg);
       loadCategoryData();
     } finally {
       setBusy(false);
