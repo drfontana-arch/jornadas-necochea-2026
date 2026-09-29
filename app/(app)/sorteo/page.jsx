@@ -6,6 +6,11 @@ import SelectorBar from "../../../components/SelectorBar";
 
 const DAY_LABEL = { "2026-10-09": "Vie 09/10", "2026-10-10": "Sáb 10/10", "2026-10-11": "Dom 11/10" };
 function groupLetter(i) { return String.fromCharCode(65 + i); }
+// Disciplinas alcanzadas por el Art. de Copa Oro/Plata: ahí se puede
+// cargar hasta el 3er puesto de cada grupo, aunque la modalidad no tenga
+// playoff -- lo pidió Enzo para registrar el resultado completo, no solo
+// los clasificados a playoff.
+const COPA_ORO_PLATA_DISCIPLINES = ["futbol11", "futbolReducido", "basquet", "voley", "hockey"];
 
 export default function SorteoPage() {
   const [disciplines, setDisciplines] = useState([]);
@@ -114,6 +119,16 @@ export default function SorteoPage() {
   // personas en vez de "0 equipos" -- el sorteo también sabe armar la
   // llave/grupos con ellas (ver runSorteoForCategory en sorteoRunner.js).
   const registeredLabels = entries.length > 0 ? entries.map(teamLabel) : participants.map((p) => `${p.fullName} (${p.departamental})`);
+
+  const isCopaOroPlataDiscipline = COPA_ORO_PLATA_DISCIPLINES.includes(selDiscipline);
+  // Cuántos puestos se pueden cargar por grupo: los que clasifican a
+  // playoff (si hay), o hasta 3° si la disciplina está alcanzada por Copa
+  // Oro/Plata (para registrar el resultado completo aunque no haya
+  // playoff), lo que sea mayor.
+  const standingsRankCount = Math.max(
+    category.modality === "grupos_playoff" ? (category.advance_per_group || 0) : 0,
+    isCopaOroPlataDiscipline ? 3 : 0
+  );
 
   return (
     <SelectorBar
@@ -246,14 +261,19 @@ export default function SorteoPage() {
           </Card>
         )}
 
-        {category.modality === "grupos_playoff" && category.groups && (
+        {(category.modality === "grupos_playoff" || (category.modality === "grupos" && isCopaOroPlataDiscipline)) && category.groups && (
           <Card className="p-5">
             <h3 className="font-bold mb-3">Posiciones finales de grupo</h3>
+            {isCopaOroPlataDiscipline && (
+              <p className="text-xs text-[#7A8FBE] mb-3">
+                Se puede cargar hasta el 3er puesto de cada grupo (disciplina alcanzada por Copa Oro/Plata), aunque no todos clasifiquen a playoff.
+              </p>
+            )}
             <div className="grid md:grid-cols-2 gap-4 mb-4">
               {category.groups.map((g, gi) => (
                 <div key={gi} className="border border-[#21426E] rounded-lg p-3">
                   <p className="font-semibold text-sm mb-2">Grupo {groupLetter(gi)}</p>
-                  {Array.from({ length: category.advance_per_group }, (_, r) => (
+                  {Array.from({ length: standingsRankCount }, (_, r) => (
                     <div key={r} className="flex items-center gap-2 mb-1.5 text-sm">
                       <span className="w-6 text-[#2FD3C4] font-mono font-semibold">{r + 1}°</span>
                       <select
@@ -269,9 +289,11 @@ export default function SorteoPage() {
                 </div>
               ))}
             </div>
-            <button onClick={generatePlayoff} disabled={busy} className="flex items-center gap-2 bg-[#0C2043] text-[#2FD3C4] text-sm px-4 py-2.5 rounded-lg hover:brightness-95">
-              <RefreshCw className="w-4 h-4" /> Generar llave de playoff
-            </button>
+            {category.modality === "grupos_playoff" && (
+              <button onClick={generatePlayoff} disabled={busy} className="flex items-center gap-2 bg-[#0C2043] text-[#2FD3C4] text-sm px-4 py-2.5 rounded-lg hover:brightness-95">
+                <RefreshCw className="w-4 h-4" /> Generar llave de playoff
+              </button>
+            )}
             {matches.playoffMatches.length > 0 && (
               <div className="mt-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-[#9FB0D0] mb-1">Llave de playoff</p>

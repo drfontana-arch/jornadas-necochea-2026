@@ -6,15 +6,18 @@ const NAVY = "#1B3D6D";
 const NAVY_DARK = "#0F274A";
 const DAY_LABEL = { "2026-10-09": "Vie 09/10", "2026-10-10": "Sáb 10/10", "2026-10-11": "Dom 11/10" };
 
-export default function BracketGroup({ matches, title, x = 0, y = 0 }) {
-  const { rounds, width, rowHeight, boxHeight } = bracketDimensions(matches);
-  if (rounds.length === 0) return null;
+export default function BracketGroup({ matches, title, x = 0, y = 0, pareja = false }) {
   // Categorías de UNA persona (Ajedrez, Tenis/Tenis de Mesa Singles): en
   // vez del nombre completo se imprime la departamental, con un espacio
-  // en blanco debajo para completar el nombre a mano (puede cambiar el
-  // día del torneo). rowHeight/boxHeight ya vienen más altos para esto
-  // (ver bracketDimensions en lib/bracketLayout.js).
+  // en blanco debajo para completar el nombre a mano. Categorías de
+  // PAREJA (Tenis Dobles, Truco Parejas, etc.): se deja espacio para DOS
+  // nombres, no solo uno. Los dos casos agrandan el casillero (ver
+  // bracketDimensions en lib/bracketLayout.js) y nunca se combinan entre
+  // sí (una categoría sortea equipos, parejas o personas, nunca mezclado).
   const individual = isIndividualBracket(matches);
+  const { rounds, width, rowHeight, boxHeight } = bracketDimensions(matches, { pareja: pareja && !individual });
+  if (rounds.length === 0) return null;
+  const topAligned = individual || (pareja && !individual);
 
   function boxX(roundIdx) { return x + 30 + roundIdx * BRACKET_COL_WIDTH; }
   function boxY(rowUnit) { return y + (title ? 100 : 40) + rowUnit * rowHeight; }
@@ -73,17 +76,29 @@ export default function BracketGroup({ matches, title, x = 0, y = 0 }) {
             <g key={m.id}>
               <rect x={bx} y={by} width={BRACKET_BOX_WIDTH} height={boxHeight} rx={6} fill="#FFFFFF" stroke={NAVY} strokeWidth="1.5" />
               <line x1={bx} y1={by + half} x2={bx + BRACKET_BOX_WIDTH} y2={by + half} stroke="#DDE3EC" strokeWidth="1" />
-              <text x={bx + 10} y={individual ? by + 20 : by + half - 8} fontSize="15" fontWeight="600" fill={NAVY_DARK} fontFamily="Arial, sans-serif">
+              <text x={bx + 10} y={topAligned ? by + 20 : by + half - 8} fontSize="15" fontWeight="600" fill={NAVY_DARK} fontFamily="Arial, sans-serif">
                 {teamALabel.slice(0, 26)}
               </text>
               {individual && (
                 <line x1={bx + 10} y1={by + half - 10} x2={bx + BRACKET_BOX_WIDTH - 10} y2={by + half - 10} stroke="#B9C4D4" strokeWidth="1" strokeDasharray="3,2" />
               )}
-              <text x={bx + 10} y={individual ? by + half + 20 : by + half + 18} fontSize="15" fontWeight="600" fill={NAVY_DARK} fontFamily="Arial, sans-serif">
+              {pareja && !individual && (
+                <>
+                  <line x1={bx + 10} y1={by + half - 30} x2={bx + BRACKET_BOX_WIDTH - 10} y2={by + half - 30} stroke="#B9C4D4" strokeWidth="1" strokeDasharray="3,2" />
+                  <line x1={bx + 10} y1={by + half - 10} x2={bx + BRACKET_BOX_WIDTH - 10} y2={by + half - 10} stroke="#B9C4D4" strokeWidth="1" strokeDasharray="3,2" />
+                </>
+              )}
+              <text x={bx + 10} y={topAligned ? by + half + 20 : by + half + 18} fontSize="15" fontWeight="600" fill={NAVY_DARK} fontFamily="Arial, sans-serif">
                 {teamBLabel.slice(0, 26)}
               </text>
               {individual && !m.bye && (
                 <line x1={bx + 10} y1={by + boxHeight - 10} x2={bx + BRACKET_BOX_WIDTH - 10} y2={by + boxHeight - 10} stroke="#B9C4D4" strokeWidth="1" strokeDasharray="3,2" />
+              )}
+              {pareja && !individual && !m.bye && (
+                <>
+                  <line x1={bx + 10} y1={by + boxHeight - 30} x2={bx + BRACKET_BOX_WIDTH - 10} y2={by + boxHeight - 30} stroke="#B9C4D4" strokeWidth="1" strokeDasharray="3,2" />
+                  <line x1={bx + 10} y1={by + boxHeight - 10} x2={bx + BRACKET_BOX_WIDTH - 10} y2={by + boxHeight - 10} stroke="#B9C4D4" strokeWidth="1" strokeDasharray="3,2" />
+                </>
               )}
               {SHOW_SCHEDULE_IN_POSTER && m.day && (
                 <text x={bx + BRACKET_BOX_WIDTH - 8} y={by - 6} fontSize="12" textAnchor="end" fill="#5A6B85" fontFamily="Arial, sans-serif">

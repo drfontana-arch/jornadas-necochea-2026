@@ -14,14 +14,21 @@ function groupLetter(i) { return String.fromCharCode(65 + i); }
 export default function PosterSVG({ category, matches, forwardedRef }) {
   const marginX = 50;
 
+  // Categorías de PAREJA (Tenis Dobles, Truco/Canasta/Generala/Burako
+  // Parejas, etc.): no hay un campo en la base para esto, así que se
+  // detecta por el nombre de la categoría -- son las que dicen "Pareja" o
+  // "Dobles". El casillero de la llave necesita espacio para escribir los
+  // DOS nombres propios que integran cada pareja de la departamental.
+  const esPareja = /pareja|doble/i.test(category.name || "");
+
   // El ancho de las llaves se calcula ANTES que el ancho total del
   // póster -- con muchos equipos (muchas rondas) la llave puede necesitar
   // más de los 1400px de base. Si no, al centrarla la ronda 1 quedaba con
   // coordenada negativa: literalmente fuera de la hoja, ilegible.
   const hasPlayoff = matches.playoffMatches && matches.playoffMatches.length > 0;
   const hasDraw = matches.drawMatches && matches.drawMatches.length > 0;
-  const playoffDim = hasPlayoff ? bracketDimensions(matches.playoffMatches) : { width: 0, height: 0 };
-  const drawDim = hasDraw ? bracketDimensions(matches.drawMatches) : { width: 0, height: 0 };
+  const playoffDim = hasPlayoff ? bracketDimensions(matches.playoffMatches, { pareja: esPareja }) : { width: 0, height: 0 };
+  const drawDim = hasDraw ? bracketDimensions(matches.drawMatches, { pareja: esPareja }) : { width: 0, height: 0 };
   const widestBracket = Math.max(playoffDim.width, drawDim.width);
   const width = Math.max(1400, widestBracket + marginX * 2);
 
@@ -169,8 +176,8 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
         </g>
       )}
 
-      {playoffY !== null && <BracketGroup matches={matches.playoffMatches} title="PLAYOFF" x={(width - playoffDim.width) / 2} y={playoffY} />}
-      {drawY !== null && <BracketGroup matches={matches.drawMatches} title="LLAVE" x={(width - drawDim.width) / 2} y={drawY} />}
+      {playoffY !== null && <BracketGroup matches={matches.playoffMatches} title="PLAYOFF" x={(width - playoffDim.width) / 2} y={playoffY} pareja={esPareja} />}
+      {drawY !== null && <BracketGroup matches={matches.drawMatches} title="LLAVE" x={(width - drawDim.width) / 2} y={drawY} pareja={esPareja} />}
 
       {emptyMsgY && (
         <text x={width / 2} y={emptyMsgY} textAnchor="middle" fontSize="16" fill="#5A6B85" fontFamily="Arial, sans-serif">

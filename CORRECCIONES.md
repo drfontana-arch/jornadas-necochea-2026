@@ -103,6 +103,15 @@ _(vacío)_
 26. **Solo el isologo (el escudo, sin texto) en el encabezado y la marca de agua del póster.** Antes iba el logo completo (escudo + "Jornadas Deportivas Interdepartamentales" + "Necochea"), redundante con el texto que el póster ya trae en su propio encabezado. Ahora: el escudo solo, a cada lado del encabezado (izquierda y derecha), y el escudo solo como marca de agua. Se recortó del archivo original midiendo el recuadro real con el navegador (no a ojo), y queda igual de autocontenido que antes -- sirve para imprenta sin depender de nada externo.
     - Verificado renderizado real: las tres copias (header izquierda, header derecha, marca de agua) muestran la misma forma completa del escudo, sin roturas ni recortes.
 
+## Aplicadas (tanda 21)
+
+27. **El cabeza de serie queda en la zona de 4, no en la de 3.** Cuando el armado de zonas da tamaños mixtos (ej. 3 zonas de 4 y 1 de 3), antes el algoritmo de reparto podía mandar al primero de la siembra justo a la zona chica -- ahora las zonas grandes se llenan primero, así el cabeza de serie siempre cae en una de esas.
+    - Probado con 7 combinaciones de cantidad de equipos/tamaño de zona (incluyendo casos borde): el cabeza de serie siempre termina en la zona más grande, y los totales cierran bien.
+28. **Nueva forma de dividir Copa Oro/Plata: según la siembra de Antecedentes**, no según el resultado de este año. Los equipos que están cargados como cabezas de serie (ej. los 6 preclasificados del año anterior) van a Copa de Oro; el resto de los inscriptos, a Copa de Plata. Aparece como botón nuevo "Dividir según siembra (Antecedentes)" en Inscripciones, al lado del botón manual existente (que sigue disponible para cuando la Comisión decide a criterio). Trabaja por equipo puntual, no por toda la departamental, por si alguna vez hay más de un equipo de la misma departamental y solo uno está en la siembra.
+29. **Se puede cargar hasta el 3er puesto de cada grupo** en las disciplinas alcanzadas por Copa Oro/Plata (Fútbol 11, Fútbol Reducido, Básquet, Vóley, Hockey), aunque la modalidad no tenga playoff o el playoff solo clasifique a los 2 primeros. Antes solo se podía cargar hasta donde llegaba "Clasifican por grupo".
+30. **Espacio para escribir los dos nombres en las llaves de pareja** (Tenis/Tenis de Mesa Dobles, Truco/Canasta/Generala/Burako Parejas). El casillero de la llave se agranda y agrega dos líneas punteadas por lado, para completar a mano los nombres de los dos integrantes de la pareja -- antes solo había lugar para una línea con el nombre de la departamental. Se detecta por el nombre de la categoría (si dice "Pareja" o "Dobles"); no toca las llaves de equipo completo (Vóley, Básquet, etc.) ni las individuales (Ajedrez, Singles).
+    - Verificado renderizado real en el navegador: se ve "Necochea 1"/"Tandil 1" con dos líneas en blanco cada uno, con espacio claro para escribir.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

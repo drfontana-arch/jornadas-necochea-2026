@@ -120,6 +120,7 @@ export default function InscripcionesPage() {
     discipline && COPA_ORO_PLATA_DISCIPLINES.includes(discipline.id) &&
     !category?.copa &&
     distinctDepts >= COPA_ORO_PLATA_MIN_EQUIPOS;
+  const tieneSiembra = (category?.seed_order || []).length > 0;
 
   async function confirmarDivision() {
     const oroIds = Object.keys(oroPicks).filter((id) => oroPicks[id]);
@@ -134,6 +135,25 @@ export default function InscripcionesPage() {
     const data = await res.json();
     if (!res.ok) { showToast(data.error || "No se pudo dividir la categoría."); return; }
     showToast("Categoría dividida en Copa de Oro y Copa de Plata.");
+    await loadAll();
+    setSelCategory(data.oro.id);
+    setShowSplit(false);
+  }
+
+  // Divide según la siembra cargada en Antecedentes (los preclasificados,
+  // ej. por el resultado del año anterior, van a Copa de Oro) en vez de
+  // tildar departamentales a mano.
+  async function confirmarDivisionPorSiembra() {
+    const seedLabels = category?.seed_order || [];
+    const ok = confirm(
+      `Van a Copa de Oro los ${seedLabels.length} equipo(s) de la siembra (Antecedentes): ${seedLabels.join(", ")}.\n\n` +
+        `El resto de los inscriptos queda en Copa de Plata. ¿Confirmás?`
+    );
+    if (!ok) return;
+    const res = await fetch(`/api/categorias/${selCategory}/dividir-copas-siembra`, { method: "POST" });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.error || "No se pudo dividir la categoría."); return; }
+    showToast(`Dividida por siembra: ${data.oroCount} equipo(s) a Copa de Oro, ${data.plataCount} a Copa de Plata.`);
     await loadAll();
     setSelCategory(data.oro.id);
     setShowSplit(false);
@@ -208,9 +228,16 @@ export default function InscripcionesPage() {
             <Medal className="w-4 h-4 text-[#E0C15A]" />
             Esta categoría llegó a {distinctDepts} equipos — según el reglamento corresponde dividirla en Copa de Oro y Copa de Plata.
           </p>
-          <button onClick={() => setShowSplit(true)} className="text-xs bg-[#E0C15A] text-[#132A4C] font-semibold px-3 py-2 rounded-lg">
-            Definir la división
-          </button>
+          <div className="flex gap-2">
+            {tieneSiembra && (
+              <button onClick={confirmarDivisionPorSiembra} className="text-xs bg-[#2FD3C4] text-[#0C2043] font-semibold px-3 py-2 rounded-lg" title="Los equipos cargados en Antecedentes van a Copa de Oro; el resto, a Copa de Plata.">
+                Dividir según siembra (Antecedentes)
+              </button>
+            )}
+            <button onClick={() => setShowSplit(true)} className="text-xs bg-[#E0C15A] text-[#132A4C] font-semibold px-3 py-2 rounded-lg">
+              Definir a mano
+            </button>
+          </div>
         </Card>
       )}
 
