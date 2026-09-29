@@ -123,6 +123,10 @@ _(vacío)_
     - Si ya tenías una llave con BYE de este tipo (como la de la captura), hay que volver a sortear esa categoría puntual (o resetearla) para que salga con el comodín en vez del BYE viejo.
     - Límite conocido: si destildás un comodín ya reemplazado y elegís otro distinto, puede no reemplazarse solo (el texto viejo ya no está para buscarlo) -- en ese caso reprogramá ese partido a mano desde "Fixture y conflictos".
 
+## Aplicadas (tanda 24)
+
+33. **En Tenis, Pádel y Tenis de Mesa, dos parejas/singles de la misma departamental quedan en mitades OPUESTAS de la llave**, para que lo más pronto que puedan cruzarse sea la final -- no alcanza con separarlas de la ronda 1 (esa regla general sigue para el resto de las disciplinas). Aplica a la llave directa y a la llave de playoff (inicial y al regenerarla). Si es posible, se hace bien (probado en 20 sorteos con orden aleatorio, todos separados); con 3+ entradas de la misma departamental en un espacio para 2 por mitad, hace lo mejor que puede.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
