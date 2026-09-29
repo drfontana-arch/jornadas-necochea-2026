@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Shuffle, RefreshCw, AlertTriangle } from "lucide-react";
 import Card from "../../../components/Card";
 import SelectorBar from "../../../components/SelectorBar";
-import { nextPow2 } from "../../../lib/sorteoLogic";
+import { nextPow2, extraQualifierLabel } from "../../../lib/sorteoLogic";
 
 const DAY_LABEL = { "2026-10-09": "Vie 09/10", "2026-10-10": "Sáb 10/10", "2026-10-11": "Dom 11/10" };
 function groupLetter(i) { return String.fromCharCode(65 + i); }
@@ -78,10 +78,7 @@ export default function SorteoPage() {
       if (!res.ok) { showToast(data.error || "No se pudo sortear."); return; }
       const issueCount = (data.conflicts?.length || 0) + (data.violations?.length || 0);
       setSorteoIssues({ conflicts: data.conflicts || [], violations: data.violations || [] });
-      const pendingMsg = data.playoffPendiente
-        ? " La llave de playoff queda pendiente: los clasificados directos no cierran en una llave completa -- cargá las posiciones de grupo y elegí quién la completa más abajo."
-        : "";
-      showToast((issueCount > 0 ? `Sorteo generado. Quedaron ${issueCount} incompatibilidad(es), abajo el detalle.` : "Sorteo generado sin superposiciones detectadas.") + pendingMsg);
+      showToast(issueCount > 0 ? `Sorteo generado. Quedaron ${issueCount} incompatibilidad(es), abajo el detalle.` : "Sorteo generado sin superposiciones detectadas.");
       loadCategoryData();
     } finally {
       setBusy(false);
@@ -155,6 +152,19 @@ export default function SorteoPage() {
   async function toggleExtraQualifier(label) {
     const next = extraPicks.includes(label) ? extraPicks.filter((l) => l !== label) : [...extraPicks, label];
     await updateSettings({ group_standings: { ...category.group_standings, extra: next } });
+    // Reemplaza el comodín ("Mejor 2do puesto"/"...#N") por el nombre real
+    // en la llave de playoff ya armada -- mismo mecanismo que "1A"/"2B" al
+    // cargar posiciones de grupo. Si se destilda o se elige otro después
+    // de ya haberse reemplazado, puede hacer falta reprogramar ese
+    // partido a mano (el comodín ya reemplazado no vuelve a aparecer).
+    for (let i = 0; i < next.length && i < neededExtra; i++) {
+      const placeholder = extraQualifierLabel(k, i, neededExtra);
+      await fetch(`/api/categorias/${selCategory}/resolver-comodin`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ placeholder, label: next[i] }),
+      });
+    }
+    loadCategoryData();
   }
 
   return (
@@ -324,7 +334,8 @@ export default function SorteoPage() {
                 </p>
                 <p className="text-xs text-[#9FB0D0] mb-2">
                   Con {numGroups} grupo(s) y {k} clasificado(s) por grupo quedan {baseQualifierCount} clasificados directos --
-                  no alcanza para una llave sin BYE en semifinal/final. Elegí {neededExtra} equipo(s) del puesto {k + 1} (ej. "el mejor {k === 1 ? "segundo" : `puesto ${k + 1}`}") para completarla.
+                  no alcanza para una llave sin BYE en semifinal/final. La llave ya salió armada con "Mejor {k === 1 ? "2do" : `${k + 1}º`} puesto" en ese lugar;
+                  elegí acá quién es realmente, y se reemplaza solo en la llave.
                 </p>
                 {extraCandidates.length === 0 ? (
                   <p className="text-xs text-[#E0684A]">
