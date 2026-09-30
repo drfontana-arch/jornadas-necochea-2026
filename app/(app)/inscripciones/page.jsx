@@ -80,6 +80,10 @@ export default function InscripcionesPage() {
   const [loading, setLoading] = useState(true);
   const [showSplit, setShowSplit] = useState(false);
   const [oroPicks, setOroPicks] = useState({});
+  // Excepción: la Comisión puede decidir dividir una categoría en Copa
+  // Oro/Plata aunque no haya llegado a los 12 equipos (el mínimo del
+  // reglamento solo dispara el aviso automático, no bloquea la división).
+  const [showExcepcion, setShowExcepcion] = useState(false);
   const [toast, setToast] = useState(null);
 
   function showToast(msg) { setToast(msg); setTimeout(() => setToast(null), 3600); }
@@ -108,6 +112,7 @@ export default function InscripcionesPage() {
     if (!selCategory) return;
     setShowSplit(false);
     setOroPicks({});
+    setShowExcepcion(false);
     fetch(`/api/categorias/${selCategory}/team-entries`).then((r) => r.json()).then((d) => setEntries(d.entries || []));
     fetch(`/api/categorias/${selCategory}/participantes`).then((r) => r.json()).then((d) => setParticipants(d.participants || []));
   }, [selCategory]);
@@ -116,10 +121,8 @@ export default function InscripcionesPage() {
   const category = discipline?.categories.find((c) => c.id === selCategory);
 
   const distinctDepts = new Set(entries.map((e) => e.departamentalId)).size;
-  const elegibleParaCopas =
-    discipline && COPA_ORO_PLATA_DISCIPLINES.includes(discipline.id) &&
-    !category?.copa &&
-    distinctDepts >= COPA_ORO_PLATA_MIN_EQUIPOS;
+  const elegibleDisciplina = discipline && COPA_ORO_PLATA_DISCIPLINES.includes(discipline.id) && !category?.copa;
+  const elegibleParaCopas = elegibleDisciplina && distinctDepts >= COPA_ORO_PLATA_MIN_EQUIPOS;
   const tieneSiembra = (category?.seed_order || []).length > 0;
 
   async function confirmarDivision() {
@@ -241,7 +244,38 @@ export default function InscripcionesPage() {
         </Card>
       )}
 
-      {elegibleParaCopas && showSplit && (
+      {/* Excepción: dividir igual aunque no haya llegado a los {COPA_ORO_PLATA_MIN_EQUIPOS} equipos del reglamento. */}
+      {elegibleDisciplina && !elegibleParaCopas && !showExcepcion && !showSplit && (
+        <div className="mb-5">
+          <button onClick={() => setShowExcepcion(true)} className="text-xs text-[#7A8FBE] hover:text-[#2FD3C4] underline underline-offset-2">
+            ¿Dividir esta categoría en Copa de Oro/Plata igual, como excepción? (tiene {distinctDepts} equipo(s), no llegó a {COPA_ORO_PLATA_MIN_EQUIPOS})
+          </button>
+        </div>
+      )}
+
+      {elegibleDisciplina && !elegibleParaCopas && showExcepcion && !showSplit && (
+        <Card className="p-4 mb-5 border-[#E0C15A] flex items-center justify-between gap-3 flex-wrap">
+          <p className="text-sm flex items-center gap-2">
+            <Medal className="w-4 h-4 text-[#E0C15A]" />
+            Dividir esta categoría en Copa de Oro y Copa de Plata como excepción ({distinctDepts} equipo(s), no llegó a {COPA_ORO_PLATA_MIN_EQUIPOS}).
+          </p>
+          <div className="flex gap-2">
+            {tieneSiembra && (
+              <button onClick={confirmarDivisionPorSiembra} className="text-xs bg-[#2FD3C4] text-[#0C2043] font-semibold px-3 py-2 rounded-lg" title="Los equipos cargados en Antecedentes van a Copa de Oro; el resto, a Copa de Plata.">
+                Dividir según siembra (Antecedentes)
+              </button>
+            )}
+            <button onClick={() => setShowSplit(true)} className="text-xs bg-[#E0C15A] text-[#132A4C] font-semibold px-3 py-2 rounded-lg">
+              Definir a mano
+            </button>
+            <button onClick={() => setShowExcepcion(false)} className="text-xs bg-[#163A67] border border-[#2A4E85] px-3 py-2 rounded-lg">
+              Cancelar
+            </button>
+          </div>
+        </Card>
+      )}
+
+      {(elegibleParaCopas || showExcepcion) && showSplit && (
         <Card className="p-5 mb-5 border-[#E0C15A]">
           <h3 className="font-bold mb-2">Definir Copa de Oro / Copa de Plata</h3>
           <p className="text-xs text-[#7A8FBE] mb-3">

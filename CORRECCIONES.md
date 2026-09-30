@@ -127,6 +127,10 @@ _(vacío)_
 
 33. **En TODAS las disciplinas, dos equipos/parejas/singles de la misma departamental quedan en mitades OPUESTAS de la llave**, para que lo más pronto que puedan cruzarse sea la final -- reemplaza a la regla anterior (que solo evitaba el cruce directo en ronda 1) como único criterio, ya no hace falta distinguir por disciplina. Aplica a la llave directa y a la llave de playoff (inicial y al regenerarla). Si es posible, se hace bien (probado en 20 sorteos con orden aleatorio, todos separados); con 3+ entradas de la misma departamental en un espacio para 2 por mitad, hace lo mejor que puede.
 
+## Aplicadas (tanda 25)
+
+34. **Excepción para dividir en Copa Oro/Plata sin llegar a 12 equipos.** El mínimo del reglamento sigue disparando el aviso automático igual que antes (Fútbol 11 ya estaba en la lista de disciplinas alcanzadas, junto con Fútbol Reducido, Básquet, Vóley y Hockey -- no hacía falta agregarlo). Ahora, para una categoría de esas disciplinas que todavía no llegó al mínimo, aparece un link chico "¿Dividir igual, como excepción?" que abre los mismos dos métodos (por siembra o a mano) sin el mínimo de por medio -- para cuando la Comisión decide hacer una excepción puntual.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
