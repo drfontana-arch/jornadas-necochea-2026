@@ -164,6 +164,12 @@ _(vacío)_
 42. **Los conflictos/restricciones/partidos sin horario aparecen plegados por defecto.** En "Fixture y conflictos", cada fila de los tres paneles (partidos sin horario, restricciones violadas, superposiciones) ahora muestra solo un renglón resumen; al tocarlo se despliega el detalle completo y los botones de acción (Reprogramar, Autoresolver, Seguir igual). Antes todo aparecía siempre expandido, y con muchos conflictos la pantalla era una pared de texto.
 43. **Imprimir / exportar a PDF el Fixture general, con o sin horario.** Dos botones nuevos ("Con horario" / "Sin horario") al lado de "Descargar Excel" abren el diálogo de impresión del navegador (desde ahí, "Guardar como PDF", mismo mecanismo que ya usan los pósters) con la lista de partidos ya filtrada tal como está en pantalla. "Sin horario" oculta las columnas de día/hora/cancha -- para repartir el cruce de partidos sin revelar todavía el horario.
 
+## Aplicadas (tanda 32)
+
+44. **Cada partido ahora guarda su propia sede, no la adivina por el día.** Hasta ahora, la columna "Sede" del Fixture/Excel/pósters no estaba guardada en el partido -- se adivinaba mirando la PRIMERA sede configurada para esa disciplina en ese día. Si una disciplina usa dos sedes el mismo día (ej. Rivadavia a la mañana y Nacional al mediodía), todos los partidos de ese día mostraban la misma sede, aunque la mitad se jugaran en la otra. Ahora cada partido guarda la sede real que le tocó al sortear (o reprogramar), así que el Fixture, el Excel y los pósters muestran la sede correcta de cada uno. Los partidos ya sorteados ANTES de este cambio siguen mostrando la sede "adivinada" (de respaldo) hasta que se vuelvan a sortear o reprogramar.
+    - El control "Reprogramar este partido" (en Fixture y conflictos) ahora tiene también un campo "Lugar/sede" para editarlo a mano.
+    - **Requiere un cambio chico en la base de datos** -- ver instrucción SQL más abajo.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

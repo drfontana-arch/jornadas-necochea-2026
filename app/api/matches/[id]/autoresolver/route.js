@@ -22,7 +22,7 @@ export async function POST(req, { params }) {
       id: target.disciplineId,
       duration: target.duration,
       courts: (await sb.from("disciplines").select("courts").eq("id", target.disciplineId).single()).data.courts,
-      venues: venuesRaw.map((v) => ({ day: v.day, time: v.time.slice(0, 5) })),
+      venues: venuesRaw.map((v) => ({ day: v.day, time: v.time.slice(0, 5), location: v.location })),
     };
 
     const otherMatches = allMatches.filter((m) => m.id !== target.id).concat(await getIndividualDisciplineBusyMatches());
@@ -74,7 +74,7 @@ export async function POST(req, { params }) {
     if (!found) {
       return NextResponse.json({ error: "No se encontró un horario libre sin superposición que respete el orden de las rondas de esta categoría (después de la ronda anterior y antes de la siguiente) dentro de las sedes/horarios ya definidos." }, { status: 409 });
     }
-    await rescheduleMatch(target.id, found.day, found.time, found.court);
+    await rescheduleMatch(target.id, found.day, found.time, found.court, found.location);
     return NextResponse.json({ ok: true, slot: found });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });

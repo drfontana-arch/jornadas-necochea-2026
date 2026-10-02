@@ -23,7 +23,7 @@ export async function POST(req, { params }) {
       categoryId,
       duration: category.disciplines.duration_minutes,
       courts: category.disciplines.courts,
-      venues: venuesRaw.map((v) => ({ day: v.day, time: v.time.slice(0, 5) })),
+      venues: venuesRaw.map((v) => ({ day: v.day, time: v.time.slice(0, 5), location: v.location })),
     };
 
     const k = category.advance_per_group || 2;
@@ -84,7 +84,7 @@ export async function POST(req, { params }) {
     const withSlots = matches.map((m) => {
       if (m.bye) return { ...m, day: null, time: null, court: null, disciplineId: discipline.id };
       const s = assignments[m.id];
-      return { ...m, day: s ? s.day : null, time: s ? s.time : null, court: s ? s.court : null, disciplineId: discipline.id };
+      return { ...m, day: s ? s.day : null, time: s ? s.time : null, court: s ? s.court : null, location: s ? s.location : null, disciplineId: discipline.id };
     });
     await replaceMatchesForStage(categoryId, "playoff", withSlots);
     const { conflicts, violations } = await conflictsForCategory(categoryId, transitionMinutes);

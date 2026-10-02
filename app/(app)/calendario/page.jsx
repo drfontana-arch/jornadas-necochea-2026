@@ -41,6 +41,7 @@ function ReprogramarControl({ match, onSaved, label }) {
   const [day, setDay] = useState(match.day || DAYS[0]);
   const [time, setTime] = useState(match.time || "09:00");
   const [court, setCourt] = useState(match.court || 1);
+  const [venueLocation, setVenueLocation] = useState(match.location || "");
   const [checking, setChecking] = useState(false);
   const [checkResult, setCheckResult] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
@@ -95,7 +96,7 @@ function ReprogramarControl({ match, onSaved, label }) {
     }
     await fetch(`/api/matches/${match.id}`, {
       method: "PATCH", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ day, time, court: Number(court) }),
+      body: JSON.stringify({ day, time, court: Number(court), location: venueLocation.trim() || null }),
     });
     setOpen(false);
     setShowDetail(false);
@@ -110,6 +111,7 @@ function ReprogramarControl({ match, onSaved, label }) {
         </select>
         <input type="time" className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs" value={time} onChange={(e) => setTime(e.target.value)} />
         <input type="number" min={1} className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs w-16" value={court} onChange={(e) => setCourt(Number(e.target.value))} />
+        <input type="text" placeholder="Lugar/sede" className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs w-28" value={venueLocation} onChange={(e) => setVenueLocation(e.target.value)} />
         {checking && <span className="text-xs text-[#7A8FBE]">Revisando…</span>}
         {!checking && issueCount > 0 && (
           <button
