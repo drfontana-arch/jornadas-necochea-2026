@@ -10,15 +10,15 @@ import { INDIVIDUAL_DISCIPLINES } from "../../../lib/sorteoLogic";
 const DAYS = ["2026-10-09", "2026-10-10", "2026-10-11"];
 const DAY_LABEL = { "2026-10-09": "Vie 09/10", "2026-10-10": "Sáb 10/10", "2026-10-11": "Dom 11/10" };
 
-function ReprogramarControl({ match, onSaved }) {
+function ReprogramarControl({ match, onSaved, label }) {
   const [open, setOpen] = useState(false);
-  const [day, setDay] = useState(match.day);
-  const [time, setTime] = useState(match.time);
-  const [court, setCourt] = useState(match.court);
+  const [day, setDay] = useState(match.day || DAYS[0]);
+  const [time, setTime] = useState(match.time || "09:00");
+  const [court, setCourt] = useState(match.court || 1);
   if (!open) {
     return (
       <button onClick={() => setOpen(true)} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#0C2043]">
-        <RefreshCw className="w-3.5 h-3.5" /> Reprogramar este partido
+        <RefreshCw className="w-3.5 h-3.5" /> {label || "Reprogramar este partido"}
       </button>
     );
   }
@@ -229,6 +229,7 @@ function ResetSorteoPanel({ disciplines, onClose, onDone, showToast }) {
 
 export default function CalendarioPage() {
   const [matches, setMatches] = useState([]);
+  const [unscheduled, setUnscheduled] = useState([]);
   const [conflicts, setConflicts] = useState([]);
   const [violations, setViolations] = useState([]);
   const [ignored, setIgnored] = useState({});
@@ -263,6 +264,7 @@ export default function CalendarioPage() {
     const depData = await depRes.json();
     const dData = await dRes.json();
     setMatches(mData.matches || []);
+    setUnscheduled(mData.unscheduled || []);
     setConflicts(mData.conflicts || []);
     setViolations(mData.violations || []);
     setDepartamentales(depData.departamentales || []);
@@ -388,6 +390,28 @@ export default function CalendarioPage() {
 
   return (
     <div className="space-y-5">
+      {unscheduled.length > 0 && (
+        <Card className="p-5 border-[#E0684A]">
+          <h2 className="font-bold text-lg mb-1 flex items-center gap-2 text-[#E0684A]">
+            <AlertTriangle className="w-5 h-5" /> Partidos sin horario asignado ({unscheduled.length})
+          </h2>
+          <p className="text-xs text-[#9FB0D0] mb-3">
+            El sorteo no encontró ningún horario libre para estos partidos (suele pasar si falta configurar sedes/ventanas horarias para la disciplina). No aparecen en el Fixture general hasta que se les asigne día, hora y cancha a mano.
+          </p>
+          <div className="space-y-2">
+            {unscheduled.map((m) => (
+              <div key={m.id} className="border border-[#5C3A32] bg-[#3A241F] rounded-lg p-3 text-sm flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <p className="font-semibold">{m.disciplineName} · {m.categoryName} <span className="text-[#9FB0D0] font-normal">({m.stage})</span></p>
+                  <p className="font-mono text-xs text-[#9FB0D0]">{matchLabel(m)}</p>
+                </div>
+                <ReprogramarControl match={m} onSaved={load} label="Asignar horario" />
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {visibleViolations.length > 0 && (
         <Card className="p-5 border-[#E0C15A]">
           <h2 className="font-bold text-lg mb-3 flex items-center gap-2 text-[#E0C15A]">
@@ -657,6 +681,7 @@ export default function CalendarioPage() {
                 <th className="py-2 pr-3">Día</th><th className="py-2 pr-3">Hora</th><th className="py-2 pr-3">Disciplina</th>
                 <th className="py-2 pr-3">Sede</th><th className="py-2 pr-3">Cancha</th>
                 <th className="py-2 pr-3">Categoría</th><th className="py-2 pr-3">Etapa</th><th className="py-2 pr-3">Partido</th>
+                <th className="py-2 pr-3">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -678,11 +703,18 @@ export default function CalendarioPage() {
                     </td>
                     <td className="py-1.5 pr-3">{m.stage}</td>
                     <td className="py-1.5 pr-3">{m.bye ? `${m.teamA || "?"} vs BYE` : matchLabel(m)}</td>
+                    <td className="py-1.5 pr-3">
+                      {isReal(m) ? (
+                        <ReprogramarControl match={m} onSaved={load} />
+                      ) : (
+                        <span className="text-xs text-[#7A8FBE]">Horario fijo (disciplina individual)</span>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
               {sorted.length === 0 && (
-                <tr><td colSpan={9} className="py-6 text-center text-[#7A8FBE]">Todavía no hay partidos sorteados y programados.</td></tr>
+                <tr><td colSpan={10} className="py-6 text-center text-[#7A8FBE]">Todavía no hay partidos sorteados y programados.</td></tr>
               )}
             </tbody>
           </table>

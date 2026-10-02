@@ -149,6 +149,11 @@ _(vacío)_
     - Se bloquea (con aviso) si la categoría todavía no fue sorteada, o si ya tiene algún resultado cargado -- rebarajar el orden del grupo después de cargar resultados dejaría esos resultados sin el partido real al que correspondían.
     - No aplica a disciplinas individuales/cronometradas (no tienen partido con horario propio) ni a Póker (arma sus mesas en una sola tanda, sin variación de horario que resortear).
 
+## Aplicadas (tanda 29)
+
+38. **Se puede modificar o asignar día/hora/cancha a mano desde el Fixture general**, no solo en los partidos marcados como conflicto. Cada fila de la lista de partidos (Fixture y conflictos) tiene ahora su propio botón "Reprogramar este partido".
+39. **Los partidos que el sorteo no pudo programar (quedaban invisibles) ahora aparecen.** Si al sortear no queda ningún horario libre para un partido (por ejemplo, falta configurar sedes/ventanas horarias de esa disciplina), antes ese partido no aparecía en ningún lado del Fixture -- no había forma de verlo ni de asignarle un horario. Ahora aparece arriba de todo en "Fixture y conflictos", en un panel aparte ("Partidos sin horario asignado"), con un botón para asignarle día/hora/cancha por primera vez.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
