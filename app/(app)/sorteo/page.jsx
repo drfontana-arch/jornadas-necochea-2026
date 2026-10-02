@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Shuffle, RefreshCw, AlertTriangle } from "lucide-react";
+import { Shuffle, RefreshCw, AlertTriangle, Clock } from "lucide-react";
 import Card from "../../../components/Card";
 import SelectorBar from "../../../components/SelectorBar";
 import { nextPow2, extraQualifierLabel } from "../../../lib/sorteoLogic";
@@ -79,6 +79,27 @@ export default function SorteoPage() {
       const issueCount = (data.conflicts?.length || 0) + (data.violations?.length || 0);
       setSorteoIssues({ conflicts: data.conflicts || [], violations: data.violations || [] });
       showToast(issueCount > 0 ? `Sorteo generado. Quedaron ${issueCount} incompatibilidad(es), abajo el detalle.` : "Sorteo generado sin superposiciones detectadas.");
+      loadCategoryData();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // "Resortear horarios": con los grupos/llave ya armados, vuelve a
+  // decidir día/hora/cancha -- y, en categorías con grupos, también
+  // rebaraja al azar el orden de enfrentamientos dentro de cada grupo
+  // (sin mover a nadie de grupo ni tocar la llave de playoff ya armada).
+  // Se bloquea del lado del servidor si ya hay resultados cargados.
+  async function rescheduleOnly() {
+    setBusy(true);
+    setSorteoIssues(null);
+    try {
+      const res = await fetch(`/api/categorias/${selCategory}/resortear-horarios`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.error || "No se pudo resortear el horario."); return; }
+      const issueCount = (data.conflicts?.length || 0) + (data.violations?.length || 0);
+      setSorteoIssues({ conflicts: data.conflicts || [], violations: data.violations || [] });
+      showToast(issueCount > 0 ? `Horarios resorteados. Quedaron ${issueCount} incompatibilidad(es), abajo el detalle.` : "Horarios resorteados sin superposiciones detectadas.");
       loadCategoryData();
     } finally {
       setBusy(false);
@@ -236,6 +257,16 @@ export default function SorteoPage() {
             >
               <Shuffle className="w-4 h-4" /> {category.drawn ? "Volver a sortear" : "Sortear"}
             </button>
+            {category.drawn && (
+              <button
+                onClick={rescheduleOnly}
+                disabled={busy}
+                title="Mantiene los grupos y la llave ya armados -- solo vuelve a decidir día/hora/cancha (y, en grupos, el orden de enfrentamientos dentro de cada uno)."
+                className="flex items-center gap-2 bg-transparent text-[#2FD3C4] font-semibold text-sm px-4 py-2.5 rounded-lg border border-[#2FD3C4] hover:bg-[#13284f] disabled:opacity-50"
+              >
+                <Clock className="w-4 h-4" /> Resortear horarios
+              </button>
+            )}
             {category.drawn && (
               <a href={`/poster/${selCategory}`} target="_blank" rel="noreferrer" className="text-sm text-[#2FD3C4] hover:underline">
                 Ver póster / imprimir →

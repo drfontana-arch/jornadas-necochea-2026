@@ -143,6 +143,12 @@ _(vacío)_
     - Probado con 8.000 sorteos aleatorios sobre la función real del sistema (variando cantidad de departamentales y de entradas por departamental, con y sin BYE): cero llaves "BYE contra BYE" evitables, y la separación de departamentales en mitades opuestas (tanda 26) se sigue cumpliendo igual.
     - **Las categorías que ya se sortearon con el método de la tanda 26 (el de ayer) pueden tener quedado con este problema** -- hay que resetear y volver a sortear esas categorías puntuales.
 
+## Aplicadas (tanda 28)
+
+37. **Nuevo botón "Resortear horarios"** en Sorteo, al lado de "Volver a sortear" (aparece solo si la categoría ya está sorteada). A diferencia de "Volver a sortear" -- que rehace todo desde cero (grupos, llave y horarios) -- este mantiene los grupos y la llave de playoff tal cual quedaron armados, y solo vuelve a decidir día/hora/cancha de los partidos. En las categorías con fase de grupos, además rebaraja al azar el orden de enfrentamientos DENTRO de cada grupo (quién juega primero contra quién en la "ronda 1", "ronda 2", etc.), sin mover a nadie de grupo ni tocar la llave de playoff (los cruces "1A"/"2B" no dependen del orden interno del grupo, así que esa llave sigue siendo la misma, solo se le recalculan los horarios).
+    - Se bloquea (con aviso) si la categoría todavía no fue sorteada, o si ya tiene algún resultado cargado -- rebarajar el orden del grupo después de cargar resultados dejaría esos resultados sin el partido real al que correspondían.
+    - No aplica a disciplinas individuales/cronometradas (no tienen partido con horario propio) ni a Póker (arma sus mesas en una sola tanda, sin variación de horario que resortear).
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
