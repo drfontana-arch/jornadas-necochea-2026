@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Check, RefreshCw, Download, RotateCcw } from "lucide-react";
+import { AlertTriangle, Check, RefreshCw, Download, RotateCcw, ChevronDown, Printer } from "lucide-react";
 import Card from "../../../components/Card";
 import { CourtGrid, AgendaGrid, CategoryLegend } from "../../../components/FixtureGrids";
 import { buildCategoryColors, catKeyOf, catLabelOf } from "../../../lib/fixtureGrid";
@@ -17,6 +17,23 @@ function matchLabel(m) {
   if (m.teamB) return `${m.teamA} vs ${m.teamB}`;
   if (m.teamA) return `${m.teamA} (horario de competencia)`;
   return "A definir vs A definir";
+}
+
+// Fila plegada por defecto: muestra solo el resumen (un renglón) y recién
+// al tocarla despliega el detalle y las acciones -- para que un panel con
+// muchos conflictos/restricciones no sea una pared de texto.
+function CollapsibleRow({ tone = "red", summary, children }) {
+  const [open, setOpen] = useState(false);
+  const toneClasses = tone === "amber" ? "border-[#5C4A22] bg-[#2E2712]" : "border-[#5C3A32] bg-[#3A241F]";
+  return (
+    <div className={`border rounded-lg text-sm ${toneClasses}`}>
+      <button type="button" onClick={() => setOpen((v) => !v)} className="w-full flex items-center justify-between gap-2 text-left px-3 py-2">
+        <span className="font-semibold">{summary}</span>
+        <ChevronDown className={`w-4 h-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && <div className="px-3 pb-3">{children}</div>}
+    </div>
+  );
 }
 
 function ReprogramarControl({ match, onSaved, label }) {
@@ -342,6 +359,7 @@ export default function CalendarioPage() {
   const [selected, setSelected] = useState({});
   const [gridScope, setGridScope] = useState("filtrados"); // filtrados | seleccionados
   const [exporting, setExporting] = useState(false);
+  const [printWithSchedule, setPrintWithSchedule] = useState(true);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
   const [sorteandoTodo, setSorteandoTodo] = useState(false);
@@ -476,8 +494,19 @@ export default function CalendarioPage() {
     }
   }
 
+  // Imprime (o "Guardar como PDF" desde el diálogo de impresión del
+  // navegador, mismo mecanismo que ya usan los pósters) la tabla impresa
+  // oculta de más abajo -- con o sin columnas de horario según se elija.
+  // El cambio de estado se aplica antes de abrir el diálogo de impresión
+  // (requestAnimationFrame espera a que React ya haya actualizado el DOM).
+  function imprimir(withSchedule) {
+    setPrintWithSchedule(withSchedule);
+    requestAnimationFrame(() => window.print());
+  }
+
   return (
-    <div className="space-y-5">
+    <div>
+    <div className="no-print space-y-5">
       {unscheduled.length > 0 && (
         <Card className="p-5 border-[#E0684A]">
           <h2 className="font-bold text-lg mb-1 flex items-center gap-2 text-[#E0684A]">
@@ -488,13 +517,10 @@ export default function CalendarioPage() {
           </p>
           <div className="space-y-2">
             {unscheduled.map((m) => (
-              <div key={m.id} className="border border-[#5C3A32] bg-[#3A241F] rounded-lg p-3 text-sm flex items-center justify-between flex-wrap gap-2">
-                <div>
-                  <p className="font-semibold">{m.disciplineName} · {m.categoryName} <span className="text-[#9FB0D0] font-normal">({m.stage})</span></p>
-                  <p className="font-mono text-xs text-[#9FB0D0]">{matchLabel(m)}</p>
-                </div>
+              <CollapsibleRow key={m.id} summary={<>{m.disciplineName} · {m.categoryName} <span className="text-[#9FB0D0] font-normal">({m.stage})</span></>}>
+                <p className="font-mono text-xs text-[#9FB0D0] mb-2">{matchLabel(m)}</p>
                 <ReprogramarControl match={m} onSaved={load} label="Asignar horario" />
-              </div>
+              </CollapsibleRow>
             ))}
           </div>
         </Card>
@@ -505,10 +531,9 @@ export default function CalendarioPage() {
           <h2 className="font-bold text-lg mb-3 flex items-center gap-2 text-[#E0C15A]">
             <AlertTriangle className="w-5 h-5" /> Partidos que violan una restricción horaria ({visibleViolations.length})
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {visibleViolations.map((v) => (
-              <div key={v.id} className="border border-[#5C4A22] bg-[#2E2712] rounded-lg p-3 text-sm">
-                <p className="font-semibold mb-1">{v.label} tiene una restricción para este horario:</p>
+              <CollapsibleRow key={v.id} tone="amber" summary={<>{v.label} tiene una restricción para este horario</>}>
                 <p className="font-mono text-xs mb-2">{v.match.disciplineName} · {v.match.categoryName} — {matchLabel(v.match)} — {DAY_LABEL[v.match.day] || v.match.day} {v.match.time}</p>
                 <div className="flex gap-2 flex-wrap">
                   <button onClick={() => setIgnoredViolations((prev) => ({ ...prev, [v.id]: true }))} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#0C2043]">
@@ -525,7 +550,7 @@ export default function CalendarioPage() {
                     <span className="text-xs text-[#7A8FBE] self-center">Horario fijo de disciplina individual — no se reprograma desde acá.</span>
                   )}
                 </div>
-              </div>
+              </CollapsibleRow>
             ))}
           </div>
         </Card>
@@ -536,12 +561,11 @@ export default function CalendarioPage() {
           <h2 className="font-bold text-lg mb-3 flex items-center gap-2 text-[#E0684A]">
             <AlertTriangle className="w-5 h-5" /> Superposiciones horarias detectadas ({visibleConflicts.length})
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {visibleConflicts.map((c) => {
               const target = isReal(c.m2) ? c.m2 : isReal(c.m1) ? c.m1 : null;
               return (
-                <div key={c.pairId} className="border border-[#5C3A32] bg-[#3A241F] rounded-lg p-3 text-sm">
-                  <p className="font-semibold mb-1">{c.dept} juega en dos lugares a la vez:</p>
+                <CollapsibleRow key={c.pairId} summary={<>{c.dept} juega en dos lugares a la vez</>}>
                   <p className="font-mono text-xs mb-1">{c.m1.disciplineName} · {c.m1.categoryName} — {matchLabel(c.m1)} — {DAY_LABEL[c.m1.day] || c.m1.day} {c.m1.time}</p>
                   <p className="font-mono text-xs mb-2">{c.m2.disciplineName} · {c.m2.categoryName} — {matchLabel(c.m2)} — {DAY_LABEL[c.m2.day] || c.m2.day} {c.m2.time}</p>
                   <div className="flex gap-2 flex-wrap">
@@ -559,7 +583,7 @@ export default function CalendarioPage() {
                       <span className="text-xs text-[#7A8FBE] self-center">Ambos horarios son de disciplinas individuales — no se reprograman desde acá.</span>
                     )}
                   </div>
-                </div>
+                </CollapsibleRow>
               );
             })}
           </div>
@@ -741,14 +765,33 @@ export default function CalendarioPage() {
           {selectedCount > 0 && (
             <button onClick={() => setSelected({})} className="text-xs text-[#9FB0D0] hover:text-[#EDE7D6] underline">Limpiar selección</button>
           )}
-          <button
-            onClick={exportar}
-            disabled={exporting || gridMatches.length === 0}
-            className="ml-auto flex items-center gap-1.5 text-sm bg-[#163A67] border border-[#2A4E85] px-3 py-1.5 rounded-lg hover:bg-[#0C2043] disabled:opacity-50"
-            title="Genera un .xlsx con colores por categoría (abre en Excel y en Google Sheets). Filtrá por disciplina y categoría arriba para bajar solo esa actividad -- la hoja 'Listado' trae Equipo A/B con columnas Resultado y Ganador en blanco, listas para completar y subir a la página del evento."
-          >
-            <Download className="w-4 h-4" /> {exporting ? "Generando…" : `Descargar Excel (${gridMatches.length})`}
-          </button>
+          <div className="ml-auto flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs text-[#7A8FBE]">Imprimir / PDF:</span>
+            <button
+              onClick={() => imprimir(true)}
+              disabled={gridMatches.length === 0}
+              className="flex items-center gap-1.5 text-sm bg-[#163A67] border border-[#2A4E85] px-3 py-1.5 rounded-lg hover:bg-[#0C2043] disabled:opacity-50"
+              title="Abre el diálogo de impresión con el fixture filtrado, con día/hora/cancha. Desde ahí se puede 'Guardar como PDF'."
+            >
+              <Printer className="w-4 h-4" /> Con horario
+            </button>
+            <button
+              onClick={() => imprimir(false)}
+              disabled={gridMatches.length === 0}
+              className="flex items-center gap-1.5 text-sm bg-[#163A67] border border-[#2A4E85] px-3 py-1.5 rounded-lg hover:bg-[#0C2043] disabled:opacity-50"
+              title="Igual, pero sin columnas de día/hora/cancha -- para repartir el cruce de partidos sin revelar el horario todavía."
+            >
+              <Printer className="w-4 h-4" /> Sin horario
+            </button>
+            <button
+              onClick={exportar}
+              disabled={exporting || gridMatches.length === 0}
+              className="flex items-center gap-1.5 text-sm bg-[#163A67] border border-[#2A4E85] px-3 py-1.5 rounded-lg hover:bg-[#0C2043] disabled:opacity-50"
+              title="Genera un .xlsx con colores por categoría (abre en Excel y en Google Sheets). Filtrá por disciplina y categoría arriba para bajar solo esa actividad -- la hoja 'Listado' trae Equipo A/B con columnas Resultado y Ganador en blanco, listas para completar y subir a la página del evento."
+            >
+              <Download className="w-4 h-4" /> {exporting ? "Generando…" : `Descargar Excel (${gridMatches.length})`}
+            </button>
+          </div>
         </div>
         {viewMode !== "lista" && <CategoryLegend matches={gridMatches} colors={colors} />}
         {viewMode === "cancha" && <CourtGrid matches={gridMatches} colors={colors} />}
@@ -810,6 +853,42 @@ export default function CalendarioPage() {
         )}
       </Card>
       {toast && <div className="fixed bottom-5 right-5 bg-[#2FD3C4] text-[#0C2043] px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm">{toast}</div>}
+    </div>
+
+      {/* Solo se ve al imprimir (ver .print-only en globals.css) -- la tabla
+          interactiva de arriba se oculta con no-print. Respeta los mismos
+          filtros/selección que el Excel (gridMatches). */}
+      <div className="print-only">
+        <h1 className="text-lg font-bold mb-3 text-black">Fixture — Jornadas Deportivas Necochea 2026</h1>
+        <table className="w-full text-xs text-black border-collapse">
+          <thead>
+            <tr className="text-left border-b-2 border-black">
+              {printWithSchedule && <th className="py-1 pr-3">Día</th>}
+              {printWithSchedule && <th className="py-1 pr-3">Hora</th>}
+              <th className="py-1 pr-3">Disciplina</th>
+              {printWithSchedule && <th className="py-1 pr-3">Sede</th>}
+              {printWithSchedule && <th className="py-1 pr-3">Cancha</th>}
+              <th className="py-1 pr-3">Categoría</th>
+              <th className="py-1 pr-3">Etapa</th>
+              <th className="py-1 pr-3">Partido</th>
+            </tr>
+          </thead>
+          <tbody>
+            {gridMatches.map((m) => (
+              <tr key={m.id} className="border-b border-gray-400">
+                {printWithSchedule && <td className="py-1 pr-3">{DAY_LABEL[m.day] || m.day || "—"}</td>}
+                {printWithSchedule && <td className="py-1 pr-3">{m.time || "—"}</td>}
+                <td className="py-1 pr-3">{m.disciplineName}</td>
+                {printWithSchedule && <td className="py-1 pr-3">{m.location || "—"}</td>}
+                {printWithSchedule && <td className="py-1 pr-3">{m.court || "—"}</td>}
+                <td className="py-1 pr-3">{m.categoryName}</td>
+                <td className="py-1 pr-3">{m.stage}</td>
+                <td className="py-1 pr-3">{m.bye ? `${m.teamA || "?"} vs BYE` : matchLabel(m)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
