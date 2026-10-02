@@ -14,6 +14,10 @@ export async function POST(req, { params }) {
     const { conflicts, violations } = await conflictsForCategory(params.id, transitionMinutes);
     return NextResponse.json({ ...result, conflicts, violations });
   } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    // e.message a veces viene vacío con errores de Postgres/Supabase -- se
+    // suman code/details/hint (si existen) y, como último recurso, el
+    // objeto entero serializado, para que el mensaje nunca llegue vacío.
+    const detail = [e?.message, e?.code, e?.details, e?.hint].filter(Boolean).join(" | ") || JSON.stringify(e, Object.getOwnPropertyNames(e || {}));
+    return NextResponse.json({ error: detail || "Error desconocido (sin mensaje)." }, { status: 500 });
   }
 }
