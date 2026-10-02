@@ -10,11 +10,47 @@ import { INDIVIDUAL_DISCIPLINES } from "../../../lib/sorteoLogic";
 const DAYS = ["2026-10-09", "2026-10-10", "2026-10-11"];
 const DAY_LABEL = { "2026-10-09": "Vie 09/10", "2026-10-10": "Sáb 10/10", "2026-10-11": "Dom 11/10" };
 
+function isReal(m) {
+  return m && !String(m.id).startsWith("ind-");
+}
+function matchLabel(m) {
+  if (m.teamB) return `${m.teamA} vs ${m.teamB}`;
+  if (m.teamA) return `${m.teamA} (horario de competencia)`;
+  return "A definir vs A definir";
+}
+
 function ReprogramarControl({ match, onSaved, label }) {
   const [open, setOpen] = useState(false);
   const [day, setDay] = useState(match.day || DAYS[0]);
   const [time, setTime] = useState(match.time || "09:00");
   const [court, setCourt] = useState(match.court || 1);
+  const [checking, setChecking] = useState(false);
+  const [checkResult, setCheckResult] = useState(null);
+  const [showDetail, setShowDetail] = useState(false);
+  const [recheckTick, setRecheckTick] = useState(0);
+
+  // Chequea (sin guardar nada) si ese día/hora/cancha generaría alguna
+  // superposición, cada vez que se toca un campo -- con una pequeña demora
+  // para no mandar un pedido por cada tecla.
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    setChecking(true);
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/matches/${match.id}/check-horario`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ day, time, court: Number(court) || null }),
+        });
+        const data = await res.json();
+        if (!cancelled) setCheckResult(res.ok ? data : null);
+      } finally {
+        if (!cancelled) setChecking(false);
+      }
+    }, 350);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [open, day, time, court, recheckTick, match.id]);
+
   if (!open) {
     return (
       <button onClick={() => setOpen(true)} className="flex items-center gap-1 text-xs bg-[#163A67] border border-[#2A4E85] px-2.5 py-1.5 rounded-lg hover:bg-[#0C2043]">
@@ -22,26 +58,86 @@ function ReprogramarControl({ match, onSaved, label }) {
       </button>
     );
   }
+
+  const issueCount = checkResult ? checkResult.conflicts.length + checkResult.violations.length + (checkResult.courtClash ? 1 : 0) : 0;
+
+  async function guardar() {
+    if (issueCount > 0) {
+      const resumen = [
+        ...checkResult.conflicts.map((c) => {
+          const other = c.m1.id === match.id ? c.m2 : c.m1;
+          return `- ${c.dept} también tiene: ${other.disciplineName} · ${other.categoryName} — ${matchLabel(other)}`;
+        }),
+        ...checkResult.violations.map((v) => `- ${v.label} tiene una restricción horaria cargada para ese momento`),
+        checkResult.courtClash
+          ? `- La cancha ${court} ya está ocupada a esa hora por: ${checkResult.courtClash.disciplineName} · ${checkResult.courtClash.categoryName} — ${matchLabel(checkResult.courtClash)}`
+          : null,
+      ].filter(Boolean).join("\n");
+      const ok = confirm(`Este horario genera ${issueCount} superposición(es):\n\n${resumen}\n\n¿Confirmás igual?`);
+      if (!ok) return;
+    }
+    await fetch(`/api/matches/${match.id}`, {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ day, time, court: Number(court) }),
+    });
+    setOpen(false);
+    setShowDetail(false);
+    onSaved();
+  }
+
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      <select className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs" value={day} onChange={(e) => setDay(e.target.value)}>
-        {DAYS.map((d) => <option key={d} value={d}>{DAY_LABEL[d]}</option>)}
-      </select>
-      <input type="time" className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs" value={time} onChange={(e) => setTime(e.target.value)} />
-      <input type="number" min={1} className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs w-16" value={court} onChange={(e) => setCourt(Number(e.target.value))} />
-      <button
-        onClick={async () => {
-          await fetch(`/api/matches/${match.id}`, {
-            method: "PATCH", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ day, time, court }),
-          });
-          setOpen(false);
-          onSaved();
-        }}
-        className="text-xs bg-[#2FD3C4] text-[#0C2043] px-2.5 py-1.5 rounded-lg"
-      >
-        Guardar
-      </button>
+    <div className="flex flex-col gap-2 items-start">
+      <div className="flex items-center gap-2 flex-wrap">
+        <select className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs" value={day} onChange={(e) => setDay(e.target.value)}>
+          {DAYS.map((d) => <option key={d} value={d}>{DAY_LABEL[d]}</option>)}
+        </select>
+        <input type="time" className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs" value={time} onChange={(e) => setTime(e.target.value)} />
+        <input type="number" min={1} className="bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-xs w-16" value={court} onChange={(e) => setCourt(Number(e.target.value))} />
+        {checking && <span className="text-xs text-[#7A8FBE]">Revisando…</span>}
+        {!checking && issueCount > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowDetail((v) => !v)}
+            title={`${issueCount} superposición(es) con este horario -- tocá para ver el detalle`}
+            className="flex items-center gap-1 text-xs bg-[#3A241F] border border-[#E0684A] text-[#E0684A] px-2 py-1.5 rounded-lg hover:bg-[#472A22]"
+          >
+            <AlertTriangle className="w-3.5 h-3.5" /> {issueCount}
+          </button>
+        )}
+        <button onClick={guardar} className="text-xs bg-[#2FD3C4] text-[#0C2043] px-2.5 py-1.5 rounded-lg">Guardar</button>
+        <button onClick={() => setOpen(false)} className="text-xs text-[#7A8FBE] hover:text-[#EDE7D6]">Cancelar</button>
+      </div>
+      {showDetail && issueCount > 0 && (
+        <div className="border border-[#5C3A32] bg-[#3A241F] rounded-lg p-2.5 space-y-2.5 max-w-md">
+          {checkResult.conflicts.map((c) => {
+            const other = c.m1.id === match.id ? c.m2 : c.m1;
+            return (
+              <div key={c.pairId} className="text-xs">
+                <p className="mb-1">
+                  <strong>{c.dept}</strong> también juega: {other.disciplineName} · {other.categoryName} — {matchLabel(other)}
+                  {" "}({DAY_LABEL[other.day] || other.day} {other.time})
+                </p>
+                {isReal(other) && (
+                  <ReprogramarControl match={other} label="Editar este partido" onSaved={() => { onSaved(); setRecheckTick((t) => t + 1); }} />
+                )}
+              </div>
+            );
+          })}
+          {checkResult.violations.map((v) => (
+            <p key={v.id} className="text-xs"><strong>{v.label}</strong> tiene una restricción horaria cargada para este momento.</p>
+          ))}
+          {checkResult.courtClash && (
+            <div className="text-xs">
+              <p className="mb-1">
+                La cancha {court} ya está ocupada a esa hora por: {checkResult.courtClash.disciplineName} · {checkResult.courtClash.categoryName} — {matchLabel(checkResult.courtClash)}
+              </p>
+              {isReal(checkResult.courtClash) && (
+                <ReprogramarControl match={checkResult.courtClash} label="Editar este partido" onSaved={() => { onSaved(); setRecheckTick((t) => t + 1); }} />
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -319,14 +415,6 @@ export default function CalendarioPage() {
   function baseDept(label) {
     if (!label) return label;
     return label.replace(/\s+\d+$/, "").trim();
-  }
-  function isReal(m) {
-    return m && !String(m.id).startsWith("ind-");
-  }
-  function matchLabel(m) {
-    if (m.teamB) return `${m.teamA} vs ${m.teamB}`;
-    if (m.teamA) return `${m.teamA} (horario de competencia)`;
-    return "A definir vs A definir";
   }
 
   // El color de cada categoría se calcula sobre TODOS los partidos, así no

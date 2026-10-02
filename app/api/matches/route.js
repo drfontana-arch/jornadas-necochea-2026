@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { listAllMatches, listUnscheduledMatches, listRestrictions, getIndividualDisciplineBusyMatches, getRosterByMatchId } from "../../../lib/db";
+import { listAllMatches, listUnscheduledMatches, listRestrictions, getIndividualDisciplineBusyMatches, getRosterByMatchId, addIndividualRosters } from "../../../lib/db";
 import { computeConflicts, computeRestrictionViolations } from "../../../lib/sorteoLogic";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,7 @@ export async function GET(req) {
     const matchesWithIndividual = matches.concat(individualBusy);
     const unscheduled = await listUnscheduledMatches();
     if (searchParams.get("withConflicts")) {
-      const rosterByMatchId = await getRosterByMatchId();
+      const rosterByMatchId = addIndividualRosters(await getRosterByMatchId(), individualBusy);
       const conflicts = computeConflicts(matchesWithIndividual, 10, rosterByMatchId);
       const restrictions = await listRestrictions();
       const violations = computeRestrictionViolations(matchesWithIndividual, restrictions);
