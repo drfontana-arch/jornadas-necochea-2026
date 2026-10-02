@@ -23,6 +23,7 @@ export default function SorteoPage() {
   const [matches, setMatches] = useState({ groupMatches: [], playoffMatches: [], drawMatches: [] });
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [reshuffleGroupOrder, setReshuffleGroupOrder] = useState(true);
   const [toast, setToast] = useState(null);
   // Conflictos/restricciones que dejó el ÚLTIMO sorteo o playoff corrido
   // en esta pantalla -- se limpia al cambiar de categoría, para no
@@ -90,11 +91,13 @@ export default function SorteoPage() {
   // rebaraja al azar el orden de enfrentamientos dentro de cada grupo
   // (sin mover a nadie de grupo ni tocar la llave de playoff ya armada).
   // Se bloquea del lado del servidor si ya hay resultados cargados.
-  async function rescheduleOnly() {
+  async function rescheduleOnly(reshuffleOrder) {
     setBusy(true);
     setSorteoIssues(null);
     try {
-      const res = await fetch(`/api/categorias/${selCategory}/resortear-horarios`, { method: "POST" });
+      const res = await fetch(`/api/categorias/${selCategory}/resortear-horarios`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reshuffleOrder }),
+      });
       const data = await res.json();
       if (!res.ok) { showToast(data.error || "No se pudo resortear el horario."); return; }
       const issueCount = (data.conflicts?.length || 0) + (data.violations?.length || 0);
@@ -259,13 +262,19 @@ export default function SorteoPage() {
             </button>
             {category.drawn && (
               <button
-                onClick={rescheduleOnly}
+                onClick={() => rescheduleOnly(reshuffleGroupOrder)}
                 disabled={busy}
-                title="Mantiene los grupos y la llave ya armados -- solo vuelve a decidir día/hora/cancha (y, en grupos, el orden de enfrentamientos dentro de cada uno)."
+                title="Mantiene los grupos y la llave ya armados -- solo vuelve a decidir día/hora/cancha/sede."
                 className="flex items-center gap-2 bg-transparent text-[#2FD3C4] font-semibold text-sm px-4 py-2.5 rounded-lg border border-[#2FD3C4] hover:bg-[#13284f] disabled:opacity-50"
               >
                 <Clock className="w-4 h-4" /> Resortear horarios
               </button>
+            )}
+            {category.drawn && category.modality !== "draw" && (
+              <label className="flex items-center gap-1.5 text-xs text-[#9FB0D0]">
+                <input type="checkbox" checked={reshuffleGroupOrder} onChange={(e) => setReshuffleGroupOrder(e.target.checked)} />
+                Rebarajar también el orden dentro de los grupos
+              </label>
             )}
             {category.drawn && (
               <a href={`/poster/${selCategory}`} target="_blank" rel="noreferrer" className="text-sm text-[#2FD3C4] hover:underline">

@@ -170,6 +170,10 @@ _(vacío)_
     - El control "Reprogramar este partido" (en Fixture y conflictos) ahora tiene también un campo "Lugar/sede" para editarlo a mano.
     - **Requiere un cambio chico en la base de datos** -- ver instrucción SQL más abajo.
 
+## Aplicadas (tanda 33)
+
+45. **"Resortear horarios" ahora deja elegir si rebaraja el orden interno del grupo o no.** Checkbox nuevo "Rebarajar también el orden dentro de los grupos" (tildado por default, mismo comportamiento de antes) al lado del botón, visible en categorías con fase de grupos. Destildado, reutiliza los partidos de grupo EXACTAMENTE como están (mismo enfrentamiento, mismo orden) y solo les recalcula día/hora/cancha/sede -- para cuando ese orden también quedó acordado con los delegados, no solo los grupos.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
