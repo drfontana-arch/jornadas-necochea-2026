@@ -174,6 +174,11 @@ _(vacío)_
 
 45. **"Resortear horarios" ahora deja elegir si rebaraja el orden interno del grupo o no.** Checkbox nuevo "Rebarajar también el orden dentro de los grupos" (tildado por default, mismo comportamiento de antes) al lado del botón, visible en categorías con fase de grupos. Destildado, reutiliza los partidos de grupo EXACTAMENTE como están (mismo enfrentamiento, mismo orden) y solo les recalcula día/hora/cancha/sede -- para cuando ese orden también quedó acordado con los delegados, no solo los grupos.
 
+## Aplicadas (tanda 34)
+
+46. **El póster de cada categoría (PDF y SVG) vuelve a mostrar día/hora/cancha/sede.** Se había ocultado a propósito en la tanda 22 porque en ese momento el sorteo todavía no asignaba horarios reales (era la bandera `SHOW_SCHEDULE_IN_POSTER`, pensada justamente para reactivarse sin tener que rehacer nada apenas estuviera listo). Ahora que el sorteo ya arma el horario completo (y, desde la tanda 32, también la sede real de cada partido), se reactivó: la tabla de grupos y las llaves del póster muestran día/hora/cancha, y ahora también la sede cuando está cargada (ej. "1 - Rivadavia").
+    - Verificado con datos de prueba renderizados en el navegador: la tabla de grupos y la llave de playoff muestran día/hora/cancha/sede correctamente, sin superposición de textos.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

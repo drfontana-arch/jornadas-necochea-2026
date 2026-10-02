@@ -102,7 +102,7 @@ export default function BracketGroup({ matches, title, x = 0, y = 0, pareja = fa
               )}
               {SHOW_SCHEDULE_IN_POSTER && m.day && (
                 <text x={bx + BRACKET_BOX_WIDTH - 8} y={by - 6} fontSize="12" textAnchor="end" fill="#5A6B85" fontFamily="Arial, sans-serif">
-                  {(DAY_LABEL[m.day] || m.day) + " · " + m.time + " · Cancha " + m.court}
+                  {(DAY_LABEL[m.day] || m.day) + " · " + m.time + " · Cancha " + m.court + (m.location ? " · " + m.location : "")}
                 </text>
               )}
             </g>

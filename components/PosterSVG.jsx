@@ -153,7 +153,7 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
             <>
               <text x={marginX + contentWidth - 330} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">DÍA</text>
               <text x={marginX + contentWidth - 220} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">HORA</text>
-              <text x={marginX + contentWidth - 110} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">CANCHA</text>
+              <text x={marginX + contentWidth - 110} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">CANCHA/SEDE</text>
             </>
           )}
           {sortedGroupMatches.map((m, i) => {
@@ -167,7 +167,7 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
                   <>
                     <text x={marginX + contentWidth - 330} y={ry + 19} fontSize="13" fill={NAVY_DARK} fontFamily="Arial, sans-serif">{DAY_LABEL[m.day] || m.day || "—"}</text>
                     <text x={marginX + contentWidth - 220} y={ry + 19} fontSize="13" fill={NAVY_DARK} fontFamily="Arial, sans-serif">{m.time || "—"}</text>
-                    <text x={marginX + contentWidth - 110} y={ry + 19} fontSize="13" fill={NAVY_DARK} fontFamily="Arial, sans-serif">{m.court || "—"}</text>
+                    <text x={marginX + contentWidth - 110} y={ry + 19} fontSize="13" fill={NAVY_DARK} fontFamily="Arial, sans-serif">{(m.court || "—") + (m.location ? " - " + m.location : "")}</text>
                   </>
                 )}
               </g>
