@@ -131,6 +131,12 @@ _(vacío)_
 
 34. **Excepción para dividir en Copa Oro/Plata sin llegar a 12 equipos.** El mínimo del reglamento sigue disparando el aviso automático igual que antes (Fútbol 11 ya estaba en la lista de disciplinas alcanzadas, junto con Fútbol Reducido, Básquet, Vóley y Hockey -- no hacía falta agregarlo). Ahora, para una categoría de esas disciplinas que todavía no llegó al mínimo, aparece un link chico "¿Dividir igual, como excepción?" que abre los mismos dos métodos (por siembra o a mano) sin el mínimo de por medio -- para cuando la Comisión decide hacer una excepción puntual.
 
+## Aplicadas (tanda 26)
+
+35. **Fix de fondo a "mitades opuestas de la llave" (tanda 24): seguía fallando en algunos casos.** El método anterior armaba la llave con el orden de siembra de siempre y después iba corrigiendo a los empujones (intercambiando de a una entrada) cada vez que encontraba dos de la misma departamental juntas en una mitad -- el problema es que arreglar una departamental podía desacomodar a otra que ya estaba bien corregida, y quedar yendo y viniendo sin terminar de resolverse (pasaba más seguido cuantas más departamentales tenían exactamente 2 equipos/parejas cada una, sin ningún "comodín" suelto con el que intercambiar sin romper nada). Se reemplazó por un método que arma las dos mitades directo: a cada departamental se le reparte la mitad de sus entradas a la izquierda y la mitad a la derecha desde el vamos (sin intercambios ni correcciones posteriores), así no hay con qué desacomodarse. Dentro de cada mitad se mantiene el orden de siembra original, para no perder el resto del armado de cabezas de serie.
+    - Probado con 10.000 sorteos aleatorios (incluyendo a propósito el peor caso: todas las departamentales con exactamente 2 entradas y cero comodines, que es el que rompía el método anterior) sobre la función real del sistema: cero fallas.
+    - **Las categorías que ya se sortearon con el método viejo (tanda 24) pueden tener quedado mal separadas** -- hay que resetear y volver a sortear esas categorías puntuales para que se arme con el método nuevo.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
