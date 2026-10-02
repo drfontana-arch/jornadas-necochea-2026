@@ -137,6 +137,12 @@ _(vacío)_
     - Probado con 10.000 sorteos aleatorios (incluyendo a propósito el peor caso: todas las departamentales con exactamente 2 entradas y cero comodines, que es el que rompía el método anterior) sobre la función real del sistema: cero fallas.
     - **Las categorías que ya se sortearon con el método viejo (tanda 24) pueden tener quedado mal separadas** -- hay que resetear y volver a sortear esas categorías puntuales para que se arme con el método nuevo.
 
+## Aplicadas (tanda 27)
+
+36. **Fix al fix de la tanda 26: dos BYE quedaban enfrentados entre sí.** Al armar las dos mitades de la llave directo (en vez de a los empujones), los huecos vacíos (BYE, cuando sobran lugares en la llave respecto a la cantidad de equipos) se amontonaban todos juntos al final de cada mitad, en vez de repartirse de a uno por llave -- eso podía dejar una llave "BYE contra BYE" sin nadie que pase a la ronda siguiente, y esa ronda 2 quedaba vacía para siempre. Ahora, dentro de cada mitad, se llenan primero las llaves con 2 equipos reales y recién las que sobran (porque no alcanzan los equipos) se arman de a "1 equipo real + BYE" -- nunca dos BYE juntos, salvo el caso extremo e inevitable de que haya más huecos que llaves en toda la mitad.
+    - Probado con 8.000 sorteos aleatorios sobre la función real del sistema (variando cantidad de departamentales y de entradas por departamental, con y sin BYE): cero llaves "BYE contra BYE" evitables, y la separación de departamentales en mitades opuestas (tanda 26) se sigue cumpliendo igual.
+    - **Las categorías que ya se sortearon con el método de la tanda 26 (el de ayer) pueden tener quedado con este problema** -- hay que resetear y volver a sortear esas categorías puntuales.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
