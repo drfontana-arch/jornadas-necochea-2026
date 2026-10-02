@@ -16,7 +16,7 @@ export async function PATCH(req, { params }) {
   try {
     const body = await req.json();
     const patch = {};
-    ["modality", "group_size", "advance_per_group", "seed_order", "groups", "group_standings", "drawn"].forEach((k) => {
+    ["modality", "group_size", "advance_per_group", "seed_order", "groups", "group_standings", "drawn", "playoff_only_day"].forEach((k) => {
       if (body[k] !== undefined) patch[k] = body[k];
     });
     await updateCategorySettings(params.id, patch);

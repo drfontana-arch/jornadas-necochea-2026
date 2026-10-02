@@ -5,6 +5,7 @@ import Card from "../../../components/Card";
 import SelectorBar from "../../../components/SelectorBar";
 import { nextPow2, extraQualifierLabel } from "../../../lib/sorteoLogic";
 
+const DAYS = ["2026-10-09", "2026-10-10", "2026-10-11"];
 const DAY_LABEL = { "2026-10-09": "Vie 09/10", "2026-10-10": "Sáb 10/10", "2026-10-11": "Dom 11/10" };
 function groupLetter(i) { return String.fromCharCode(65 + i); }
 // Disciplinas alcanzadas por el Art. de Copa Oro/Plata: ahí se puede
@@ -246,9 +247,27 @@ export default function SorteoPage() {
                     />
                   </label>
                 )}
+                {category.modality === "grupos_playoff" && (
+                  <label className="text-xs text-[#9FB0D0]">
+                    Reservar día solo para semifinal/final
+                    <select
+                      value={category.playoff_only_day || ""}
+                      onChange={(e) => updateSettings({ playoff_only_day: e.target.value || null })}
+                      className="block w-48 mt-1 bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-sm"
+                    >
+                      <option value="">Ninguno</option>
+                      {DAYS.map((d) => <option key={d} value={d}>{DAY_LABEL[d]}</option>)}
+                    </select>
+                  </label>
+                )}
               </>
             )}
           </div>
+          {category.modality === "grupos_playoff" && category.playoff_only_day && (
+            <p className="text-xs text-[#9FB0D0] mb-3">
+              La fase de grupos no va a usar {DAY_LABEL[category.playoff_only_day]} -- ese día queda reservado para semifinal y final.
+            </p>
+          )}
           <p className="text-sm text-[#9FB0D0] mb-3">
             {registeredLabels.length} equipo(s)/participante(s) inscriptos en {disciplineCategory?.name}.
           </p>

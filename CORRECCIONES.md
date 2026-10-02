@@ -179,6 +179,13 @@ _(vacío)_
 46. **El póster de cada categoría (PDF y SVG) vuelve a mostrar día/hora/cancha/sede.** Se había ocultado a propósito en la tanda 22 porque en ese momento el sorteo todavía no asignaba horarios reales (era la bandera `SHOW_SCHEDULE_IN_POSTER`, pensada justamente para reactivarse sin tener que rehacer nada apenas estuviera listo). Ahora que el sorteo ya arma el horario completo (y, desde la tanda 32, también la sede real de cada partido), se reactivó: la tabla de grupos y las llaves del póster muestran día/hora/cancha, y ahora también la sede cuando está cargada (ej. "1 - Rivadavia").
     - Verificado con datos de prueba renderizados en el navegador: la tabla de grupos y la llave de playoff muestran día/hora/cancha/sede correctamente, sin superposición de textos.
 
+## Aplicadas (tanda 35)
+
+47. **Nuevo selector "Reservar día solo para semifinal/final"** en Sorteo, para categorías "Grupos + playoff". Al elegir un día, la fase de grupos queda prohibida de usarlo (ni al sortear ni al "Resortear horarios") -- los partidos de zona se reparten solo entre los demás días, y el playoff (semifinal/final) sigue pudiendo usar cualquier día, incluido el reservado. Pensado para el caso real: 2 zonas de 4 equipos jugando viernes/sábado, con el domingo reservado para semifinal y final -- antes, si faltaba una sede configurada algún día, el sorteo podía terminar metiendo partidos de zona el domingo (o dejando la última ronda sin horario) sin avisar bien por qué.
+    - Si después de reservar el día, la fase de grupos no entra en los días que quedan (por ejemplo, porque falta configurar una sede en alguno de ellos), esos partidos van a aparecer en el panel "Partidos sin horario asignado" (Fixture y conflictos) en vez de colarse en el día reservado -- es la señal de que falta ampliar las sedes/horarios de los días permitidos, no de que el sistema esté fallando.
+    - Verificado con un test de la función real: con el día reservado, la fase de grupos nunca usa ese día (en el caso probado, usa el único otro día configurado hasta agotar su capacidad y deja el resto sin asignar, en vez de invadir el día reservado).
+    - **Requiere un cambio chico en la base de datos** -- ver instrucción SQL más abajo.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
