@@ -200,6 +200,12 @@ _(vacío)_
     - Verificado con 20.000 sorteos aleatorios: separación de departamentales y "sin BYE enfrentados" siguen en 0 fallas (incluido el peor caso histórico: todas las departamentales con exactamente 2 equipos, sin ningún comodín de por medio). El cabeza de serie #1 cambia de mitad en 0.14% de los casos y el #2 en 0.26% -- ambos matemáticamente inevitables (cuando ya no hay ninguna otra departamental más débil disponible para ceder), nunca movidos "porque sí".
     - **Las categorías que ya se sortearon con el método anterior** pueden tener al cabeza de serie del lado que no le correspondía -- hay que resetear y volver a sortear esas categorías puntuales para que se arme con este fix.
 
+## Aplicadas (tanda 38)
+
+50. **Las rondas se reparten entre todos los días disponibles, no se amontonan en uno solo.** Hasta ahora, el sorteo llenaba un día COMPLETO de horarios antes de pasar al siguiente (si sobraban canchas/horas, un torneo entero podía terminar jugándose en un solo día seguido, sin parar, dejando el resto de los días vacíos para esa disciplina). Ahora, cuando una disciplina tiene sedes en más de un día, las rondas se reparten lo más parejo posible entre todos esos días -- aplica a la fase de grupos y a la llave/playoff por igual (el día reservado para semifinal/final, si está activado, sigue funcionando igual: ese día queda aparte, y el reparto parejo se aplica entre los días que quedan para la fase de grupos).
+    - Verificado con la función real: 5 equipos (10 partidos, 5 rondas) con viernes y sábado configurados -- antes se amontonaban las 5 rondas en viernes; ahora quedan 3 rondas viernes y 2 sábado.
+    - **Las categorías que ya estaban sorteadas** van a seguir con el reparto viejo hasta que se vuelvan a sortear o se les aplique "Resortear horarios".
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
