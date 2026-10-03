@@ -14,10 +14,23 @@ export async function POST(req, { params }) {
     const { conflicts, violations } = await conflictsForCategory(params.id, transitionMinutes);
     return NextResponse.json({ ...result, conflicts, violations });
   } catch (e) {
-    // e.message a veces viene vacío con errores de Postgres/Supabase -- se
-    // suman code/details/hint (si existen) y, como último recurso, el
-    // objeto entero serializado, para que el mensaje nunca llegue vacío.
-    const detail = [e?.message, e?.code, e?.details, e?.hint].filter(Boolean).join(" | ") || JSON.stringify(e, Object.getOwnPropertyNames(e || {}));
+    // e.message a veces viene vacío con errores de Postgres/Supabase. El
+    // intento anterior usaba JSON.stringify sobre el objeto entero, que
+    // puede tener referencias circulares (típico en errores de fetch/
+    // Supabase) y tirar SU PROPIA excepción -- eso hacía que esta misma
+    // función de error fallara sin que el catch de afuera la viera, y
+    // Next.js devolvía su mensaje genérico de producción en su lugar. Acá
+    // cada intento de lectura va envuelto en su propio try/catch, sin usar
+    // JSON.stringify sobre algo desconocido.
+    const parts = [];
+    try { if (e && e.message) parts.push(String(e.message)); } catch {}
+    try { if (e && e.code) parts.push("code=" + String(e.code)); } catch {}
+    try { if (e && e.details) parts.push("details=" + String(e.details)); } catch {}
+    try { if (e && e.hint) parts.push("hint=" + String(e.hint)); } catch {}
+    let detail = parts.join(" | ");
+    if (!detail) {
+      try { detail = String(e); } catch { detail = ""; }
+    }
     return NextResponse.json({ error: detail || "Error desconocido (sin mensaje)." }, { status: 500 });
   }
 }
