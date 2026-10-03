@@ -236,6 +236,7 @@ _(vacío)_
     - Ahora, para Truco y Generala, el sorteo ya no evita que dos parejas de la misma departamental jueguen en simultáneo -- llena todas las mesas disponibles en cada horario antes de pasar al siguiente, como corresponde. El resto de las disciplinas sigue funcionando igual que antes (si tienen 2+ equipos por departamental, siguen sin poder jugar al mismo tiempo).
     - Verificado con la función real: 26 parejas reales en ronda 1, 20 mesas disponibles -- llena las 20 a las 21:00 y recién las 6 que sobran pasan al horario siguiente, en vez de dispersarse en horarios sueltos.
     - **Las categorías de Truco/Generala ya sorteadas** necesitan "Resortear horarios" (o volver a sortear) para que se les aplique.
+57. **El mismo fix se extendió a Canasta y Burako** -- mismas disciplinas de naipes por parejas, mismo problema.
 
 ## Notas / limitaciones conocidas
 
