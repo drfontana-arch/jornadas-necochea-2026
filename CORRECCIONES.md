@@ -212,6 +212,13 @@ _(vacío)_
     - Verificado con la función real: 8 parejas/jugadores (cuartos + semifinal + final) con un día reservado -- cuartos cae en el primer día disponible, semifinal y final las dos caen en el día reservado, nunca antes.
     - Las categorías de Llave directa que ya estaban sorteadas necesitan "Resortear horarios" (o volver a sortear) para que se les aplique.
 
+## Aplicadas (tanda 40)
+
+52. **Fix: los BYE (pase directo a la ronda siguiente) le tocaban a cualquiera, no a los cabezas de serie.** Al armar la llave, el "BYE" tenía que ser para los mejor sembrados -- si hay 1 solo BYE, para el 1er cabeza de serie; si hay 3, para el 1°, 2° y 3°; y si sobran BYE más allá de los que tienen antecedente cargado, esos extra se reparten al azar entre el resto. El código tenía dos problemas que lo rompían: usaba la POSICIÓN del equipo dentro del cuadro como si fuera su nivel de siembra (bracketOrder mezcla a propósito sembrados fuertes y débiles entre las posiciones, así que la posición sola no sirve), y encima el orden estaba invertido (le daba el BYE a los últimos en vez de a los primeros).
+    - Ahora se usa el número de siembra real (el seed que bracketOrder le asignó a cada uno) para decidir, y los BYE van a los de número más bajo (mejor sembrados) primero.
+    - Verificado con 3.000 sorteos aleatorios (variando cantidad de equipos, departamentales y cabezas de serie cargados): en el 100% de los casos, los BYE disponibles fueron exactamente para los N mejores sembrados (N = cantidad de BYE, hasta cubrir a todos los sembrados) -- sin romper la separación de departamentales ni volver a generar BYE-contra-BYE.
+    - **Las categorías de Llave directa o Grupos + playoff ya sorteadas** pueden tener el BYE mal asignado -- hay que resetear y volver a sortear (o regenerar la llave) para que se corrija.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
