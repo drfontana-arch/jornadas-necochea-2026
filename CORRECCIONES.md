@@ -219,6 +219,12 @@ _(vacío)_
     - Verificado con 3.000 sorteos aleatorios (variando cantidad de equipos, departamentales y cabezas de serie cargados): en el 100% de los casos, los BYE disponibles fueron exactamente para los N mejores sembrados (N = cantidad de BYE, hasta cubrir a todos los sembrados) -- sin romper la separación de departamentales ni volver a generar BYE-contra-BYE.
     - **Las categorías de Llave directa o Grupos + playoff ya sorteadas** pueden tener el BYE mal asignado -- hay que resetear y volver a sortear (o regenerar la llave) para que se corrija.
 
+## Aplicadas (tanda 41)
+
+53. **Fix: dos partidos que cruzaban la medianoche podían no detectarse como superpuestos.** La función que chequea si dos horarios se pisan (`overlaps`) comparaba primero si eran del "mismo día" y, si no, directamente decía que no se pisaban -- sin importar la hora real. Para actividades nocturnas (Truco, Generala, Póker, Tenis de Mesa) que arrancan de noche y siguen pasada la medianoche en la sede del día siguiente (ya cargada en Disciplinas y sedes), esto podía dejar pasar un partido de las 23:50 de un día contra uno de las 00:10 del siguiente sin marcarlo como conflicto, aunque sus horarios reales se pisen 10 minutos. Ahora compara el horario absoluto (día + hora), no el día y la hora por separado.
+54. **El reparto de rondas entre días (tanda 38) ya no aplica a las actividades nocturnas.** Para Truco, Generala, Póker y Tenis de Mesa, el "día siguiente" cargado en sedes es la continuación de la MISMA noche (madrugada), no un día aparte para repartir descansos -- llenan todas las mesas disponibles esa noche antes de recién pasar a la sede de la madrugada, en vez de cortar antes de tiempo para "repartir parejo" entre las dos fechas.
+    - Verificado con la función real: Truco con 2 mesas, viernes 21:00 + sábado 00:00 (continuación) -- llena las 10 llaves posibles del viernes a la noche antes de seguir en la sede de la madrugada, sin cortar antes de tiempo.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
