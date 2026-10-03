@@ -230,6 +230,13 @@ _(vacío)_
 55. **Truco y Generala dicen "Mesa" en vez de "Cancha".** En "Disciplinas y sedes" (el campo y el resumen de la tarjeta), en el póster de cada categoría (llaves y tabla de grupos) y en el cronograma del día, estas dos disciplinas ahora muestran "Mesa"/"Mesas" en vez de "Cancha"/"Canchas" -- el dato en sí (el número) es el mismo, solo cambia la palabra. El resto de las disciplinas sigue diciendo "Cancha" igual que antes.
     - La tabla general de "Fixture y conflictos" y el Excel exportado mezclan varias disciplinas en una sola columna, así que ahí la columna sigue llamándose "Cancha" en general (cambiarla fila por fila no se podía sin confundir). Si hace falta, se puede sumar después.
 
+## Aplicadas (tanda 43)
+
+56. **Fix: Truco y Generala relegaban partidos sueltos a horarios muy posteriores en vez de llenar todas las mesas.** El sorteo evitaba que dos equipos/parejas de la MISMA departamental jugaran al mismo tiempo (pensado para deportes de equipo, donde "Necochea 1" y "Necochea 2" podrían compartir jugadores/cuerpo técnico). Pero en Truco y Generala una misma departamental suele anotar varias parejas totalmente independientes (gente distinta cada una) -- esa restricción no tenía sentido ahí, y terminaba dejando partidos sueltos en horarios mucho más tarde (usando una sola mesa) en vez de jugarse junto con el resto a la hora que corresponde.
+    - Ahora, para Truco y Generala, el sorteo ya no evita que dos parejas de la misma departamental jueguen en simultáneo -- llena todas las mesas disponibles en cada horario antes de pasar al siguiente, como corresponde. El resto de las disciplinas sigue funcionando igual que antes (si tienen 2+ equipos por departamental, siguen sin poder jugar al mismo tiempo).
+    - Verificado con la función real: 26 parejas reales en ronda 1, 20 mesas disponibles -- llena las 20 a las 21:00 y recién las 6 que sobran pasan al horario siguiente, en vez de dispersarse en horarios sueltos.
+    - **Las categorías de Truco/Generala ya sorteadas** necesitan "Resortear horarios" (o volver a sortear) para que se les aplique.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
