@@ -206,6 +206,12 @@ _(vacío)_
     - Verificado con la función real: 5 equipos (10 partidos, 5 rondas) con viernes y sábado configurados -- antes se amontonaban las 5 rondas en viernes; ahora quedan 3 rondas viernes y 2 sábado.
     - **Las categorías que ya estaban sorteadas** van a seguir con el reparto viejo hasta que se vuelvan a sortear o se les aplique "Resortear horarios".
 
+## Aplicadas (tanda 39)
+
+51. **"Reservar día solo para semifinal/final" ahora también funciona en "Llave directa".** El selector solo aparecía en "Grupos + playoff", porque ahí hay una fase de grupos separada del playoff que se puede filtrar. En una llave directa (eliminación simple desde la ronda 1, sin grupos previos -- el caso de Tenis Senior) no existe esa separación, así que el selector no aparecía. Ahora también está disponible para "Llave directa": las rondas anteriores a semifinal quedan prohibidas de usar el día elegido, y las últimas 2 rondas (semifinal y final) quedan obligadas a jugarse ahí.
+    - Verificado con la función real: 8 parejas/jugadores (cuartos + semifinal + final) con un día reservado -- cuartos cae en el primer día disponible, semifinal y final las dos caen en el día reservado, nunca antes.
+    - Las categorías de Llave directa que ya estaban sorteadas necesitan "Resortear horarios" (o volver a sortear) para que se les aplique.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

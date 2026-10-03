@@ -247,25 +247,27 @@ export default function SorteoPage() {
                     />
                   </label>
                 )}
-                {category.modality === "grupos_playoff" && (
-                  <label className="text-xs text-[#9FB0D0]">
-                    Reservar día solo para semifinal/final
-                    <select
-                      value={category.playoff_only_day || ""}
-                      onChange={(e) => updateSettings({ playoff_only_day: e.target.value || null })}
-                      className="block w-48 mt-1 bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-sm"
-                    >
-                      <option value="">Ninguno</option>
-                      {DAYS.map((d) => <option key={d} value={d}>{DAY_LABEL[d]}</option>)}
-                    </select>
-                  </label>
-                )}
               </>
             )}
+            {(category.modality === "grupos_playoff" || category.modality === "draw") && (
+              <label className="text-xs text-[#9FB0D0]">
+                Reservar día solo para semifinal/final
+                <select
+                  value={category.playoff_only_day || ""}
+                  onChange={(e) => updateSettings({ playoff_only_day: e.target.value || null })}
+                  className="block w-48 mt-1 bg-[#0C2043] border border-[#2A4E85] rounded px-2 py-1 text-sm"
+                >
+                  <option value="">Ninguno</option>
+                  {DAYS.map((d) => <option key={d} value={d}>{DAY_LABEL[d]}</option>)}
+                </select>
+              </label>
+            )}
           </div>
-          {category.modality === "grupos_playoff" && category.playoff_only_day && (
+          {category.playoff_only_day && (category.modality === "grupos_playoff" || category.modality === "draw") && (
             <p className="text-xs text-[#9FB0D0] mb-3">
-              La fase de grupos no va a usar {DAY_LABEL[category.playoff_only_day]} -- ese día queda reservado para semifinal y final.
+              {category.modality === "draw"
+                ? `Las rondas anteriores a semifinal no van a usar ${DAY_LABEL[category.playoff_only_day]} -- ese día queda reservado para semifinal y final.`
+                : `La fase de grupos no va a usar ${DAY_LABEL[category.playoff_only_day]} -- ese día queda reservado para semifinal y final.`}
             </p>
           )}
           <p className="text-sm text-[#9FB0D0] mb-3">
