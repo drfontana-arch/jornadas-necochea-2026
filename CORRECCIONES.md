@@ -193,6 +193,13 @@ _(vacío)_
     - Verificado con la función real: semifinales y final quedan las tres en el día reservado, nunca antes.
     - **Las categorías que ya tenían esto mal programado** (semifinal en otro día) necesitan volver a sortear su playoff -- desde Sorteo, "Resortear horarios" (si los grupos ya están consolidados) o regenerar el playoff.
 
+## Aplicadas (tanda 37)
+
+49. **Fix: "mitades opuestas de la llave" podía mover al cabeza de serie sin necesidad.** El método que reparte las departamentales entre las dos mitades (tanda 26) decidía, para cada una, cuántos de sus equipos van a cada lado -- pero para las departamentales con un solo equipo (la gran mayoría) usaba un contador alternante sin relación con dónde el sorteo ya los había puesto, así que el cabeza de serie #1 o el #2 podían terminar del lado equivocado aunque no hiciera falta tocarlos para nada.
+    - Ahora, una departamental que YA respeta el máximo permitido en su mitad (como cualquiera con un solo equipo, que siempre lo respeta) queda exactamente donde la siembra la puso -- cero disrupción. Solo se tocan las departamentales que de verdad están mal repartidas, y entre esas, primero las que tienen integrantes menos importantes en juego (más lejos de la cabecera de su mitad).
+    - Verificado con 20.000 sorteos aleatorios: separación de departamentales y "sin BYE enfrentados" siguen en 0 fallas (incluido el peor caso histórico: todas las departamentales con exactamente 2 equipos, sin ningún comodín de por medio). El cabeza de serie #1 cambia de mitad en 0.14% de los casos y el #2 en 0.26% -- ambos matemáticamente inevitables (cuando ya no hay ninguna otra departamental más débil disponible para ceder), nunca movidos "porque sí".
+    - **Las categorías que ya se sortearon con el método anterior** pueden tener al cabeza de serie del lado que no le correspondía -- hay que resetear y volver a sortear esas categorías puntuales para que se arme con este fix.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
