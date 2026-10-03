@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Printer } from "lucide-react";
+import { courtWord } from "../../../../../lib/sorteoLogic";
 
 const DAYS = ["2026-10-09", "2026-10-10", "2026-10-11"];
 const DAY_LABEL = { "2026-10-09": "Viernes 9 de octubre", "2026-10-10": "Sábado 10 de octubre", "2026-10-11": "Domingo 11 de octubre" };
@@ -86,7 +87,7 @@ export default function PosterDiaPage({ params }) {
                     <th className="text-left p-2 border" style={{ borderColor: "#DDE3EC" }}>Categoría</th>
                     <th className="text-left p-2 border" style={{ borderColor: "#DDE3EC" }}>Etapa</th>
                     <th className="text-left p-2 border" style={{ borderColor: "#DDE3EC" }}>Partido</th>
-                    <th className="text-left p-2 border" style={{ borderColor: "#DDE3EC" }}>Cancha</th>
+                    <th className="text-left p-2 border" style={{ borderColor: "#DDE3EC" }}>{courtWord(ms[0].disciplineId)}</th>
                   </tr>
                 </thead>
                 <tbody>

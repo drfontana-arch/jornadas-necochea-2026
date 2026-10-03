@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Trash2, X } from "lucide-react";
 import Card from "../../../components/Card";
+import { courtWord } from "../../../lib/sorteoLogic";
 
 const DAYS = ["2026-10-09", "2026-10-10", "2026-10-11"];
 const DAY_LABEL = { "2026-10-09": "Vie 09/10", "2026-10-10": "Sáb 10/10", "2026-10-11": "Dom 11/10" };
@@ -68,7 +69,7 @@ export default function DisciplinasPage() {
             <div className="flex items-center justify-between cursor-pointer" onClick={() => setOpen(isOpen ? null : d.id)}>
               <div>
                 <p className="font-bold">{d.name}</p>
-                <p className="text-xs text-[#9FB0D0]">{d.categories.length} categorías · {d.venues.length} sedes · {d.courts} cancha(s) · {d.duration} min</p>
+                <p className="text-xs text-[#9FB0D0]">{d.categories.length} categorías · {d.venues.length} sedes · {d.courts} {courtWord(d.id, { capitalize: false })}(s) · {d.duration} min</p>
               </div>
               <span className="text-[#2FD3C4] text-sm">{isOpen ? "Cerrar ▲" : "Ver ▼"}</span>
             </div>
@@ -78,7 +79,7 @@ export default function DisciplinasPage() {
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     <label className="text-xs text-[#9FB0D0]">
-                      Canchas
+                      {courtWord(d.id, { plural: true })}
                       <input
                         type="number" min={1} defaultValue={d.courts}
                         onBlur={(e) => updateDiscipline(d.id, { courts: Number(e.target.value) })}

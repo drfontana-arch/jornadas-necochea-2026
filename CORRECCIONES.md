@@ -225,6 +225,11 @@ _(vacío)_
 54. **El reparto de rondas entre días (tanda 38) ya no aplica a las actividades nocturnas.** Para Truco, Generala, Póker y Tenis de Mesa, el "día siguiente" cargado en sedes es la continuación de la MISMA noche (madrugada), no un día aparte para repartir descansos -- llenan todas las mesas disponibles esa noche antes de recién pasar a la sede de la madrugada, en vez de cortar antes de tiempo para "repartir parejo" entre las dos fechas.
     - Verificado con la función real: Truco con 2 mesas, viernes 21:00 + sábado 00:00 (continuación) -- llena las 10 llaves posibles del viernes a la noche antes de seguir en la sede de la madrugada, sin cortar antes de tiempo.
 
+## Aplicadas (tanda 42)
+
+55. **Truco y Generala dicen "Mesa" en vez de "Cancha".** En "Disciplinas y sedes" (el campo y el resumen de la tarjeta), en el póster de cada categoría (llaves y tabla de grupos) y en el cronograma del día, estas dos disciplinas ahora muestran "Mesa"/"Mesas" en vez de "Cancha"/"Canchas" -- el dato en sí (el número) es el mismo, solo cambia la palabra. El resto de las disciplinas sigue diciendo "Cancha" igual que antes.
+    - La tabla general de "Fixture y conflictos" y el Excel exportado mezclan varias disciplinas en una sola columna, así que ahí la columna sigue llamándose "Cancha" en general (cambiarla fila por fila no se podía sin confundir). Si hace falta, se puede sumar después.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

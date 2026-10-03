@@ -6,7 +6,7 @@ const NAVY = "#1B3D6D";
 const NAVY_DARK = "#0F274A";
 const DAY_LABEL = { "2026-10-09": "Vie 09/10", "2026-10-10": "Sáb 10/10", "2026-10-11": "Dom 11/10" };
 
-export default function BracketGroup({ matches, title, x = 0, y = 0, pareja = false }) {
+export default function BracketGroup({ matches, title, x = 0, y = 0, pareja = false, courtWord = "Cancha" }) {
   // Categorías de UNA persona (Ajedrez, Tenis/Tenis de Mesa Singles): en
   // vez del nombre completo se imprime la departamental, con un espacio
   // en blanco debajo para completar el nombre a mano. Categorías de
@@ -102,7 +102,7 @@ export default function BracketGroup({ matches, title, x = 0, y = 0, pareja = fa
               )}
               {SHOW_SCHEDULE_IN_POSTER && m.day && (
                 <text x={bx + BRACKET_BOX_WIDTH - 8} y={by - 6} fontSize="12" textAnchor="end" fill="#5A6B85" fontFamily="Arial, sans-serif">
-                  {(DAY_LABEL[m.day] || m.day) + " · " + m.time + " · Cancha " + m.court + (m.location ? " · " + m.location : "")}
+                  {(DAY_LABEL[m.day] || m.day) + " · " + m.time + " · " + courtWord + " " + m.court + (m.location ? " · " + m.location : "")}
                 </text>
               )}
             </g>

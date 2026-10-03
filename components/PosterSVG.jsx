@@ -1,6 +1,7 @@
 "use client";
 import { bracketDimensions, SHOW_SCHEDULE_IN_POSTER } from "../lib/bracketLayout";
 import { ISOLOGO_SVG_INNER, isologoTransform } from "../lib/posterLogo";
+import { courtWord } from "../lib/sorteoLogic";
 import BracketGroup from "./BracketGroup";
 
 const NAVY = "#1B3D6D";
@@ -20,6 +21,7 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
   // "Dobles". El casillero de la llave necesita espacio para escribir los
   // DOS nombres propios que integran cada pareja de la departamental.
   const esPareja = /pareja|doble/i.test(category.name || "");
+  const palabraCancha = courtWord(category.discipline_id);
 
   // El ancho de las llaves se calcula ANTES que el ancho total del
   // póster -- con muchos equipos (muchas rondas) la llave puede necesitar
@@ -153,7 +155,7 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
             <>
               <text x={marginX + contentWidth - 330} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">DÍA</text>
               <text x={marginX + contentWidth - 220} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">HORA</text>
-              <text x={marginX + contentWidth - 110} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">CANCHA/SEDE</text>
+              <text x={marginX + contentWidth - 110} y={groupsTableHeaderY + 20} fontSize="13" fontWeight="700" fill={NAVY} fontFamily="Arial, sans-serif">{palabraCancha.toUpperCase()}/SEDE</text>
             </>
           )}
           {sortedGroupMatches.map((m, i) => {
@@ -176,8 +178,8 @@ export default function PosterSVG({ category, matches, forwardedRef }) {
         </g>
       )}
 
-      {playoffY !== null && <BracketGroup matches={matches.playoffMatches} title="PLAYOFF" x={(width - playoffDim.width) / 2} y={playoffY} pareja={esPareja} />}
-      {drawY !== null && <BracketGroup matches={matches.drawMatches} title="LLAVE" x={(width - drawDim.width) / 2} y={drawY} pareja={esPareja} />}
+      {playoffY !== null && <BracketGroup matches={matches.playoffMatches} title="PLAYOFF" x={(width - playoffDim.width) / 2} y={playoffY} pareja={esPareja} courtWord={palabraCancha} />}
+      {drawY !== null && <BracketGroup matches={matches.drawMatches} title="LLAVE" x={(width - drawDim.width) / 2} y={drawY} pareja={esPareja} courtWord={palabraCancha} />}
 
       {emptyMsgY && (
         <text x={width / 2} y={emptyMsgY} textAnchor="middle" fontSize="16" fill="#5A6B85" fontFamily="Arial, sans-serif">
