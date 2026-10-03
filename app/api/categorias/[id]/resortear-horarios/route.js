@@ -14,23 +14,36 @@ export async function POST(req, { params }) {
     const { conflicts, violations } = await conflictsForCategory(params.id, transitionMinutes);
     return NextResponse.json({ ...result, conflicts, violations });
   } catch (e) {
-    // e.message a veces viene vacío con errores de Postgres/Supabase. El
-    // intento anterior usaba JSON.stringify sobre el objeto entero, que
-    // puede tener referencias circulares (típico en errores de fetch/
-    // Supabase) y tirar SU PROPIA excepción -- eso hacía que esta misma
-    // función de error fallara sin que el catch de afuera la viera, y
-    // Next.js devolvía su mensaje genérico de producción en su lugar. Acá
-    // cada intento de lectura va envuelto en su propio try/catch, sin usar
-    // JSON.stringify sobre algo desconocido.
+    // Diagnóstico agresivo: un intento anterior mostró "{message:\"\"}" y
+    // después "[object Object]" -- el objeto lanzado no tiene message/
+    // code/details/hint con contenido. Acá se vuelca TODO lo que se pueda
+    // leer de forma segura (tipo, constructor, cada propiedad propia),
+    // cada cosa en su propio try/catch, para encontrar qué es realmente.
+    console.error("Error en resortear-horarios:", e);
     const parts = [];
-    try { if (e && e.message) parts.push(String(e.message)); } catch {}
-    try { if (e && e.code) parts.push("code=" + String(e.code)); } catch {}
-    try { if (e && e.details) parts.push("details=" + String(e.details)); } catch {}
-    try { if (e && e.hint) parts.push("hint=" + String(e.hint)); } catch {}
-    let detail = parts.join(" | ");
-    if (!detail) {
-      try { detail = String(e); } catch { detail = ""; }
-    }
-    return NextResponse.json({ error: detail || "Error desconocido (sin mensaje)." }, { status: 500 });
+    try { parts.push("typeof=" + typeof e); } catch {}
+    try { parts.push("toString=" + Object.prototype.toString.call(e)); } catch {}
+    try { if (e && e.constructor && e.constructor.name) parts.push("constructor=" + e.constructor.name); } catch {}
+    try { if (e && e.name) parts.push("name=" + String(e.name)); } catch {}
+    try { if (e && e.message !== undefined) parts.push("message=" + JSON.stringify(String(e.message))); } catch {}
+    try { if (e && e.code !== undefined) parts.push("code=" + String(e.code)); } catch {}
+    try { if (e && e.details !== undefined) parts.push("details=" + String(e.details)); } catch {}
+    try { if (e && e.hint !== undefined) parts.push("hint=" + String(e.hint)); } catch {}
+    try { if (e && e.status !== undefined) parts.push("status=" + String(e.status)); } catch {}
+    try {
+      const keys = Object.keys(e || {});
+      parts.push("keys=[" + keys.join(",") + "]");
+      for (const k of keys) {
+        try {
+          const v = e[k];
+          const t = typeof v;
+          if (t === "string" || t === "number" || t === "boolean") parts.push(`${k}=${v}`);
+          else parts.push(`${k}:${t}`);
+        } catch (inner) { parts.push(`${k}=<no se pudo leer>`); }
+      }
+    } catch {}
+    try { parts.push("String(e)=" + String(e)); } catch {}
+    try { if (e && e.stack) parts.push("stack=" + String(e.stack).slice(0, 300)); } catch {}
+    return NextResponse.json({ error: parts.join(" || ") || "Error totalmente vacío." }, { status: 500 });
   }
 }
