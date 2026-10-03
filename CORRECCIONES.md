@@ -186,6 +186,13 @@ _(vacío)_
     - Verificado con un test de la función real: con el día reservado, la fase de grupos nunca usa ese día (en el caso probado, usa el único otro día configurado hasta agotar su capacidad y deja el resto sin asignar, en vez de invadir el día reservado).
     - **Requiere un cambio chico en la base de datos** -- ver instrucción SQL más abajo.
 
+## Aplicadas (tanda 36)
+
+48. **Fix: con "Reservar día solo para semifinal/final", la semifinal se seguía jugando otro día.** La corrección anterior solo evitaba que la fase de GRUPOS usara ese día; el playoff seguía usando cualquier día disponible y, si sobraba lugar antes del día reservado (ej. el sábado a la noche, apenas termina la fase de grupos), la semifinal arrancaba ahí en vez de esperar al día reservado. Ahora el playoff (semifinal Y final) queda obligado a programarse SOLO en el día reservado -- si ese día no alcanza para todas las rondas del playoff, los partidos que no entran quedan sin horario asignado (visibles en el panel correspondiente) en vez de usar otro día.
+    - Aplica tanto al sorteo normal como a "Resortear horarios" y a la regeneración de la llave al cargar posiciones de grupo ("Completar la llave").
+    - Verificado con la función real: semifinales y final quedan las tres en el día reservado, nunca antes.
+    - **Las categorías que ya tenían esto mal programado** (semifinal en otro día) necesitan volver a sortear su playoff -- desde Sorteo, "Resortear horarios" (si los grupos ya están consolidados) o regenerar el playoff.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.

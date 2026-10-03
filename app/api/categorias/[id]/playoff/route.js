@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCategory, listAllMatches, replaceMatchesForStage, updateCategorySettings, listRestrictions, getIndividualDisciplineBusyMatches, conflictsForCategory } from "../../../../../lib/db";
 import { getSupabase } from "../../../../../lib/supabase";
 import { buildDrawMatches, scheduleRoundsProgressively, groupLetter, absoluteMinutes, nextPow2 } from "../../../../../lib/sorteoLogic";
+import { onlyReservedPlayoffDayDiscipline } from "../../../../../lib/sorteoRunner";
 
 export const dynamic = "force-dynamic";
 
@@ -78,8 +79,9 @@ export async function POST(req, { params }) {
       if (endMin > groupsMaxEnd) groupsMaxEnd = endMin;
     });
     const playoffNotBefore = groupsMaxEnd > 0 ? groupsMaxEnd + transitionMinutes : 0;
+    const playoffDiscipline = onlyReservedPlayoffDayDiscipline(discipline, category.playoff_only_day);
     const { assignments, unresolved } = scheduleRoundsProgressively(
-      schedulable, discipline, transitionMinutes, allMatches.concat(individualBusy), restrictions, playoffNotBefore
+      schedulable, playoffDiscipline, transitionMinutes, allMatches.concat(individualBusy), restrictions, playoffNotBefore
     );
     const withSlots = matches.map((m) => {
       if (m.bye) return { ...m, day: null, time: null, court: null, disciplineId: discipline.id };
