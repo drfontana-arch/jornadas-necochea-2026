@@ -238,6 +238,14 @@ _(vacío)_
     - **Las categorías de Truco/Generala ya sorteadas** necesitan "Resortear horarios" (o volver a sortear) para que se les aplique.
 57. **El mismo fix se extendió a Canasta y Burako** -- mismas disciplinas de naipes por parejas, mismo problema.
 
+## Aplicadas (tanda 44)
+
+58. **Aviso cuando se carga más de un equipo/pareja de la misma departamental como cabeza de serie.** Investigado el caso reportado (en Tenis/Pádel, dos parejas de una misma departamental aparecían como cabezas de serie cuando solo una debía serlo): el motor de sorteo funciona bien (siembra por equipo/pareja puntual, nunca por toda la departamental) -- lo que pasaba es que en Antecedentes es fácil apretar "Agregar a la siembra" en las DOS filas de una misma departamental por error, porque ahí solo se ven etiquetas tipo "Quilmes 1"/"Quilmes 2" sin ningún otro dato (como nombres) que ayude a distinguir cuál corresponde al antecedente real.
+    - Ahora, al agregar un equipo a la siembra cuando ya hay otro de la MISMA departamental cargado, aparece una confirmación explicando el problema antes de dejar agregarlo igual (por si en algún caso puntual de verdad corresponden los dos).
+    - "Pegar orden" ahora también salta (y avisa cuántas) las líneas que generarían este mismo problema.
+    - La lista "Orden de siembra actual" marca con un ícono de alerta ⚠ cualquier fila que tenga este conflicto, para detectar de un vistazo si ya hay algo mal cargado (como el caso real reportado).
+    - **Para arreglar la categoría puntual que ya tiene el problema**: entrar a Antecedentes, esa categoría, y sacar de la siembra (botón "×") al equipo/pareja que NO corresponde -- después volver a sortear esa categoría.
+
 ## Notas / limitaciones conocidas
 
 - Las restricciones **individuales por persona** se guardan bien, pero todavía **no se aplican solas** al sortear ni al autoresolver (solo las de departamental y equipo). Pendiente de decidir si se construye.
